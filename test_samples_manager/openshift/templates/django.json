@@ -15,7 +15,7 @@
     }
   },
   "labels": {
-    "template": "samples_manager"
+    "template": "samples-manager"
   },
   "message": "The following service(s) have been created in your project: ${NAME}.\n\nFor more information about using this template, including OpenShift considerations, see https://github.com/openshift/django-ex/blob/master/README.md.",
   "objects": [
@@ -158,7 +158,7 @@
             "imageChangeParams": {
               "automatic": true,
               "containerNames": [
-                "samples_manager"
+                "samples-manager"
               ],
               "from": {
                 "kind": "ImageStreamTag",
@@ -184,7 +184,7 @@
           "spec": {
             "containers": [
               {
-                "name": "samples_manager",
+                "name": "samples-manager",
                 "image": " ",
                 "ports": [
                   {
@@ -240,7 +240,7 @@
       "displayName": "Name",
       "description": "The name assigned to all of the frontend objects defined in this template.",
       "required": true,
-      "value": "samples_manager"
+      "value": "samples-manager"
     },
     {
       "name": "NAMESPACE",
