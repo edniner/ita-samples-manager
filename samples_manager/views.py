@@ -28,6 +28,7 @@ def send_mail_notification(title,message,from_mail,to_mail):
 
 def get_logged_user(request):
     logged_user = request.META["HTTP_X_REMOTE_USER"]
+    print(logged_user)
     #logged_user = 'blerina.gkotse@cern.ch'
     users = Users.objects.all()
     emails =[]
