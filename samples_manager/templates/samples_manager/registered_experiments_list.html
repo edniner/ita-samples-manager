@@ -1,0 +1,35 @@
+{% extends 'samples_manager/base.html' %}
+{% block content %}
+<div class='panel panel-default' id="main_panel">
+    <div class="row">
+        <button type="button"
+                class="btn btn-primary js-create-experiment"
+                data-url="{% url 'samples_manager:experiment_new' %}">
+                <span class="glyphicon glyphicon-plus"></span>New Irradiation
+        </button>  
+        <table class="table" id="experiment-table">
+            <thead>
+                <tr>
+                <th>Irradiation title</th>
+                <th>Description</th>
+                <th>CERN experiment</th>
+                <th>Availability</th>
+                <th>Number of samples</th>
+                <th>Responsible person</th>
+                <th>Status</th>
+                <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                 {% include 'samples_manager/partial_registered_experiments_list.html' %}
+            </tbody>
+        </table>
+</div>
+</div>
+ <!-- THE MODAL WE WILL BE USING -->
+  <div class="modal" id="modal-experiment">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% for user in users %}
+  <tr>
+    <td>{{ user.name }}</td>
+    <td>{{ user.surname }}</td>
+    <td>{{ user.email }}</td>
+    <td>{{ user.telephone }}</td>
+    <td>
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-user"
+              data-url="{% url 'samples_manager:user_update' user.id %}">
+        <span class="glyphicon glyphicon-pencil"></span> View-Edit
+      </button>
+      <button type="button"
+              class="btn btn-primary btn-sm js-clone-user"
+              data-url="{% url 'samples_manager:user_clone' user.id %}">
+        <span class="glyphicon glyphicon-duplicate"></span> Clone
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-user"
+              data-url="{% url 'samples_manager:user_delete' user.id %}">
+        <span class="glyphicon glyphicon-trash"></span> Delete
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No user</td>
+  </tr>
+{% endfor %}

@@ -1,0 +1,29 @@
+{% for sample in samples %}
+  <tr>
+    <td>{{ sample.set_id }}</td>
+    <td>{{ sample.description }}</td>
+    <td>{{ sample.experiment.title}}</td>
+    <td>{{ sample.req_fluence }}</td>
+    <td></td>
+     <td>
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-sample"
+              data-url="{% url 'samples_manager:sample_update' sample.id %}">
+             <span class="glyphicon glyphicon-pencil"></span>View-Edit
+      </button>
+      <button type="button"
+              class="btn btn-primary btn-sm js-clone-sample"
+              data-url="{% url 'samples_manager:sample_clone' sample.id %}">
+        <span class="glyphicon glyphicon-duplicate"></span> Clone
+      </button>
+      <!--<button type="button"
+                class="btn btn-primary soap">
+                <span class="glyphicon glyphicon-plus"></span>Soap Request
+      </button> -->
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center bg-warning">No sample</td>
+  </tr>
+{% endfor %}

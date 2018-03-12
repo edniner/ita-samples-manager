@@ -1,0 +1,34 @@
+{% extends 'samples_manager/base.html' %}
+{% block content %}
+<div class='panel panel-default' id="main_panel">        
+    <div class="row">
+        <button type="button"
+                class="btn btn-primary js-create-box"
+                data-url="{% url 'samples_manager:box_new' %}">
+                <span class="glyphicon glyphicon-plus"></span> New Box
+        </button>
+        <table class="table" id="box-table">
+            <thead>
+                <tr>
+                <th>Box</th>
+                <th>Description</th>
+                <th>Responsible</th>
+                <th>Current location</th>
+                </tr>
+            </thead>
+            <tbody>
+                 {% include 'samples_manager/partial_boxes_list.html' %}
+            </tbody>
+        </table>
+</div>
+
+
+
+</div>
+ <!-- THE MODAL WE WILL BE USING -->
+  <div class="modal" id="modal-box">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+{% endblock %}

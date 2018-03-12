@@ -1,0 +1,44 @@
+{% extends 'samples_manager/base.html' %}
+
+{% block content %}
+<div class='panel panel-default' id="main_panel">
+    <div class="row">
+       <h3 class="lead"><strong> Welcome to IRRAD Data Manager, <br> the all-in-one data management tool for the registration, supervision and follow up of IRRAD experiments.<strong><br> Please, register your irradiation.<strong></h3>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-4">
+        </div>
+        <div class="col-sm-4">
+                    <button type="button"
+                      data-target = "#modal-experiment"
+                      class="btn btn-primary js-create-experiment"
+                      title='Register new irradiation experiment'
+                      data-url="{% url 'samples_manager:experiment_new' %}">
+                        <h3>New Irradiation</h3>
+                    </button>  
+        </div>
+         <div class="col-sm-4">
+      </div>
+</div>
+
+
+ <!-- THE MODAL WE WILL BE USING -->
+   <div class="modal" id="modal-experiment"  data-backdrop="static" data-keyboard="false"  tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+    </div> 
+  <div class="modal" id="modal-sample"  data-backdrop="static" data-keyboard="false"  tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+  <!-- <div class="modal" id="modal-user"  data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>-->
+{% endblock %}

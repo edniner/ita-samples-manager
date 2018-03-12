@@ -1,0 +1,36 @@
+{% extends 'samples_manager/base.html' %}
+{% block content %}
+<div class='panel panel-default' id="main_panel">
+    <div class="row">
+        <button type="button"
+                class="btn btn-primary js-create-sample"
+                data-url="{% url 'samples_manager:sample_new' %}">
+                <span class="glyphicon glyphicon-plus"></span>New Sample
+        </button>    
+        <table class="table" id="sample-table">
+            <thead>
+                <tr>
+                <th>SET Number</th>
+                <th>Description</th>
+                <th>Experiment</th>
+                <th>Requested fluence</th>
+                </tr>
+            </thead>
+            <tbody>
+                 {% include 'samples_manager/partial_samples_list.html' %}
+            </tbody>
+        </table>
+</div>
+
+<div class="row">
+        <div class="col-sm-4">
+
+        </div>
+</div>
+ <!-- THE MODAL WE WILL BE USING -->
+  <div class="modal" id="modal-sample">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+{% endblock %}

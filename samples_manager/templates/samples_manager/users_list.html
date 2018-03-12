@@ -1,0 +1,35 @@
+{% extends 'samples_manager/base.html' %}
+{% block content %}
+<div class='panel panel-default' id="main_panel">        
+    <div class="row">
+        <button type="button"
+                class="btn btn-primary js-create-user"
+                data-url="{% url 'samples_manager:user_new' %}">
+                <span class="glyphicon glyphicon-plus"></span> New User
+        </button>
+        <table class="table" id="user-table">
+            <thead>
+                <p>{{username}}</p>
+                <tr>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>E-mail</th>
+                <th>Telephone</th>
+                </tr>
+            </thead>
+            <tbody>
+                 {% include 'samples_manager/partial_users_list.html' %}
+            </tbody>
+        </table>
+</div>
+
+
+
+</div>
+ <!-- THE MODAL WE WILL BE USING -->
+  <div class="modal" id="modal-user">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+{% endblock %}

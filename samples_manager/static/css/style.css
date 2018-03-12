@@ -1,0 +1,241 @@
+body{
+    background: url(../images/cesar-couto-420988-unsplash.jpg) center center / cover no-repeat fixed;
+/*background: #cedce7; /* Old browsers */
+/*background: -moz-linear-gradient(to bottom, #cedce7 0%,#596a72 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+/*background: -webkit-linear-gradient(top, #cedce7 0%,#596a72 100%); /* Chrome10-25,Safari5.1-6 */
+/*background: linear-gradient(to bottom, #cedce7 0%,#596a72 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+
+/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#596a72',GradientType=0 ); /* IE6-9 */
+    /*background: #ececec;
+    background: url(../images/cern.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;*/
+    /*background: rgba(243,226,199,1);
+    background: -moz-linear-gradient(top, rgba(243,226,199,1) 0%, rgba(243,226,199,1) 16%, rgba(233,212,179,1) 43%, rgba(182,141,76,1) 97%, rgba(182,141,76,1) 100%);
+    background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(243,226,199,1)), color-stop(16%, rgba(243,226,199,1)), color-stop(43%, rgba(233,212,179,1)), color-stop(97%, rgba(182,141,76,1)), color-stop(100%, rgba(182,141,76,1)));
+    background: -webkit-linear-gradient(top, rgba(243,226,199,1) 0%, rgba(243,226,199,1) 16%, rgba(233,212,179,1) 43%, rgba(182,141,76,1) 97%, rgba(182,141,76,1) 100%);
+    background: -o-linear-gradient(top, rgba(243,226,199,1) 0%, rgba(243,226,199,1) 16%, rgba(233,212,179,1) 43%, rgba(182,141,76,1) 97%, rgba(182,141,76,1) 100%);
+    background: -ms-linear-gradient(top, rgba(243,226,199,1) 0%, rgba(243,226,199,1) 16%, rgba(233,212,179,1) 43%, rgba(182,141,76,1) 97%, rgba(182,141,76,1) 100%);
+    background: linear-gradient(to bottom, rgba(243,226,199,1) 0%, rgba(243,226,199,1) 16%, rgba(233,212,179,1) 43%, rgba(182,141,76,1) 97%, rgba(182,141,76,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3e2c7', endColorstr='#b68d4c', GradientType=0 );
+    font-family: 'Roboto';  */
+}
+a {
+    color: #FFFFFF;
+}
+a hover {
+    color: darkorange;
+}
+h1,h2,h3,h4,li,p,table th, table td {
+    color: #FFFFFF;
+}
+h1{
+text-align: center;
+}
+
+.js-create-experiment, .js-create-user, .js-create-sample, .js-create-dosimeter {
+ margin-bottom: 30px;
+}
+
+.mbr-hero__text{
+    font-size: 60px;
+    font-weight: bold;
+    left: -2px;
+    letter-spacing: 2px;
+    line-height: 50px;
+    margin: 10px 0 1px 0;
+    padding-bottom: 41px;
+}
+
+.lead{
+    text-align: center;
+}
+#modal-sample h1,#modal-sample h2,#modal-sample h3,#modal-sample h4,#modal-sample p {
+    color: #333333;
+}
+
+#modal-dosimeter h1,#modal-dosimeter h2,#modal-dosimeter h3,#modal-dosimeter h4,#modal-dosimeter p {
+    color: #333333;
+}
+#modal-experiment h1,#modal-experiment h2,#modal-experiment h3,#modal-experiment h4,#modal-experiment p  {
+    color: #333333;
+}
+
+#modal-box h1,#modal-box h2,#modal-box h3,#modal-box h4,#modal-box p  {
+    color: #333333;
+}
+
+#modal-user h1,#modal-user h2,#modal-user h3,#modal-user h4,#modal-user p  {
+    color: #333333;
+}
+h4{
+    font-size: 26px;
+}
+
+.formset_table  tr, .formset_table  td, .formset_table  a, .formset_table th{
+    color: #333333;
+}
+
+#passive_standard_category div{
+    color: #333333;
+    font-size: medium;
+    text-align: center;
+    display: inline-block;
+    margin: 0.5% 8% 2% 8%;
+}
+#passive_standard_category p {
+    font-size: 15px;
+    font-weight: bold;
+}
+#main_panel h2,h4{
+    border-bottom: solid white;
+    text-align: center;
+}
+#main_panel p{
+    margin-top: 20px;
+}
+.wrapper{
+ width: 60%;
+ margin: auto;
+}
+.new_experiment_form{
+    margin: 2%;
+}
+.new_sample_form{
+    text-align: center;
+}
+.new_sample_form input{
+    width: 30%;
+}
+.form-inline label{
+    color:  #FFFFFF;
+    margin: 1%;
+}
+
+.new_experiment_form label{
+    color:  #FFFFFF;
+    width: 100%;
+}
+.new_sample_form label{
+    color:  #FFFFFF;
+    width: 100%;
+}
+.form-inline textarea, .form-inline input {
+    color:  #222222;
+}
+
+.new_experiment_form textarea, .new_sample_form textarea{
+    width: 100%;
+}
+.form-inline{
+    margin: 2%;
+}
+
+.button_div{
+    text-align: center;
+}
+
+li{
+     color: #FFFFFF;
+     font-size: large;
+     text-align: center;
+}
+dt {
+    color: #FFFFFF;
+    font-size: large;
+}
+dd {
+    color: #FFFFFF;
+    font-size: medium;
+    margin-bottom: 2%;
+}
+.glyphicon {
+    font-size: 200%;
+   color:   #FFFFFF;;
+}
+
+.new {
+    background: orange;
+}
+
+div.panel-default{
+    background: rgb(44, 44, 44);
+    padding: 2%;
+}
+
+div.panel-default button{
+    text-align: center;
+}
+
+div.page-header {
+    background:rgb(44, 44, 44);
+    margin-top:0%; 
+}
+
+div.col-sm-4{
+    text-align: center;
+}
+
+.frame{
+    background: rgb(44, 44, 44);
+}
+
+.status_registered{
+    background: white;
+    color: rgb(44, 44, 44);
+}
+.status_approved{
+    background: green;
+    color: white;
+}
+.status_in_beam{
+    background: yellow;
+    color: white;
+}
+
+.status_out_of_beam{
+    background: red;
+    color: white;
+}
+
+.status_completed{
+    background: orange;
+    color: white;
+}
+
+
+.modal-backdrop
+{
+    opacity:0.3 !important;
+}
+
+.help-block{ color: red;}
+
+#regulations li{
+    list-style-type: none;
+    text-align: justify;
+    padding-right:5%; 
+}
+
+#regulations li a{
+    text-decoration: underline;
+}
+
+.footer {
+    height: 4%;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgb(44, 44, 44)
+}
+.row{
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.space{
+    height: 6%;
+}
+
