@@ -69,6 +69,7 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.RemoteUserBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 ROOT_URLCONF = 'test-irrad-management-page.urls'
