@@ -2,7 +2,7 @@ from django.contrib.auth.middleware import RemoteUserMiddleware
 
 # customising the RemoteUserMiddleware to get the HTTP header that openshift adds
 class ProxyRemoteUserMiddleware(RemoteUserMiddleware):
-    '''header = 'HTTP_X_REMOTE_USER' '''
+    header = 'HTTP_X_REMOTE_USER'
     def process_request(self,request):
         if hasattr(request, 'user') and request.user.is_authenticated() \
          and request.user.get_username() == request.META[self.header]:
