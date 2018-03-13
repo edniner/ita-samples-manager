@@ -9,7 +9,7 @@ $(function () {
       xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
       }
 
-      xmlhttp.open('POST', 'https://cmmsx.cern.ch/WSHub/SOAP',
+      xmlhttp.open('POST', 'https://cmmsx-test.cern.ch/WSHub/SOAP',
     true);
 
       xmlhttp.onreadystatechange=function(){
