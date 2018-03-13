@@ -27,9 +27,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()'''
 
 def get_logged_user(request):
-    logged_user = request.META["HTTP_X_REMOTE_USER"]
-    fullname = request.META.get("ADFS_FULLNAME", None)
-    print(fullname)
+    logged_user = request.META["HTTP_X_REMOTE_EMAIL"]
+    #fullname = request.META.get("ADFS_FULLNAME", None)
+    username =  request.META["HTTP_X_REMOTE_USER"]
+    print(username)
+    firstname = request.META["HTTP_X_REMOTE_FIRST_NAME"]
+    print(firstname)
+    lastname = request.META["HTTP_X_REMOTE_LAST_NAME"]
+    print(lastname)
+    email =  request.META["HTTP_X_REMOTE_EMAIL"]
+    print(email)
     #logged_user = 'blerina.gkotse@cern.ch'
     users = Users.objects.all()
     emails =[]
@@ -37,7 +44,12 @@ def get_logged_user(request):
         emails.append(item.email)
     if not logged_user in emails:
         new_user = Users()
-        new_user.email = logged_user
+        if firstname is not None:
+            new_user.name= firstname
+        if lastname is not None:
+            new_user.surname = lastname
+        if email is not None:
+            new_user.email = email
         new_user.save()
     return logged_user
     
