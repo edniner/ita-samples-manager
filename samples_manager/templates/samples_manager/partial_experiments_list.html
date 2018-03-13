@@ -1,6 +1,7 @@
 <meta charset="UTF-8"> 
 {% for experiment in experiments %}
   <tr>
+    <td>{{ experiment.updated_at}}</td>
     <td>{{ experiment.title }}</td>
     <td>{{ experiment.cern_experiment }}</td>
     <td>{{ experiment.availability }}</td>
@@ -14,24 +15,29 @@
              <span class="glyphicon glyphicon-pencil"></span>
       </button>
       <button type="button"
-              class="btn btn-primary js-clone-experiment"
-              title='Clone'
-              data-url="{% url 'samples_manager:experiment_clone' experiment.id %}">
-        <span class="glyphicon glyphicon-duplicate"></span>
-      </button>
-      <a href="{% url 'samples_manager:print_experiment_view' experiment.id  %}">
-        <button type="button"
               class="btn btn-info"
-              title='Print'>
-        <span class="glyphicon glyphicon-print"></span>
+              title='Add users'>
+             <span class="glyphicon glyphicon-user"></span>
       </button>
-      </a>
       <button type="button"
-              class="btn btn-danger js-delete-experiment"
-              title='Delete'
-              data-url="{% url 'samples_manager:experiment_delete' experiment.id %}">
-        <span class="glyphicon glyphicon-trash"></span>
+              class="btn btn-primary"
+              title='Add samples'>
+             <span class="glyphicon glyphicon-book"></span>
       </button>
+      <div class="dropdown">
+        <button type="button"
+                class="btn dropdown-toggle"
+                id="dropdownMenu1" data-toggle="dropdown" 
+                aria-haspopup="true" aria-expanded="true"
+                title='More options'>
+              <span class="glyphicon glyphicon-menu-hamburger"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+          <li><button class="js-clone-experiment" data-url="{% url 'samples_manager:experiment_clone' experiment.id %}">Clone</button></li>
+          <li><div><a href="{% url 'samples_manager:print_experiment_view' experiment.id  %}"><button>Print</button></div></a></li>
+          <li><button class="js-delete-experiment" title='Delete' data-url="{% url 'samples_manager:experiment_delete' experiment.id %}">Delete</button></li>
+        </ul>
+      </div>
     </td>
   </tr>
 {% empty %}

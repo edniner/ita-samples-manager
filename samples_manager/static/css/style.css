@@ -72,6 +72,25 @@ h4{
     border-bottom: solid white;
     text-align: center;
 }
+
+div.dropdown{
+    display: inline-block;
+    padding: 0;
+}
+
+.dropdown-menu{
+ padding: 0;
+}
+
+.dropdown-menu button, .dropdown-menu a{
+    width: 100%;
+    color: #333333;
+}
+
+#main_panel h3{
+    font-weight: bold;
+}
+
 #main_panel p{
     margin-top: 20px;
 }
@@ -142,6 +161,10 @@ dd {
 div.panel-default{
     background: rgb(44, 44, 44);
     padding: 2%;
+}
+
+.panel-default>.panel-heading{
+    background:rgb(44, 44, 44);
 }
 
 div.panel-default button{
