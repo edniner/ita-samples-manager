@@ -27,15 +27,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()'''
 
 def get_logged_user(request):
-    logged_user = request.META["HTTP_X_REMOTE_EMAIL"]
+
+    logged_user = request.META["HTTP_X_REMOTE_USER_EMAIL"]
     #fullname = request.META.get("ADFS_FULLNAME", None)
     username =  request.META["HTTP_X_REMOTE_USER"]
     print(username)
-    firstname = request.META["HTTP_X_REMOTE_FIRST_NAME"]
+    firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     print(firstname)
-    lastname = request.META["HTTP_X_REMOTE_LAST_NAME"]
+    lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     print(lastname)
-    email =  request.META["HTTP_X_REMOTE_EMAIL"]
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     print(email)
     #logged_user = 'blerina.gkotse@cern.ch'
     users = Users.objects.all()

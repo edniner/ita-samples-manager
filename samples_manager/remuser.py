@@ -10,13 +10,13 @@ class ProxyRemoteUserMiddleware(RemoteUserMiddleware):
                 username =  request.META["HTTP_X_REMOTE_USER"]
                 if username is not None:
                     request.user.username = username
-                firstname = request.META["HTTP_X_REMOTE_FIRST_NAME"]
+                firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
                 if firstname is not None:
                     request.user.first_name = firstname
-                lastname = request.META["HTTP_X_REMOTE_LAST_NAME"]
+                lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
                 if lastname is not None:
                     request.user.last_name = lastname
-                email =  request.META["HTTP_X_REMOTE_EMAIL"]
+                email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
                 if email is not None:
                     request.user.email = email
                 request.user.save()
