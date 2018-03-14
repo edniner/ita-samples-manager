@@ -7,7 +7,7 @@ from .models import Experiments,Users, ReqFluences,Materials, PassiveStandardCat
 from django.forms import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
-
+import logging 
 
 OPTIONS = (
             ("5x5 mm²", "5x5 mm²"),

@@ -96,12 +96,12 @@ class Users(models.Model):
         return self.email
 
 def validate_negative(value):
-    if value < 0:
-        raise ValidationError(
-            _('%(value)s is negative'),
-            params={'value': value},
-        )
-
+        if value < 0:
+            raise ValidationError(
+                _('%(value)s is negative'),
+                params={'value': value},
+            )
+    
 class Experiments(models.Model):
     title = models.CharField(max_length=200, unique = True)
     description =  models.TextField()
@@ -112,10 +112,10 @@ class Experiments(models.Model):
     comments = models.TextField( null=True ) 
     category=  models.CharField(max_length=100,choices=CATEGORIES, blank=False)
     regulations_flag = models.BooleanField()
-    # plus fluences, categories, material
     # these fields should be autofilled
     status=models.CharField(max_length=50, choices=EXPERIMENT_STATUS)
     responsible=models.ForeignKey(Users, related_name='%(class)s_responsible')
+    users = models.ManyToManyField(Users,null=True)
     created_at=models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
@@ -132,8 +132,9 @@ class Experiments(models.Model):
         return self.title
     def long_irradiation(self):
         return self.end_date - self.start_date >=datetime.timedelta(days=1)
-        
+    
 
+        
 class PassiveStandardCategories(models.Model):
     irradiation_area_5x5 = models.BooleanField()
     irradiation_area_10x10 = models.BooleanField()

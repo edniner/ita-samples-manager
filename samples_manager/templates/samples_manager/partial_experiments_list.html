@@ -15,7 +15,8 @@
              <span class="glyphicon glyphicon-pencil"></span>
       </button>
       <button type="button"
-              class="btn btn-info"
+              class="btn btn-info js-create-user"
+              data-url="{% url 'samples_manager:user_new' experiment.id %}"
               title='Add users'>
              <span class="glyphicon glyphicon-user"></span>
       </button>

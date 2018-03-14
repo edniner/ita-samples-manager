@@ -14,9 +14,7 @@ h1{
 text-align: center;
 }
 
-.js-create-experiment, .js-create-user, .js-create-sample, .js-create-dosimeter {
- margin-bottom: 30px;
-}
+
 
 .mbr-hero__text{
     font-size: 60px;

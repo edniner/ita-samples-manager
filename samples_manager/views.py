@@ -17,6 +17,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from django.utils.safestring import mark_safe
+import logging 
 
 
 
@@ -27,23 +28,18 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()'''
 
 def get_logged_user(request):
-
-    logged_user = request.META["HTTP_X_REMOTE_USER_EMAIL"]
-    #fullname = request.META.get("ADFS_FULLNAME", None)
-    username =  request.META["HTTP_X_REMOTE_USER"]
-    print(username)
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
-    print(firstname)
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
-    print(lastname)
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
-    print(email)
-    #logged_user = 'blerina.gkotse@cern.ch'
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]'''
+    firstname = 'Blerina'
+    lastname = 'Gkotse'
+    email = 'blerina.gkotse@cern.ch'
     users = Users.objects.all()
     emails =[]
     for item in users:
         emails.append(item.email)
-    if not logged_user in emails:
+    if not email in emails:
         new_user = Users()
         if firstname is not None:
             new_user.name= firstname
@@ -52,7 +48,7 @@ def get_logged_user(request):
         if email is not None:
             new_user.email = email
         new_user.save()
-    return logged_user
+    return email
     
 
 def index(request):
@@ -90,7 +86,6 @@ def experiments_list(request):
 def registered_experiments_list(request):
     experiments = Experiments.objects.all().filter(status="Registered")
     logged_user = get_logged_user(request)
-    print(experiments)
     return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user})
     
 def users_list(request):
@@ -189,15 +184,28 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
     if request.method == 'POST':
         if form1.is_valid() and form2.is_valid() and form3.is_valid():
             if new == 0: # new experiment
+                logging.warning('New experiment')
                 experiment_data = {}
                 experiment_data.update(form1.cleaned_data)
+                logging.warning(form1.cleaned_data)
                 experiment_data.update(form2.cleaned_data)
                 experiment_data.update(form3.cleaned_data)
+                logging.warning(experiment_data)
+                #users=experiment_data.pop('users')
+                logging.warning(experiment_data)
                 experiment_temp = Experiments.objects.create(**experiment_data)
+                logging.warning('experiment created')
                 experiment = Experiments.objects.get(pk = experiment_temp.pk)
+                logging.warning('experiment created 1')
                 experiment.created_by = user
+                logging.warning('created_by user')
                 experiment.status = "Registered"
+                logging.warning('to be saved')
                 experiment.save()
+                logging.warning('Experiment saved')
+                '''for u in users:
+                    user = Users.objects.get(email = u)
+                    experiment.users.add(user)'''
                 if experiment.category == "Passive Standard":
                     if passive_standard_categories_form.is_valid(): 
                         if passive_standard_categories_form.cleaned_data is not None:
@@ -218,6 +226,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                             active_category.save()
                 else: 
                     print("no category")
+                
                 if fluence_formset.is_valid():
                     print( fluence_formset)
                     if fluence_formset.cleaned_data is not None:
@@ -339,17 +348,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
     print("all saved!")
     return JsonResponse(data)
 
-
-def user_new(request):
-    BoxesFormSet = inlineformset_factory( Users, Boxes,  fk_name='responsible', form=BoxesForm, extra=1)
-    if request.method == 'POST':
-        form = UsersForm(request.POST)
-        fluence_formset = BoxesFormSet(request.POST)
-    else:
-        form = UsersForm()
-        formset = BoxesFormSet()
-    return save_user_form(request, form, formset, 'samples_manager/partial_user_create.html')
-
 def experiment_new(request):
     logged_user = get_logged_user(request)
     user = Users.objects.get(email = logged_user)
@@ -360,6 +358,8 @@ def experiment_new(request):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     if request.method == 'POST':
+        print("in the post!")
+        logging.warning('POST request')
         form1 = ExperimentsForm1(request.POST,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST)
         form3 = ExperimentsForm3(request.POST)
@@ -596,15 +596,14 @@ def save_user_form(request,form,template_name):
     return JsonResponse(data)
 
 
-def user_new(request):
-    BoxesFormSet = inlineformset_factory( Users, Boxes,  fk_name='responsible', form=BoxesForm, extra=1)
+def user_new(request,experiment_id):
+    print("experiment_id")
+    print(experiment_id)
     if request.method == 'POST':
         form = UsersForm(request.POST)
-        formset = BoxesFormSet(request.POST)
     else:
         form = UsersForm()
-        formset = BoxesFormSet()
-    return save_user_form(request, form,'samples_manager/partial_user_create.html')
+    return save_user_form(request, form, 'samples_manager/partial_user_create.html')
 
 def user_update(request, pk):
     user = get_object_or_404(Users, pk=pk)
