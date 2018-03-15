@@ -92,6 +92,12 @@ def users_list(request):
     users = Users.objects.all()
     return render(request, 'samples_manager/users_list.html', {'users': users,})
 
+def experiment_users_list(request, experiment_id):
+    experiment = Experiments.objects.get(pk = experiment_id)
+    users= experiment.users.values()
+    print(users)
+    return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment})
+
 
 def experiment_details(request, experiment_id):
     experiment = get_object_or_404(Experiments, pk=experiment_id)
@@ -194,13 +200,9 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 #users=experiment_data.pop('users')
                 logging.warning(experiment_data)
                 experiment_temp = Experiments.objects.create(**experiment_data)
-                logging.warning('experiment created')
                 experiment = Experiments.objects.get(pk = experiment_temp.pk)
-                logging.warning('experiment created 1')
                 experiment.created_by = user
-                logging.warning('created_by user')
                 experiment.status = "Registered"
-                logging.warning('to be saved')
                 experiment.save()
                 logging.warning('Experiment saved')
                 '''for u in users:
@@ -582,14 +584,21 @@ def experiment_delete(request, pk):
 def save_user_form(request, form, experiment, template_name):
     data = dict()
     if request.method == 'POST':
+        logging.warning("post")
         if form.is_valid():
+            logging.warning("form is valid")
+            print(form.cleaned_data)
             new_user = form.save()
+            print(new_user)
             experiment.users.add(new_user)
+            print(new_user)
             data['form_is_valid'] = True
-            users = Users.objects.all()
+            users = experiment.users.all()
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
-                'users': users
+                'users': users,
+                'experiment':experiment
             })
+            print('done')
         else:
             data['form_is_valid'] = False
     context = {'form': form, 'experiment': experiment}
@@ -603,32 +612,37 @@ def user_new(request,experiment_id):
         form = UsersForm(request.POST)
     else:
         form = UsersForm()
-    return save_user_form(request, form, experiment, 'samples_manager/partial_user_create.html')
+    return save_user_form(request, form,experiment, 'samples_manager/partial_user_create.html')
 
-def user_update(request, pk):
+def user_update(request,experiment_id,pk):
+    experiment = Experiments.objects.get(pk = experiment_id)
     user = get_object_or_404(Users, pk=pk)
     if request.method == 'POST':
         form = UsersForm(request.POST, instance=user)
     else:
         form = UsersForm(instance=user)
-    return save_user_form(request, form, 'samples_manager/partial_user_update.html')
+    return save_user_form(request, form, experiment,'samples_manager/partial_user_update.html')
 
-def user_delete(request, pk):
+def user_delete(request,experiment_id,pk):
+    experiment = Experiments.objects.get(pk = experiment_id)
     user = get_object_or_404(Users, pk=pk)
     data = dict()
+    print(experiment)
     if request.method == 'POST':
         user.delete()
         data['form_is_valid'] = True  # This is just to play along with the existing code
-        users = Users.objects.all()
+        users = experiment.users.all()
         data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
-            'users': users
+            'users': users,
+            'experiment':experiment
         })
     else:
-        context = {'user': user}
+        context = {'user': user, 'experiment':experiment,}
         data['html_form'] = render_to_string('samples_manager/partial_user_delete.html',
             context,
             request=request,
         )
+        print(data['html_form'])
     return JsonResponse(data)
     
 def user_clone(request, pk):

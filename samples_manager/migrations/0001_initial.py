@@ -101,6 +101,11 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(related_name='experiments_updated_by', to='samples_manager.Users', null=True),
         ),
         migrations.AddField(
+            model_name='experiments',
+            name='users',
+            field=models.ManyToManyField(to='samples_manager.Users'),
+        ),
+        migrations.AddField(
             model_name='activecategories',
             name='experiment',
             field=models.ForeignKey(to='samples_manager.Experiments', null=True),

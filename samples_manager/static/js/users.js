@@ -31,6 +31,7 @@ var loadForm = function () {
         console.log("Success");
         console.log(data);
         if (data.form_is_valid) {
+          console.log(data.html_user_list)
           $("#user-table tbody").html(data.html_user_list);  // <-- Replace the table body
           $("#modal-user").modal("hide");  // <-- Close the modal
         }

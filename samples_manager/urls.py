@@ -16,10 +16,11 @@ urlpatterns = [
     url(r'^experiments/(?P<pk>\d+)/validate/$', views.experiment_validate, name='experiment_validate'),
     url(r'^experiments/(?P<pk>\d+)/print/$', views.print_experiment_view, name='print_experiment_view'),
     url(r'^users/$', views.users_list, name='users_list'),
+    url(r'^experiment/(?P<experiment_id>\d+)/users/$', views.experiment_users_list, name='experiment_users_list'),
     url(r'^experiment/(?P<experiment_id>\d+)/user/new/$', views.user_new, name='user_new'),
     #url(r'^user/new/$', views.user_new, name='user_new'),
-    url(r'^users/(?P<pk>\d+)/update/$', views.user_update, name='user_update'),
-    url(r'^users/(?P<pk>\d+)/delete/$', views.user_delete, name='user_delete'),
+    url(r'^experiment/(?P<experiment_id>\d+)/users/(?P<pk>\d+)/update/$', views.user_update, name='user_update'),
+    url(r'^experiment/(?P<experiment_id>\d+)/users/(?P<pk>\d+)/delete/$', views.user_delete, name='user_delete'),
     url(r'^users/(?P<pk>\d+)/clone/$', views.user_clone, name='user_clone'),
     url(r'^regulations/$',views.regulations, name='regulations'),
 ]

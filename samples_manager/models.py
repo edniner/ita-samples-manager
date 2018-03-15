@@ -115,7 +115,7 @@ class Experiments(models.Model):
     # these fields should be autofilled
     status=models.CharField(max_length=50, choices=EXPERIMENT_STATUS)
     responsible=models.ForeignKey(Users, related_name='%(class)s_responsible')
-    users = models.ManyToManyField(Users,null=True)
+    users = models.ManyToManyField(Users)
     created_at=models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
@@ -132,8 +132,6 @@ class Experiments(models.Model):
         return self.title
     def long_irradiation(self):
         return self.end_date - self.start_date >=datetime.timedelta(days=1)
-    
-
         
 class PassiveStandardCategories(models.Model):
     irradiation_area_5x5 = models.BooleanField()

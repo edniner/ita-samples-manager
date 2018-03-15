@@ -3,9 +3,9 @@
   <tr>
     <td>{{ experiment.updated_at}}</td>
     <td>{{ experiment.title }}</td>
-    <td>{{ experiment.cern_experiment }}</td>
     <td>{{ experiment.availability }}</td>
     <td>{{ experiment.number_samples }}</td>
+    <td>{{ experiment.users.count }}</td>
     <td>{{ experiment.status }}</td>
     <td>
       <button type="button"
@@ -14,12 +14,13 @@
               data-url="{% url 'samples_manager:experiment_update' experiment.id %}">
              <span class="glyphicon glyphicon-pencil"></span>
       </button>
-      <button type="button"
-              class="btn btn-info js-create-user"
-              data-url="{% url 'samples_manager:user_new' experiment.id %}"
-              title='Add users'>
-             <span class="glyphicon glyphicon-user"></span>
-      </button>
+      <a href="{% url 'samples_manager:experiment_users_list' experiment.id  %}">
+          <button type="button"
+                class="btn btn-info "
+                title='See and add users'>
+              <span class="glyphicon glyphicon-user"></span>
+        </button>
+      </a>
       <button type="button"
               class="btn btn-primary"
               title='Add samples'>

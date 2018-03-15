@@ -4,7 +4,7 @@
     <div class="row">
         <button type="button"
                 class="btn btn-primary js-create-user"
-                data-url="{% url 'samples_manager:user_new' %}">
+                data-url="{% url 'samples_manager:user_new' experiment.id %}">
                 <span class="glyphicon glyphicon-plus"></span> New User
         </button>
         <table class="table" id="user-table">
