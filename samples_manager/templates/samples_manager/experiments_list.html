@@ -1,5 +1,18 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
+ <!-- THE MODAL WE WILL BE USING -->
+  <div class="modal"  data-backdrop="static" data-keyboard="false" id="modal-experiment">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+  <div class="modal"  data-backdrop="static" data-keyboard="false" id="modal-user">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
 <div class='panel panel-default' id="main_panel">
     <div class="row">
         <div class="col-sm-8">
@@ -43,10 +56,4 @@
         </div>
     </div>
 </div>
- <!-- THE MODAL WE WILL BE USING -->
-  <div class="modal"  data-backdrop="static" data-keyboard="false" id="modal-experiment">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div>
-    </div>
 {% endblock %}

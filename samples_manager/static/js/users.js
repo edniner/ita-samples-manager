@@ -9,9 +9,12 @@ var loadForm = function () {
       dataType: 'json',
       beforeSend: function () {
         $("#modal-user").modal("show");
+        console.log("show");
       },
       success: function (data) {
+        console.log("success");
         $("#modal-user .modal-content").html(data.html_form);
+        console.log(data.html_form);
       }
     });
   };

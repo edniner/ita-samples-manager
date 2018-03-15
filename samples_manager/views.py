@@ -579,11 +579,12 @@ def experiment_delete(request, pk):
     
 
 
-def save_user_form(request,form,template_name):
+def save_user_form(request, form, experiment, template_name):
     data = dict()
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
+            new_user = form.save()
+            experiment.users.add(new_user)
             data['form_is_valid'] = True
             users = Users.objects.all()
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
@@ -591,19 +592,18 @@ def save_user_form(request,form,template_name):
             })
         else:
             data['form_is_valid'] = False
-    context = {'form': form}
+    context = {'form': form, 'experiment': experiment}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
 
 def user_new(request,experiment_id):
-    print("experiment_id")
-    print(experiment_id)
+    experiment = Experiments.objects.get(pk = experiment_id)
     if request.method == 'POST':
         form = UsersForm(request.POST)
     else:
         form = UsersForm()
-    return save_user_form(request, form, 'samples_manager/partial_user_create.html')
+    return save_user_form(request, form, experiment, 'samples_manager/partial_user_create.html')
 
 def user_update(request, pk):
     user = get_object_or_404(Users, pk=pk)
