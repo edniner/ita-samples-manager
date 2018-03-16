@@ -21,6 +21,15 @@ ACTIVE_OPTIONS = (
             ("Room temperature", "Room temperature (~ 20 °C)"),
             )
 
+PARTICLES = (
+            ("Protons", "Protons"),
+            ("Heavy ions", "Heavy ions"),
+            ("Pions", "Pions"),
+            ("Neutrons", "Neutrons"),
+            ("Electrons", "Electrons"),
+            ("Other", "Other"),
+            )
+
 
 
 class ExperimentsForm1(forms.ModelForm):
@@ -39,7 +48,7 @@ class ExperimentsForm1(forms.ModelForm):
         self.fields['availability'] = forms.DateField(('%d/%m/%Y',),widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When your samples will be available for irradiation'} ) )
     class Meta:
         model = Experiments
-        exclude = ('category','number_samples','comments','regulations_flag')
+        exclude = ('category','number_samples','comments','regulations_flag','irradiation_type')
         fields = ['title','description','cern_experiment','responsible','availability','constraints']
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Please, provide a unique title for your irradiation experiment'}),
@@ -56,13 +65,15 @@ def validate_negative(value):
 class ExperimentsForm2(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ExperimentsForm2, self).__init__(*args, **kwargs)
+        self.fields['irradiation_type'].label='Irradiation type *'
+        self.fields['irradiation_type'] = forms.ChoiceField(choices = PARTICLES)
         self.fields['number_samples'] = forms.IntegerField(min_value=0)
         self.fields['number_samples'].label='Number of samples *'
         self.fields['category'].label='Category *'
     class Meta:
         model = Experiments
         exclude = ('title','description','cern_experiment','responsible','availability','constraints','comments','regulations_flag')
-        fields = ['number_samples','category']
+        fields = ['irradiation_type','number_samples','category']
 
 class ExperimentsForm3(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -72,7 +83,7 @@ class ExperimentsForm3(forms.ModelForm):
         self.fields['regulations_flag'].label=mark_safe('<a target="_blank" style="color:black; text-decoration: underline;" href="/samples_manager/regulations/">Please, accept terms and conditions * </a>')
     class Meta:
         model = Experiments
-        exclude = ('title','description','responsible','cern_experiment''availability','constraints','category','number_samples')
+        exclude = ('title','description','responsible','cern_experiment''availability','constraints','category','number_samples','irradiation_type')
         fields = ['comments','regulations_flag']
         widgets = {
            'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':4}),

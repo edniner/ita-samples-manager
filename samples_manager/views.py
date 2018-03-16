@@ -71,20 +71,18 @@ def regulations(request):
     return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user})
 
 def all_experiments_list(request):
-    #experiments = Experiments.objects.all().order_by('-updated_at')
-    experiments = Experiments.objects.all()
+    experiments = Experiments.objects.order_by('updated_at')
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user})
 
 def experiments_list(request):
-    #experiments = Experiments.objects.all().order_by('-updated_at')
     logged_user = get_logged_user(request)
     user = Users.objects.all().filter(email=logged_user)
-    experiments = Experiments.objects.all().filter(responsible=user)
+    experiments = Experiments.objects.all().filter(responsible=user).order_by('updated_at')
     return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
 
 def registered_experiments_list(request):
-    experiments = Experiments.objects.all().filter(status="Registered")
+    experiments = Experiments.objects.all().filter(status="Registered").order_by('updated_at')
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user})
     
@@ -93,7 +91,7 @@ def users_list(request):
     return render(request, 'samples_manager/users_list.html', {'users': users,})
 
 def experiment_users_list(request, experiment_id):
-    experiment = Experiments.objects.get(pk = experiment_id)
+    experiment = Experiments.objects.get(pk = experiment_id).order_by('updated_at')
     users= experiment.users.values()
     print(users)
     return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment})
@@ -242,7 +240,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                             material= form.save()
                             material.experiment = experiment
                             material.save()
-                experiments = Experiments.objects.filter(responsible=user)
+                experiments = Experiments.objects.filter(responsible=user).order_by('updated_at')
                 data['form_is_valid'] = True
                 data['html_experiment_list'] = render_to_string('samples_manager/partial_experiments_list.html', {
                         'experiments': experiments,
@@ -288,7 +286,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 if  material_formset.is_valid():    
                     material_formset.save()
                 data['form_is_valid'] = True
-                experiments = Experiments.objects.filter(responsible=user)
+                experiments = Experiments.objects.filter(responsible=user).order_by('updated_at')
                 data['html_experiment_list'] = render_to_string('samples_manager/partial_experiments_list.html', {
                         'experiments': experiments,
                     })
@@ -330,7 +328,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 if  material_formset.is_valid():    
                     material_formset.save()
                 data['form_is_valid'] = True
-                experiments = Experiments.objects.all()
+                experiments = Experiments.objects.all().order_by('updated_at')
                 data['state'] = "Validated"
                 data['html_experiment_list'] = render_to_string('samples_manager/partial_registered_experiments_list.html', {
                             'experiments': experiments,
@@ -562,7 +560,7 @@ def experiment_delete(request, pk):
     if request.method == 'POST':
         experiment.delete()
         data['form_is_valid'] = True
-        experiments = Experiments.objects.filter(responsible=user)
+        experiments = Experiments.objects.filter(responsible=user).order_by('updated_at')
         message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was deleted by the account: '+logged_user+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\n\nKind regards,\nIRRAD team.')
         send_mail_notification( 'Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
         message2irrad=mark_safe("The user with the account: "+logged_user+" deleted the experiment with title '"+ experiment.title+"'.\n")

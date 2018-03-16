@@ -1,11 +1,11 @@
 {% for experiment in experiments %}
   <tr>
+    <td>{{ experiment.updated_at}}</td>
     <td>{{ experiment.title }}</td>
-    <td>{{ experiment.description }}</td>
-    <td>{{ experiment.cern_experiment }}</td>
     <td>{{ experiment.availability }}</td>
     <td>{{ experiment.number_samples }}</td>
-    <td>{{ experiment.responsible }}</td>
+    <td>{{ experiment.users.count }}</td>
+    <td>{{ experiment.responsible.name}} {{ experiment.responsible.surname}} </td>
     <td>{{ experiment.status }}</td>
     <td>
       <button type="button"

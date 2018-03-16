@@ -112,6 +112,7 @@ class Experiments(models.Model):
     comments = models.TextField( null=True ) 
     category=  models.CharField(max_length=100,choices=CATEGORIES, blank=False)
     regulations_flag = models.BooleanField()
+    irradiation_type =  models.CharField(max_length=100)
     # these fields should be autofilled
     status=models.CharField(max_length=50, choices=EXPERIMENT_STATUS)
     responsible=models.ForeignKey(Users, related_name='%(class)s_responsible')
