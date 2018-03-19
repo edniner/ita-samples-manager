@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.admin import widgets   
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,DateTimeInput,Textarea
-from .models import Experiments,Users, ReqFluences,Materials, PassiveStandardCategories,PassiveCustomCategories,ActiveCategories
+from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples
 from django.forms import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
@@ -91,13 +91,36 @@ class ExperimentsForm3(forms.ModelForm):
 
 
 def get_fluences(experiment_id):
-    fluences = ReqFluences.objects.all().filter( experiment = experiment_id)       
+    fluences = ReqFluences.objects.filter( experiment = experiment_id)    
     return fluences
     
 def get_materials(experiment_id):
-    materials = Materials.objects.all().filter( experiment = experiment_id)       
+    materials = Materials.objects.filter( experiment = experiment_id)       
     return materials
 
+def get_categories(experiment_id):
+    experiment = Experiments.objects.get(pk = experiment_id)
+    if experiment.category == 'Passive Standard':
+        category = PassiveStandardCategories.objects.filter( experiment = experiment_id)
+        categories = ()
+        if category[0].irradiation_area_5x5==True:
+            categories  =  categories  + (('Passive standard 5x5 mm²','Passive standard 5x5 mm²'),)
+        if category[0].irradiation_area_10x10==True:
+            categories =  categories + (('Passive standard 10x10 mm²','Passive standard 10x10 mm²'),)
+        if category[0].irradiation_area_20x20==True:
+            categories  =  categories  + (('Passive standard 20x20 mm²','Passive standard 20x20 mm²'),)
+    elif experiment.category == 'Passive Custom':
+        passive_custom_categories = PassiveCustomCategories.objects.filter( experiment = experiment_id)
+        categories = ()
+        for category in passive_custom_categories: 
+            categories = categories  + ((category.passive_category_type+', in irradiation area: '+category.passive_irradiation_area,category.passive_category_type+', in irradiation area: '+category.passive_irradiation_area),)
+    elif experiment.category == 'Active':
+        active_categories = ActiveCategories.objects.filter( experiment = experiment_id)
+        categories = ()
+        for category in active_categories: 
+            categories = categories  + ((category.active_category_type+', in irradiation area: '+category.active_irradiation_area,category.active_category_type+', in irradiation area: '+category.active_irradiation_area),)
+    return categories
+    
 class UsersForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(UsersForm, self).__init__(*args, **kwargs)
@@ -182,7 +205,83 @@ class ActiveCategoriesForm(ModelForm):
         exclude = ('experiment',)
 
 
+'''class SamplesForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+            self.experiment_id = kwargs.pop('experiment_id')
+            super(SamplesForm, self).__init__(*args, **kwargs)
+            self.fields['comments'].required = False
+            self.fields['description'].label= 'Name/Description *'
+            self.fields['length'].label= 'Length *'
+            self.fields['height'].label= 'Height *'
+            self.fields['width'].label= 'Width *'
+            self.fields['weight'].label= 'Weight *'
+            self.fields['req_fluence'] = forms.ModelChoiceField(queryset=get_fluences(self.experiment_id))
+            self.fields['req_fluence'].label= 'Requested fluence *'
+            self.fields['material'].label= 'Material *'
+            self.fields['material'] = forms.ModelChoiceField(queryset=get_materials(self.experiment_id))
+            self.fields['category'].label= 'Category *'
+            self.fields['category'] = forms.ChoiceField(choices=get_categories(self.experiment_id))
+            #self.fields['category'] = forms.CharField(queryset=get_categories(self.experiment_id) widget=forms.TextInput(attrs={'input': 'special'}))
+            self.fields['current_location'].label= 'Current location *'
+            #self.fields['req_fluence'] = forms.ChoiceField( choices=get_fluences() )
 
+    class Meta:
+            model = Samples
+            fields = ['description','length', 'height','width', 'weight','comments','req_fluence','material','category','current_location']
+            widgets = {
+                'description': forms.TextInput(attrs={'placeholder': 'Provide a name or description for your sample. E.g. silicon detector 1'}),
+                'length':  forms.TextInput(attrs={'placeholder': 'e.g. 5 mm'}),
+                'height':  forms.TextInput(attrs={'placeholder': 'e.g. 1 mm'}),
+                'width':  forms.TextInput(attrs={'placeholder': 'e.g. 2 mm'}),
+                'weight':  forms.TextInput(attrs={'placeholder': 'e.g. 0.01 g'}),
+                'current_location':  forms.TextInput(attrs={'placeholder': 'e.g. Bld. 28 or Out of CERN'}),
+                'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
+            }
+'''
+    
+
+class SamplesForm1(ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.experiment_id = kwargs.pop('experiment_id')
+        super(SamplesForm1, self).__init__(*args, **kwargs)
+        self.fields['description'].label= 'Name/Description *'
+        self.fields['length'].label= 'Length *'
+        self.fields['height'].label= 'Height *'
+        self.fields['width'].label= 'Width *'
+        self.fields['weight'].label= 'Weight *'
+        self.fields['material'].label= 'Material *'
+        self.fields['material'] = forms.ModelChoiceField(queryset=get_materials(self.experiment_id))
+    class Meta:
+            model = Samples
+            exclude = ('comments','req_fluence','category','current_location')
+            fields = ['description','length', 'height','width', 'weight','material']
+            widgets = {
+                'description': forms.TextInput(attrs={'placeholder': 'Provide a name or description for your sample. E.g. silicon detector 1'}),
+                'length':  forms.TextInput(attrs={'placeholder': 'e.g. 5 mm'}),
+                'height':  forms.TextInput(attrs={'placeholder': 'e.g. 1 mm'}),
+                'width':  forms.TextInput(attrs={'placeholder': 'e.g. 2 mm'}),
+                'weight':  forms.TextInput(attrs={'placeholder': 'e.g. 0.01 g'}),
+            }
+
+class SamplesForm2(ModelForm):
+    def __init__(self, *args, **kwargs):
+            self.experiment_id = kwargs.pop('experiment_id')
+            super(SamplesForm2, self).__init__(*args, **kwargs)
+            self.fields['req_fluence'] = forms.ModelChoiceField(queryset=get_fluences(self.experiment_id))
+            self.fields['req_fluence'].label= 'Requested fluence *'
+            self.fields['category'].label= 'Category *'
+            self.fields['category'] = forms.ChoiceField(choices=get_categories(self.experiment_id))
+            self.fields['current_location'].label= 'Current location *'
+            self.fields['comments'].required = False
+
+    class Meta:
+            model = Samples
+            exclude = ('description','length', 'height','width', 'weight','material')
+            fields = ['req_fluence','category','current_location','comments']
+            widgets = {
+                'current_location':  forms.TextInput(attrs={'placeholder': 'e.g. Bld. 28 or Out of CERN'}),
+                'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
+            }
 
 
 

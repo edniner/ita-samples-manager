@@ -141,7 +141,7 @@ class PassiveStandardCategories(models.Model):
     experiment = models.ForeignKey(Experiments, null = True)
 
     def __str__(self):              # __str__ on Python 2
-        return self.experiment
+        return str(self.irradiation_area_5x5)
 
 class PassiveCustomCategories(models.Model):
     passive_category_type = models.CharField(max_length=50)
@@ -177,6 +177,65 @@ class Materials(models.Model):
     def __str__(self):              # __str__ on Python 2
         return self.material
 
+
+class Boxes(models.Model):
+    box_id=models.CharField(max_length=50)
+    description=models.CharField(max_length=200, null=True)
+    responsible=models.ForeignKey(Users, related_name='%(class)s_responsible')
+    current_location = models.CharField(max_length=100)
+    last_location = models.CharField(max_length=100)
+    length = models.CharField(max_length=50)
+    height = models.CharField(max_length=50)
+    width = models.CharField(max_length=50)
+    weight = models.CharField(max_length=50)
+    created_at=models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField()
+    created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
+    updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
+
+    def __str__(self):             # __str__ on Python 2
+        return self.box_id
+    
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created_at= timezone.now()
+        self.updated_at = timezone.now()
+        return super(Boxes, self).save(*args, **kwargs)
+
+
+class Samples(models.Model):
+    set_id = models.CharField(max_length=50, null = True,  unique = True)
+    description = models.CharField(max_length=200, unique = True)
+    current_location = models.CharField(max_length=100)
+    length = models.CharField(max_length=50)
+    height = models.CharField(max_length=50)
+    width = models.CharField(max_length=50)
+    weight = models.CharField(max_length=50)
+    comments = models.TextField()
+    req_fluence =  models.ForeignKey(ReqFluences)
+    material = models.ForeignKey(Materials)
+    category = models.CharField(max_length=50)
+    storage = models.CharField(max_length=50, choices=STORAGE)
+    #samples characteristics
+    status = models.CharField(max_length=50, choices=STATUS)
+    last_location = models.CharField(max_length=100,null=True)
+    created_at=models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField()
+    experiment = models.ForeignKey(Experiments,null=True)
+    box = models.ForeignKey(Boxes,null=True)
+    created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
+    updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
+
+    def __str__(self):              # __str__ on Python 2
+        return self.set_id
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created_at= timezone.now()
+        self.updated_at = timezone.now()
+        return super(Samples, self).save(*args, **kwargs)
 
 
 

@@ -4,16 +4,16 @@
     <div class="row">
         <button type="button"
                 class="btn btn-primary js-create-sample"
-                data-url="{% url 'samples_manager:sample_new' %}">
+                data-url="{% url 'samples_manager:sample_new' experiment.id %}">
                 <span class="glyphicon glyphicon-plus"></span>New Sample
         </button>    
         <table class="table" id="sample-table">
             <thead>
                 <tr>
-                <th>SET Number</th>
-                <th>Description</th>
-                <th>Experiment</th>
+                <th>Name/Description</th>
+                <th>Category</th>
                 <th>Requested fluence</th>
+                <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,7 +28,7 @@
         </div>
 </div>
  <!-- THE MODAL WE WILL BE USING -->
-  <div class="modal" id="modal-sample">
+  <div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-sample">
     <div class="modal-dialog">
       <div class="modal-content">
       </div>

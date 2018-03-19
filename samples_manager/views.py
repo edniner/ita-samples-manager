@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users
+from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples
 from django.template import loader
 from django.core.urlresolvers import reverse
 import datetime
-from .forms import ExperimentsForm1,ExperimentsForm2,ExperimentsForm3, UsersForm, ReqFluencesForm, MaterialsForm, PassiveStandardCategoriesForm, PassiveCustomCategoriesForm,ActiveCategoriesForm
+from .forms import ExperimentsForm1,ExperimentsForm2,ExperimentsForm3, UsersForm, ReqFluencesForm, MaterialsForm, PassiveStandardCategoriesForm, PassiveCustomCategoriesForm,ActiveCategoriesForm, SamplesForm1, SamplesForm2 
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.files.storage import FileSystemStorage
@@ -91,10 +91,16 @@ def users_list(request):
     return render(request, 'samples_manager/users_list.html', {'users': users,})
 
 def experiment_users_list(request, experiment_id):
-    experiment = Experiments.objects.get(pk = experiment_id).order_by('updated_at')
+    experiment = Experiments.objects.get(pk = experiment_id)
     users= experiment.users.values()
     print(users)
     return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment})
+
+
+def experiment_samples_list(request, experiment_id):
+    experiment = Experiments.objects.get(pk = experiment_id)
+    samples = Samples.objects.filter(experiment = experiment).order_by('updated_at')
+    return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'experiment': experiment })
 
 
 def experiment_details(request, experiment_id):
@@ -105,63 +111,55 @@ def experiment_details(request, experiment_id):
 def user_details(request, user_id):
     user = get_object_or_404(Users, pk=user_id)
     return render(request, 'samples_manager/user_details.html', {'user': user})
-
-def save_sample_form(request,form, new, experiment_id, template_name):
+    
+def save_sample_form(request,form1,form2, new, experiment, template_name):
     data = dict()
     print("in the save")
     logged_user = get_logged_user(request)
+    user = Users.objects.get(email = logged_user)
+    print(user)
     if request.method == 'POST':
-        print("post")
-        if form.is_valid():
-            print("form is valid")
-            sample_temp = form.save()
-            print("sample_temp")
-            sample = Samples.objects.get(pk = sample_temp.pk)
-            print(sample)
+        if form1.is_valid() and form2.is_valid():
             if new == 0:
-                print("new sample")
+                print("new")
+                sample_data = {}
+                sample_data.update(form1.cleaned_data)
+                sample_data.update(form2.cleaned_data)
+                sample_temp = Samples.objects.create(**sample_data)
+                sample = Samples.objects.get(pk = sample_temp.pk)
                 sample.status = "Registered"
-                user = Users.objects.get(email = logged_user)
                 sample.created_by = user
-                print("create by")
-                '''sample.set_id = generate_set_id()'''
-                print("set %s" %sample.set_id)
+                sample.experiment = experiment
+                '''sample.set_id = generate_set_id()
+                print("set %s" %sample.set_id)'''
                 sample.save()
                 print ("saved")
             elif new == 1: 
                 print("new == 1")
-                sample.status = "Updated"
-                user = Users.objects.get(email = logged_user)
-                sample.update_by = user
-                sample.save()
-            elif new == 3:
-                print("new == 3")
-                sample.status = "Registered"
-                user = Users.objects.get(email = logged_user)
-                sample.created_by = user
-                exp = Experiments.objects.get (pk = experiment_id)
-                sample.experiment = exp
-                '''set_id = generate_set_id()
-                sample.set_id = set_id'''
-                sample.save()
-                print("saved")
+                sample_updated = form1.save()
+                form2.save()
+                experiment = Samples.objects.get(pk =  sample_updated.pk)
+                sample_updated.status = "Updated"
+                sample_updated.update_by = user
+                sample_updated.save()
             else:
-                sample.save()
+                sample_updated = form1.save()
+                form2.save()
+                sample_updated.save()
             print('getting all samples')
             data['form_is_valid'] = True
-            samples = Samples.objects.all()
+            samples = Samples.objects.filter(experiment = experiment)
             print('html samples list')
             data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
-                'samples':samples
+                'samples':samples,
+                'experiment': experiment
             })
-            data['experiment_id'] = experiment_id
         else:
             data['form_is_valid'] = False
-            ##print("form errors %s" %form.errors)
-    context = {'form': form}
+    print(form1)
+    context = {'form1': form1,'form2': form2, 'experiment':experiment}
     print("context")
     data['html_form'] = render_to_string(template_name, context, request=request)
-    #print("html form")
     return JsonResponse(data)
 
 def save_dosimeter_form(request,form, template_name):
@@ -191,7 +189,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 logging.warning('New experiment')
                 experiment_data = {}
                 experiment_data.update(form1.cleaned_data)
-                logging.warning(form1.cleaned_data)
                 experiment_data.update(form2.cleaned_data)
                 experiment_data.update(form3.cleaned_data)
                 logging.warning(experiment_data)
@@ -203,9 +200,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 experiment.status = "Registered"
                 experiment.save()
                 logging.warning('Experiment saved')
-                '''for u in users:
-                    user = Users.objects.get(email = u)
-                    experiment.users.add(user)'''
                 if experiment.category == "Passive Standard":
                     if passive_standard_categories_form.is_valid(): 
                         if passive_standard_categories_form.cleaned_data is not None:
@@ -643,15 +637,60 @@ def user_delete(request,experiment_id,pk):
         print(data['html_form'])
     return JsonResponse(data)
     
-def user_clone(request, pk):
-        user = get_object_or_404(Users, pk=pk)
-        if request.method == 'POST':
-            form = UsersForm(request.POST, instance=user)
-        else:
-            form = UsersForm(instance=user)
-        return save_user_form(request, form, 'samples_manager/partial_user_create.html')
+def sample_new(request, experiment_id):
+    experiment = Experiments.objects.get(pk = experiment_id)
+    if request.method == 'POST':
+        form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
+        form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
+    else:
+        form1 = SamplesForm1(experiment_id = experiment.id)
+        form2 = SamplesForm2(experiment_id = experiment.id)
+    new = 0
+    return save_sample_form(request,form1, form2,new,experiment,'samples_manager/partial_sample_create.html')
 
 
+def sample_update(request, experiment_id, pk):
+    experiment = Experiments.objects.get(pk = experiment_id)
+    sample = get_object_or_404(Samples, pk=pk)
+    if request.method == 'POST':
+        form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
+        form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
+    else:
+        form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
+        form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
+    new = 1
+    return save_sample_form(request,form1,form2, new,experiment, 'samples_manager/partial_sample_update.html')
+
+
+def sample_clone(request, experiment_id, pk):
+    experiment = Experiments.objects.get(pk = experiment_id)
+    sample = get_object_or_404(Samples, pk=pk)
+    if request.method == 'POST':
+        form1 = SamplesForm1(request.POST, experiment_id = experiment.id, instance=sample)
+        form2 = SamplesForm2(request.POST, experiment_id = experiment.id, instance=sample)
+    else:
+        form1 = SamplesForm1(request.POST, experiment_id = experiment.id, instance=sample)
+        form2 = SamplesForm2(request.POST,experiment_id = experiment.id, instance=sample)
+    new = 0
+    return save_sample_form(request, form, new, experiment, 'samples_manager/partial_sample_create.html')
+
+def sample_delete(request, pk):
+    sample = get_object_or_404(Samples, pk=pk)
+    data = dict()
+    if request.method == 'POST':
+        sample.delete()
+        data['form_is_valid'] = True  # This is just to play along with the existing code
+        samples = Samples.objects.all()
+        data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+            'samples': samples
+        })
+    else:
+        context = {'sample': sample}
+        data['html_form'] = render_to_string('samples_manager/partial_sample_delete.html',
+            context,
+            request=request,
+        )
+    return JsonResponse(data)
 
 def print_experiment_view(request, pk):
     print("printing")

@@ -14,6 +14,8 @@
               data-url="{% url 'samples_manager:experiment_update' experiment.id %}">
              <span class="glyphicon glyphicon-pencil"></span>
       </button>
+    </td>
+    <td>
       <a href="{% url 'samples_manager:experiment_users_list' experiment.id  %}">
           <button type="button"
                 class="btn btn-info "
@@ -21,11 +23,17 @@
               <span class="glyphicon glyphicon-user"></span>
         </button>
       </a>
-      <button type="button"
-              class="btn btn-primary"
-              title='Add samples'>
-             <span class="glyphicon glyphicon-book"></span>
-      </button>
+    </td>
+    <td>
+        <a href="{% url 'samples_manager:experiment_samples_list' experiment.id  %}">     
+          <button type="button"
+                  class="btn btn-primary"
+                  title='Add samples'>
+                  <span class="glyphicon glyphicon-book"></span>
+          </button
+        </a>
+      </td>
+      <td>
       <div class="dropdown">
         <button type="button"
                 class="btn dropdown-toggle"

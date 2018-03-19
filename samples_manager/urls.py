@@ -19,8 +19,13 @@ urlpatterns = [
     url(r'^experiment/(?P<experiment_id>\d+)/users/$', views.experiment_users_list, name='experiment_users_list'),
     url(r'^experiment/(?P<experiment_id>\d+)/user/new/$', views.user_new, name='user_new'),
     #url(r'^user/new/$', views.user_new, name='user_new'),
-    url(r'^experiment/(?P<experiment_id>\d+)/users/(?P<pk>\d+)/update/$', views.user_update, name='user_update'),
-    url(r'^experiment/(?P<experiment_id>\d+)/users/(?P<pk>\d+)/delete/$', views.user_delete, name='user_delete'),
-    url(r'^users/(?P<pk>\d+)/clone/$', views.user_clone, name='user_clone'),
+    url(r'^experiment/(?P<experiment_id>\d+)/user/(?P<pk>\d+)/update/$', views.user_update, name='user_update'),
+    url(r'^experiment/(?P<experiment_id>\d+)/user/(?P<pk>\d+)/delete/$', views.user_delete, name='user_delete'),
     url(r'^regulations/$',views.regulations, name='regulations'),
-]
+    url(r'^experiment/(?P<experiment_id>\d+)/samples/$', views.experiment_samples_list, name='experiment_samples_list'),
+    url(r'^experiment/(?P<experiment_id>\d+)/sample/new/$', views.sample_new, name='sample_new'),
+    url(r'^experiment/(?P<experiment_id>\d+)/sample/(?P<pk>\d+)/update/$', views.sample_update, name='sample_update'),
+    url(r'^experiment/(?P<experiment_id>\d+)/sample/(?P<pk>\d+)/delete/$', views.sample_delete, name='sample_delete'),
+    url(r'^experiment/(?P<experiment_id>\d+)/sample/(?P<pk>\d+)/clone/$', views.sample_delete, name='sample_clone'),
+    ]
+
