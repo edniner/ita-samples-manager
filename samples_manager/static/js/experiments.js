@@ -23,9 +23,7 @@ var loadForm = function () {
       type: form.attr("method"),
       dataType: 'json',
       success: function (data) {
-        console.log("success");
         if (data.form_is_valid) {
-          console.log(data)
           if(data['state']=='Created')
             alert("Your irradiation experiment was successfully saved!\nSoon, the facility coordinators will validate your request.")
           else if (data['state']=='Updated')

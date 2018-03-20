@@ -2,7 +2,6 @@ $(function () {
 
 var loadForm = function () {
     var btn = $(this);
-    console.log("samples loadForm")
     $.ajax({
       url: btn.attr("data-url"),
       type: 'get',
@@ -41,9 +40,7 @@ var loadForm = function () {
 
   var samplesloadForm = function (experiment_id) {
     var btn = $(this);
-    console.log("samples loadForm");
     link = 'experiment/'+experiment_id+'/sample/new/';
-    console.log(link);
     $.ajax({
       url:link,
       type: 'get',

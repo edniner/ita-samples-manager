@@ -37,6 +37,7 @@ def get_logged_user(request):
     email = 'blerina.gkotse@cern.ch'
     users = Users.objects.all()
     emails =[]
+
     for item in users:
         emails.append(item.email)
     if not email in emails:
@@ -48,14 +49,17 @@ def get_logged_user(request):
         if email is not None:
             new_user.email = email
         new_user.save()
-    return email
+        logged_user =  new_user
+    else:
+        logged_user = Users.objects.get( email = email)
+    return logged_user
     
 
 def index(request):
     template = loader.get_template('samples_manager/index.html')
     logged_user = get_logged_user(request)
     print(logged_user)
-    context = {'logged_user': logged_user}
+    context = {'logged_user': logged_user.email}
     return render(request, 'samples_manager/index.html', context)
 
 
@@ -63,44 +67,50 @@ def view_user(request):
     #only in production
     logged_user = get_logged_user(request)
     #logged_user = 'blerina.gkotse@cern.ch'
-    html = "<html><body><div id='user_id'>User e-mail %s.</div></body></html>" %  logged_user
+    html = "<html><body><div id='user_id'>User e-mail %s.</div></body></html>" %  logged_user.email
     return HttpResponse(html)
 
 def regulations(request):
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user})
+    return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user.email})
 
 def all_experiments_list(request):
-    experiments = Experiments.objects.order_by('updated_at')
+    experiments = Experiments.objects.order_by('-updated_at')
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user})
+    return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user.email})
 
 def experiments_list(request):
     logged_user = get_logged_user(request)
-    user = Users.objects.all().filter(email=logged_user)
-    experiments = Experiments.objects.all().filter(responsible=user).order_by('updated_at')
-    return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
+    if logged_user.role == 'Admin':
+        experiments = Experiments.objects.order_by('-updated_at')
+        logged_user = get_logged_user(request)
+        return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user.email})
+    else:
+        experiments = Experiments.objects.all().filter(responsible=logged_user).order_by('-updated_at')
+        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user.email})
 
 def registered_experiments_list(request):
-    experiments = Experiments.objects.all().filter(status="Registered").order_by('updated_at')
+    experiments = Experiments.objects.all().filter(status="Registered").order_by('-updated_at')
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user})
+    return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user.email})
     
 def users_list(request):
     users = Users.objects.all()
-    return render(request, 'samples_manager/users_list.html', {'users': users,})
+    logged_user = get_logged_user(request)
+    return render(request, 'samples_manager/users_list.html', {'users': users,'logged_user': logged_user.email})
 
 def experiment_users_list(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
     users= experiment.users.values()
-    print(users)
-    return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment})
+    logged_user = get_logged_user(request)
+    return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user.email})
 
 
 def experiment_samples_list(request, experiment_id):
+    logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
-    samples = Samples.objects.filter(experiment = experiment).order_by('updated_at')
-    return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'experiment': experiment })
+    samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+    return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'experiment': experiment,'logged_user': logged_user.email })
 
 
 def experiment_details(request, experiment_id):
@@ -112,53 +122,46 @@ def user_details(request, user_id):
     user = get_object_or_404(Users, pk=user_id)
     return render(request, 'samples_manager/user_details.html', {'user': user})
     
-def save_sample_form(request,form1,form2, new, experiment, template_name):
+def save_sample_form(request,form1,form2, status, experiment, template_name):
     data = dict()
-    print("in the save")
     logged_user = get_logged_user(request)
-    user = Users.objects.get(email = logged_user)
     print(user)
     if request.method == 'POST':
+        print("post")
         if form1.is_valid() and form2.is_valid():
-            if new == 0:
-                print("new")
+            if status == 'new':
+                print("status")
                 sample_data = {}
                 sample_data.update(form1.cleaned_data)
                 sample_data.update(form2.cleaned_data)
                 sample_temp = Samples.objects.create(**sample_data)
                 sample = Samples.objects.get(pk = sample_temp.pk)
                 sample.status = "Registered"
-                sample.created_by = user
+                sample.created_by = logged_user
                 sample.experiment = experiment
-                '''sample.set_id = generate_set_id()
-                print("set %s" %sample.set_id)'''
+                '''sample.set_id = generate_set_id()'''
                 sample.save()
                 print ("saved")
-            elif new == 1: 
-                print("new == 1")
+            elif status == 'update': 
                 sample_updated = form1.save()
                 form2.save()
-                experiment = Samples.objects.get(pk =  sample_updated.pk)
                 sample_updated.status = "Updated"
-                sample_updated.update_by = user
+                sample_updated.update_by = logged_user
                 sample_updated.save()
             else:
                 sample_updated = form1.save()
                 form2.save()
                 sample_updated.save()
-            print('getting all samples')
             data['form_is_valid'] = True
-            samples = Samples.objects.filter(experiment = experiment)
-            print('html samples list')
+            samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
             data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                 'samples':samples,
                 'experiment': experiment
             })
         else:
             data['form_is_valid'] = False
-    print(form1)
+            logging.warning('Sample data invalid')
     context = {'form1': form1,'form2': form2, 'experiment':experiment}
-    print("context")
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
@@ -179,24 +182,21 @@ def save_dosimeter_form(request,form, template_name):
     return JsonResponse(data)
 
 
-def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, new, template_name):
+def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, template_name):
     data = dict()
     logged_user = get_logged_user(request)
-    user = Users.objects.get(email = logged_user)
     if request.method == 'POST':
         if form1.is_valid() and form2.is_valid() and form3.is_valid():
-            if new == 0: # new experiment
-                logging.warning('New experiment')
+            if status == 'new' or  status == 'clone': # status experiment
                 experiment_data = {}
                 experiment_data.update(form1.cleaned_data)
                 experiment_data.update(form2.cleaned_data)
                 experiment_data.update(form3.cleaned_data)
-                logging.warning(experiment_data)
                 #users=experiment_data.pop('users')
                 logging.warning(experiment_data)
                 experiment_temp = Experiments.objects.create(**experiment_data)
                 experiment = Experiments.objects.get(pk = experiment_temp.pk)
-                experiment.created_by = user
+                experiment.created_by =  logged_user 
                 experiment.status = "Registered"
                 experiment.save()
                 logging.warning('Experiment saved')
@@ -234,17 +234,26 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                             material= form.save()
                             material.experiment = experiment
                             material.save()
-                experiments = Experiments.objects.filter(responsible=user).order_by('updated_at')
+                if  status == 'clone':
+                    previous_experiment = Experiments.objects.get(pk =  form1.instance.pk)
+                    for user in previous_experiment.users.all():
+                        experiment.users.add(user)
                 data['form_is_valid'] = True
-                data['html_experiment_list'] = render_to_string('samples_manager/partial_experiments_list.html', {
+                if logged_user.role == 'Admin':
+                    experiments = Experiments.objects.all()
+                    output_template = 'samples_manager/partial_registered_experiments_list.html'
+                else: 
+                    experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
+                    output_template = 'samples_manager/partial_experiments_list.html'
+                data['html_experiment_list'] = render_to_string(output_template, {
                         'experiments': experiments,
-                    })
+                        })
                 data['state'] = "Created"
-                message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nIRRAD team.')
+                message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nIRRAD team.')
                 send_mail_notification( 'New experiment registered in the IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
-                message2irrad=mark_safe("The user with the account: "+logged_user+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/registered/experiments/")
-                send_mail_notification('New experiment',message2irrad,logged_user,'irrad.ps@cern.ch')
-            elif  new == 1:
+                message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/registered/experiments/")
+                send_mail_notification('New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+            elif  status == 'update':
                 print("update")
                 experiment_updated = form1.save()
                 form2.save()
@@ -252,8 +261,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 experiment = Experiments.objects.get(pk =  experiment_updated.pk)
                 if experiment.status=='Validated':
                     experiment.status = "Updated"
-                user = Users.objects.get(email = logged_user)
-                experiment.update_by = user
+                experiment.update_by = logged_user
                 experiment.save()
                 if experiment.category == "Passive Standard":
                     if passive_standard_categories_form.is_valid(): 
@@ -280,22 +288,26 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 if  material_formset.is_valid():    
                     material_formset.save()
                 data['form_is_valid'] = True
-                experiments = Experiments.objects.filter(responsible=user).order_by('updated_at')
-                data['html_experiment_list'] = render_to_string('samples_manager/partial_experiments_list.html', {
+                if logged_user.role == 'Admin':
+                    experiments = Experiments.objects.all()
+                    output_template = 'samples_manager/partial_registered_experiments_list.html'
+                else: 
+                    experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
+                    output_template = 'samples_manager/partial_experiments_list.html'
+                data['html_experiment_list'] = render_to_string(output_template, {
                         'experiments': experiments,
-                    })
+                        })
                 data['state'] = "Updated"
-                message2irrad=mark_safe("The user with e-mail: "+logged_user+" updated the experiment with title '"+experiment.title+"'.\nPlease, find all the experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
-                send_mail_notification('Updated experiment',message2irrad,logged_user,'irrad.ps@cern.ch')
-            elif  new == 2:  # validation
+                message2irrad=mark_safe("The user with e-mail: "+logged_user.email+" updated the experiment with title '"+experiment.title+"'.\nPlease, find all the experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
+                send_mail_notification('Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+            elif  status == 'validate':  # validation
                 print("validation")
                 experiment_updated = form1.save()
                 form2.save()
                 form3.save()
                 experiment = Experiments.objects.get(pk =  experiment_updated.pk)
                 experiment.status = "Validated"
-                user = Users.objects.get(email = logged_user)
-                experiment.update_by = user
+                experiment.update_by = logged_user
                 experiment.save()
                 if experiment.category == "Passive Standard":
                     if passive_standard_categories_form.is_valid(): 
@@ -322,7 +334,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 if  material_formset.is_valid():    
                     material_formset.save()
                 data['form_is_valid'] = True
-                experiments = Experiments.objects.all().order_by('updated_at')
+                experiments = Experiments.objects.all().order_by('-updated_at')
                 data['state'] = "Validated"
                 data['html_experiment_list'] = render_to_string('samples_manager/partial_registered_experiments_list.html', {
                             'experiments': experiments,
@@ -344,7 +356,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
 
 def experiment_new(request):
     logged_user = get_logged_user(request)
-    user = Users.objects.get(email = logged_user)
     FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm, extra=1)
     MaterialReqFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=1)
     cern_experiments = Experiments.objects.order_by().values('cern_experiment').distinct()
@@ -363,7 +374,7 @@ def experiment_new(request):
         passive_custom_categories_form =  PassiveCustomCategoriesForm(request.POST)
         active_categories_form = ActiveCategoriesForm(request.POST)
     else:
-        form1 = ExperimentsForm1(data_list=cern_experiments_list,initial={'responsible': user})
+        form1 = ExperimentsForm1(data_list=cern_experiments_list,)
         form2 = ExperimentsForm2()
         form3 = ExperimentsForm3()
         fluence_formset = FluenceReqFormSet()
@@ -371,8 +382,8 @@ def experiment_new(request):
         passive_standard_categories_form =  PassiveStandardCategoriesForm()
         passive_custom_categories_form =  PassiveCustomCategoriesForm()
         active_categories_form = ActiveCategoriesForm()
-    new = 0
-    return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, new, 'samples_manager/partial_experiment_create.html')
+    status = 'new'
+    return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, 'samples_manager/partial_experiment_create.html')
 
 def experiment_update(request, pk):
     cern_experiments = Experiments.objects.order_by().values('cern_experiment').distinct()
@@ -442,8 +453,8 @@ def experiment_update(request, pk):
                 active_categories_form = ActiveCategoriesForm(instance = cat_instance)
             except ActiveCategories.DoesNotExist:
                 active_categories_form = ActiveCategoriesForm()
-    new = 1
-    return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, new, 'samples_manager/partial_experiment_update.html')
+    status = 'update'
+    return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, 'samples_manager/partial_experiment_update.html')
 
 
 def experiment_validate(request, pk):
@@ -514,8 +525,8 @@ def experiment_validate(request, pk):
                 active_categories_form = ActiveCategoriesForm(instance = cat_instance)
             except ActiveCategories.DoesNotExist:
                 active_categories_form = ActiveCategoriesForm()
-    new = 2
-    return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, new,'samples_manager/partial_experiment_validate.html')
+    status = 'validate'
+    return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status,'samples_manager/partial_experiment_validate.html')
 
 def experiment_clone(request, pk):
     cern_experiments = Experiments.objects.order_by().values('cern_experiment').distinct()
@@ -543,26 +554,30 @@ def experiment_clone(request, pk):
         passive_standard_categories_form = PassiveStandardCategoriesForm()
         passive_custom_categories_form = PassiveCustomCategoriesForm()
         active_categories_form = ActiveCategoriesForm() 
-    new = 0
-    return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, new, 'samples_manager/partial_experiment_clone.html')
+    status = 'clone'
+    return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, 'samples_manager/partial_experiment_clone.html')
 
 def experiment_delete(request, pk):
     experiment = get_object_or_404(Experiments, pk=pk)
     data = dict()
     logged_user = get_logged_user(request)
-    user = Users.objects.get(email = logged_user)
     if request.method == 'POST':
         experiment.delete()
         data['form_is_valid'] = True
-        experiments = Experiments.objects.filter(responsible=user).order_by('updated_at')
-        message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was deleted by the account: '+logged_user+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\n\nKind regards,\nIRRAD team.')
-        send_mail_notification( 'Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
-        message2irrad=mark_safe("The user with the account: "+logged_user+" deleted the experiment with title '"+ experiment.title+"'.\n")
-        send_mail_notification( 'Experiment "%s"  was deleted'%experiment.title,message2irrad,experiment.responsible.email, 'irrad.ps@cern.ch')
-        data['html_experiment_list'] = render_to_string('samples_manager/partial_experiments_list.html', {
-            'experiments': experiments,
+        if logged_user.role == 'Admin':
+                experiments = Experiments.objects.all()
+                output_template = 'samples_manager/partial_registered_experiments_list.html'
+        else: 
+                experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
+                output_template = 'samples_manager/partial_experiments_list.html'
+        data['html_experiment_list'] = render_to_string(output_template, {
+                'experiments': experiments,
         })
         data['state']='Deleted'
+        message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was deleted by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\n\nKind regards,\nIRRAD team.')
+        send_mail_notification( 'Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
+        message2irrad=mark_safe("The user with the account: "+logged_user.email+" deleted the experiment with title '"+ experiment.title+"'.\n")
+        send_mail_notification( 'Experiment "%s"  was deleted'%experiment.title,message2irrad,experiment.responsible.email, 'irrad.ps@cern.ch')
     else:
         context = {'experiment': experiment}
         data['html_form'] = render_to_string('samples_manager/partial_experiment_delete.html',
@@ -645,8 +660,8 @@ def sample_new(request, experiment_id):
     else:
         form1 = SamplesForm1(experiment_id = experiment.id)
         form2 = SamplesForm2(experiment_id = experiment.id)
-    new = 0
-    return save_sample_form(request,form1, form2,new,experiment,'samples_manager/partial_sample_create.html')
+    status = 'new'
+    return save_sample_form(request,form1, form2,status,experiment,'samples_manager/partial_sample_create.html')
 
 
 def sample_update(request, experiment_id, pk):
@@ -656,36 +671,38 @@ def sample_update(request, experiment_id, pk):
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
     else:
-        form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
-        form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
-    new = 1
-    return save_sample_form(request,form1,form2, new,experiment, 'samples_manager/partial_sample_update.html')
+        form1 = SamplesForm1(instance=sample, experiment_id = experiment.id)
+        form2 = SamplesForm2(instance=sample, experiment_id = experiment.id)
+    status = 'update'
+    return save_sample_form(request,form1,form2, status,experiment, 'samples_manager/partial_sample_update.html')
 
 
 def sample_clone(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     if request.method == 'POST':
-        form1 = SamplesForm1(request.POST, experiment_id = experiment.id, instance=sample)
-        form2 = SamplesForm2(request.POST, experiment_id = experiment.id, instance=sample)
+        form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
+        form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
     else:
-        form1 = SamplesForm1(request.POST, experiment_id = experiment.id, instance=sample)
-        form2 = SamplesForm2(request.POST,experiment_id = experiment.id, instance=sample)
-    new = 0
-    return save_sample_form(request, form, new, experiment, 'samples_manager/partial_sample_create.html')
+        form1 = SamplesForm1(experiment_id = experiment.id, instance=sample)
+        form2 = SamplesForm2(experiment_id = experiment.id, instance=sample)
+    status = 'clone'
+    return save_sample_form(request, form1,form2, status, experiment, 'samples_manager/partial_sample_create.html')
 
-def sample_delete(request, pk):
+def sample_delete(request,experiment_id, pk):
+    print("in delete")
+    experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     data = dict()
     if request.method == 'POST':
         sample.delete()
         data['form_is_valid'] = True  # This is just to play along with the existing code
-        samples = Samples.objects.all()
+        samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
             'samples': samples
         })
     else:
-        context = {'sample': sample}
+        context = {'sample': sample, 'experiment': experiment }
         data['html_form'] = render_to_string('samples_manager/partial_sample_delete.html',
             context,
             request=request,

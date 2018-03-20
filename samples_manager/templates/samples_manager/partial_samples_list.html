@@ -1,22 +1,41 @@
 {% for sample in samples %}
   <tr>
+    <td>{{ sample.updated_at }}</td>
     <td>{{ sample.description }}</td>
-    <td>{{ sample}}</td>
+    <td>{{ sample.category}}</td>
     <td>{{ sample.req_fluence}}</td>
      <td>
-       <button type="button"
-              class="btn btn-warning btn-sm js-update-sample"
-              data-url="{%  url 'samples_manager:sample_update' experiment.id sample.id %}"
-              title='View or Edit sample'>
-             <span class="glyphicon glyphicon-pencil"></span>
+        <button type="button"
+                class="btn btn-warning js-update-sample"
+                data-url="{%  url 'samples_manager:sample_update' experiment.id sample.id %}"
+                title='View or Edit sample'>
+              <span class="glyphicon glyphicon-pencil"></span>
+        </button>
+      </td>
+      <td>
+        <button type="button"
+                class="btn btn-primary js-clone-sample"
+                data-url="{%url 'samples_manager:sample_clone' experiment.id sample.id %}"
+                title='Clone sample'>
+          <span class="glyphicon glyphicon-duplicate"></span>
+        </button>
+      </td>
+      <td>
+      <a href="#">
+        <button type="button"
+              class="btn btn-info"
+              title='Print'>
+        <span class="glyphicon glyphicon-print"></span>
       </button>
+      </a>
+    </td>
+    <td>
       <button type="button"
-              class="btn btn-primary btn-sm js-clone-sample"
-              data-url="{%url 'samples_manager:sample_clone' experiment.id sample.id %}"
-              title='Clone sample'>
-        <span class="glyphicon glyphicon-duplicate"></span>
-      </button>
-
+                class="btn btn-danger js-delete-sample"
+                title='Delete'
+                data-url="{% url 'samples_manager:sample_delete' experiment.id sample.id %}">
+          <span class="glyphicon glyphicon-trash"></span>
+        </button>
     </td>
   </tr>
 {% empty %}

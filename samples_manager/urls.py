@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^experiment/(?P<experiment_id>\d+)/samples/$', views.experiment_samples_list, name='experiment_samples_list'),
     url(r'^experiment/(?P<experiment_id>\d+)/sample/new/$', views.sample_new, name='sample_new'),
     url(r'^experiment/(?P<experiment_id>\d+)/sample/(?P<pk>\d+)/update/$', views.sample_update, name='sample_update'),
+    url(r'^experiment/(?P<experiment_id>\d+)/sample/(?P<pk>\d+)/clone/$', views.sample_clone, name='sample_clone'),
     url(r'^experiment/(?P<experiment_id>\d+)/sample/(?P<pk>\d+)/delete/$', views.sample_delete, name='sample_delete'),
-    url(r'^experiment/(?P<experiment_id>\d+)/sample/(?P<pk>\d+)/clone/$', views.sample_delete, name='sample_clone'),
     ]
 

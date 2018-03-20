@@ -36,7 +36,6 @@
             },
 
             hasChildElements = function(row) {
-                console.log(row.find(childElementSelector).length)
                 return row.find(childElementSelector).length > 0;
             },
 
@@ -50,14 +49,11 @@
             */
             //ina changed
             showDeleteLinks = function() {
-                console.log("showdelete")
-                console.log(minForms.length == 0 || (minForms.val() == '' || (totalForms.val() - minForms.val() > 0)))
                 return minForms.length == 0 ||   // For Django versions pre 1.7
                     (minForms.val() == '' || (totalForms.val() - minForms.val() > 0));
             },
 
             insertDeleteLink = function(row) {
-                console.log("insertDeleteLink")
                 var delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.'),
                     addCssSelector = $.trim(options.addCssClass).replace(/\s+/g, '.');
                 if (row.is('TR')) {
@@ -115,7 +111,6 @@
                     }
                     // Check if we've reached the minimum number of forms - hide all delete link(s)
                     if (!showDeleteLinks()){
-                        console.log("!showDeleteLinks()")
                         $('a.' + delCssSelector).each(function(){$(this).hide();});
                     }
                     // Check if we need to show the add button:
@@ -150,7 +145,6 @@
             
             if (hasChildElements(row)) {
                 row.addClass(options.formCssClass);
-                console.log("row is visible")
                 insertDeleteLink(row);
                 applyExtraClasses(row, i);
                 
@@ -167,7 +161,6 @@
                 template.find(childElementSelector).each(function() {
                     updateElementIndex($(this), options.prefix, '__prefix__');
                 });
-                console.log("after options")
                 insertDeleteLink(template);
             } else {
                 // Otherwise, use the last form in the formset; this works much better if you've got
@@ -215,7 +208,6 @@
                     updateElementIndex($(this), options.prefix, formCount);
                 });
                 if (showDeleteLinks()){
-                    console.log($('a.' + delCssSelector).each(function(){$(this).show();}))
                     $('a.' + delCssSelector).each(function(){$(this).show();});
                 }
                 // Check if we've exceeded the maximum allowed number of forms:
