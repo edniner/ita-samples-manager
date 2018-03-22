@@ -101,14 +101,14 @@ def validate_negative(value):
                 _('%(value)s is negative'),
                 params={'value': value},
             )
-    
+
 class Experiments(models.Model):
     title = models.CharField(max_length=200, unique = True)
     description =  models.TextField()
     cern_experiment = models.CharField(max_length=100)
     availability = models.DateField( null = True)
     constraints =  models.CharField(max_length=2000)
-    number_samples = models.PositiveIntegerField(default=0,validators=[validate_negative])
+    number_samples = models.PositiveIntegerField(default=0,validators=[MinValueValidator(0)])
     comments = models.TextField( null=True ) 
     category=  models.CharField(max_length=100,choices=CATEGORIES, blank=False)
     regulations_flag = models.BooleanField()
@@ -208,10 +208,9 @@ class Samples(models.Model):
     set_id = models.CharField(max_length=50, null = True,  unique = True)
     description = models.CharField(max_length=200, unique = True)
     current_location = models.CharField(max_length=100)
-    length = models.CharField(max_length=50)
-    height = models.CharField(max_length=50)
-    width = models.CharField(max_length=50)
-    weight = models.CharField(max_length=50)
+    height = models.DecimalField(max_digits=12,decimal_places=6)
+    width = models.DecimalField(max_digits=12,decimal_places=6)
+    weight = models.DecimalField(max_digits=12,decimal_places=6, null=True)
     comments = models.TextField()
     req_fluence =  models.ForeignKey(ReqFluences)
     material = models.ForeignKey(Materials)
@@ -238,6 +237,25 @@ class Samples(models.Model):
         return super(Samples, self).save(*args, **kwargs)
 
 
+class MaterialElements(models.Model):
+    atomic_number = models.PositiveIntegerField()
+    atomic_symbol = models.CharField(max_length=5)
+    atomic_mass = models.DecimalField(max_digits=15,decimal_places=10)
+    density = models.DecimalField(max_digits=9,decimal_places=7)
+    min_ionization = models.DecimalField(max_digits=4,decimal_places=3)
+    nu_coll_length = models.DecimalField(max_digits=4,decimal_places=1)
+    nu_int_length = models.DecimalField(max_digits=4,decimal_places=1)
+    pi_coll_length = models.DecimalField(max_digits=4,decimal_places=1)
+    pi_int_length = models.DecimalField(max_digits=4,decimal_places=1)
+    radiation_length = models.DecimalField(max_digits=4,decimal_places=2)
+
+    def __str__(self):              # __str__ on Python 2
+        return self.atomic_symbol
+
+class SamplesElements(models.Model):
+    element_type = models.ForeignKey(MaterialElements)
+    element_length = models.DecimalField(max_digits=20,decimal_places=6)
+    sample = models.ForeignKey(Samples)
 
     
 

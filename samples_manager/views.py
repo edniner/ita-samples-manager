@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples
+from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesElements
 from django.template import loader
 from django.core.urlresolvers import reverse
 import datetime
-from .forms import ExperimentsForm1,ExperimentsForm2,ExperimentsForm3, UsersForm, ReqFluencesForm, MaterialsForm, PassiveStandardCategoriesForm, PassiveCustomCategoriesForm,ActiveCategoriesForm, SamplesForm1, SamplesForm2 
+from .forms import ExperimentsForm1,ExperimentsForm2,ExperimentsForm3, UsersForm, ReqFluencesForm, MaterialsForm, PassiveStandardCategoriesForm, PassiveCustomCategoriesForm,ActiveCategoriesForm, SamplesForm1, SamplesForm2,SamplesElementsForm 
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.files.storage import FileSystemStorage
@@ -122,7 +122,7 @@ def user_details(request, user_id):
     user = get_object_or_404(Users, pk=user_id)
     return render(request, 'samples_manager/user_details.html', {'user': user})
     
-def save_sample_form(request,form1,form2, status, experiment, template_name):
+def save_sample_form(request,form1, elements_formset, form2, status, experiment, template_name):
     data = dict()
     logged_user = get_logged_user(request)
     if request.method == 'POST':
@@ -160,7 +160,7 @@ def save_sample_form(request,form1,form2, status, experiment, template_name):
         else:
             data['form_is_valid'] = False
             logging.warning('Sample data invalid')
-    context = {'form1': form1,'form2': form2, 'experiment':experiment}
+    context = {'form1': form1,'form2': form2,'elements_formset': elements_formset,'experiment':experiment}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
@@ -652,16 +652,19 @@ def user_delete(request,experiment_id,pk):
     return JsonResponse(data)
     
 def sample_new(request, experiment_id):
+    SamplesElementsFormset = inlineformset_factory( Samples, SamplesElements, form=SamplesElementsForm, extra=1)
     experiment = Experiments.objects.get(pk = experiment_id)
     print(experiment)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
+        elements_formset = SamplesElementsFormset(request.POST)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id)
+        elements_formset = SamplesElementsFormset()
         form2 = SamplesForm2(experiment_id = experiment.id)
     status = 'new'
-    return save_sample_form(request,form1, form2,status,experiment,'samples_manager/partial_sample_create.html')
+    return save_sample_form(request,form1, elements_formset,form2,status,experiment,'samples_manager/partial_sample_create.html')
 
 
 def sample_update(request, experiment_id, pk):

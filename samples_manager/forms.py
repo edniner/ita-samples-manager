@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.admin import widgets   
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,DateTimeInput,Textarea
-from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples
+from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,SamplesElements
 from django.forms import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
@@ -204,63 +204,23 @@ class ActiveCategoriesForm(ModelForm):
         }
         exclude = ('experiment',)
 
-
-'''class SamplesForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-            self.experiment_id = kwargs.pop('experiment_id')
-            super(SamplesForm, self).__init__(*args, **kwargs)
-            self.fields['comments'].required = False
-            self.fields['description'].label= 'Name/Description *'
-            self.fields['length'].label= 'Length *'
-            self.fields['height'].label= 'Height *'
-            self.fields['width'].label= 'Width *'
-            self.fields['weight'].label= 'Weight *'
-            self.fields['req_fluence'] = forms.ModelChoiceField(queryset=get_fluences(self.experiment_id))
-            self.fields['req_fluence'].label= 'Requested fluence *'
-            self.fields['material'].label= 'Material *'
-            self.fields['material'] = forms.ModelChoiceField(queryset=get_materials(self.experiment_id))
-            self.fields['category'].label= 'Category *'
-            self.fields['category'] = forms.ChoiceField(choices=get_categories(self.experiment_id))
-            #self.fields['category'] = forms.CharField(queryset=get_categories(self.experiment_id) widget=forms.TextInput(attrs={'input': 'special'}))
-            self.fields['current_location'].label= 'Current location *'
-            #self.fields['req_fluence'] = forms.ChoiceField( choices=get_fluences() )
-
-    class Meta:
-            model = Samples
-            fields = ['description','length', 'height','width', 'weight','comments','req_fluence','material','category','current_location']
-            widgets = {
-                'description': forms.TextInput(attrs={'placeholder': 'Provide a name or description for your sample. E.g. silicon detector 1'}),
-                'length':  forms.TextInput(attrs={'placeholder': 'e.g. 5 mm'}),
-                'height':  forms.TextInput(attrs={'placeholder': 'e.g. 1 mm'}),
-                'width':  forms.TextInput(attrs={'placeholder': 'e.g. 2 mm'}),
-                'weight':  forms.TextInput(attrs={'placeholder': 'e.g. 0.01 g'}),
-                'current_location':  forms.TextInput(attrs={'placeholder': 'e.g. Bld. 28 or Out of CERN'}),
-                'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
-            }
-'''
-    
-
 class SamplesForm1(ModelForm):
     def __init__(self, *args, **kwargs):
         self.experiment_id = kwargs.pop('experiment_id')
         super(SamplesForm1, self).__init__(*args, **kwargs)
-        self.fields['description'].label= 'Name/Description *'
-        self.fields['length'].label= 'Length *'
-        self.fields['height'].label= 'Height *'
-        self.fields['width'].label= 'Width *'
-        self.fields['weight'].label= 'Weight *'
-        self.fields['material'].label= 'Material *'
+        self.fields['description'].label= 'Name *'
+        self.fields['height'].label= 'Height (mm) *'
+        self.fields['width'].label= 'Width (mm) *'
+        self.fields['weight'].label= 'Weight (kg) '
+        self.fields['material'].label= 'Samples type *'
         self.fields['material'] = forms.ModelChoiceField(queryset=get_materials(self.experiment_id))
     class Meta:
             model = Samples
             exclude = ('comments','req_fluence','category','current_location')
-            fields = ['description','length', 'height','width', 'weight','material']
+            fields = ['material','description', 'height','width', 'weight']
             widgets = {
                 'description': forms.TextInput(attrs={'placeholder': 'Provide a name or description for your sample. E.g. silicon detector 1'}),
-                'length':  forms.TextInput(attrs={'placeholder': 'e.g. 5 mm'}),
-                'height':  forms.TextInput(attrs={'placeholder': 'e.g. 1 mm'}),
-                'width':  forms.TextInput(attrs={'placeholder': 'e.g. 2 mm'}),
-                'weight':  forms.TextInput(attrs={'placeholder': 'e.g. 0.01 g'}),
+                'weight': forms.NumberInput(attrs={'placeholder': 'Please provide weigth especially if it is more that 1 kg'})
             }
 
 class SamplesForm2(ModelForm):
@@ -276,12 +236,24 @@ class SamplesForm2(ModelForm):
 
     class Meta:
             model = Samples
-            exclude = ('description','length', 'height','width', 'weight','material')
+            exclude = ('description', 'height','width', 'weight','material')
             fields = ['req_fluence','category','current_location','comments']
             widgets = {
                 'current_location':  forms.TextInput(attrs={'placeholder': 'e.g. Bld. 28 or Out of CERN'}),
                 'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
             }
+
+
+class SamplesElementsForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SamplesElementsForm, self).__init__(*args, **kwargs)
+        self.fields['element_type'].label=mark_safe('Material element')
+        self.fields['element_length'].label=mark_safe('Length')
+
+    class Meta:
+         model = SamplesElements
+         fields = ['id','element_type', 'element_length',]
+         exclude = ('sample',)
 
 
 

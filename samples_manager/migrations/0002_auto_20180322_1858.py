@@ -11,10 +11,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='experiments',
-            name='irradiation_type',
-            field=models.CharField(default='Protons', max_length=100),
-            preserve_default=False,
+        migrations.AlterField(
+            model_name='samples',
+            name='weight',
+            field=models.DecimalField(null=True, max_digits=12, decimal_places=6),
         ),
     ]
