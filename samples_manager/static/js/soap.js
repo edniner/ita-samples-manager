@@ -25,7 +25,7 @@ $(function () {
             '<wsh:readEquipment>'+
               '<equipmentCode>PXXISET001-CR002706</equipmentCode>'+
               '<credentials>'+
-                '<password>Maurice008</password>'+
+                '<password>Maurice009</password>'+
                 '<username>irrad</username>'+
               '</credentials>'+
             '<sessionID></sessionID>'+

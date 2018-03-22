@@ -125,7 +125,6 @@ def user_details(request, user_id):
 def save_sample_form(request,form1,form2, status, experiment, template_name):
     data = dict()
     logged_user = get_logged_user(request)
-    print(user)
     if request.method == 'POST':
         print("post")
         if form1.is_valid() and form2.is_valid():
@@ -240,7 +239,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                         experiment.users.add(user)
                 data['form_is_valid'] = True
                 if logged_user.role == 'Admin':
-                    experiments = Experiments.objects.all()
+                    experiments = Experiments.objects.all().order_by('-updated_at')
                     output_template = 'samples_manager/partial_registered_experiments_list.html'
                 else: 
                     experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
@@ -654,6 +653,7 @@ def user_delete(request,experiment_id,pk):
     
 def sample_new(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
+    print(experiment)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
