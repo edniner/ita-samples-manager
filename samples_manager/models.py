@@ -227,7 +227,7 @@ class Samples(models.Model):
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
 
     def __str__(self):              # __str__ on Python 2
-        return self.set_id
+        return self.description
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
@@ -255,7 +255,7 @@ class MaterialElements(models.Model):
 class SamplesElements(models.Model):
     element_type = models.ForeignKey(MaterialElements)
     element_length = models.DecimalField(max_digits=20,decimal_places=6)
-    sample = models.ForeignKey(Samples)
+    sample = models.ForeignKey(Samples, null = True)
 
     
 

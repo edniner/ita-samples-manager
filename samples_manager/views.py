@@ -28,16 +28,12 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()'''
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]'''
-    firstname = 'Blerina'
-    lastname = 'Gkotse'
-    email = 'blerina.gkotse@cern.ch'
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     users = Users.objects.all()
     emails =[]
-
     for item in users:
         emails.append(item.email)
     if not email in emails:
@@ -125,11 +121,12 @@ def user_details(request, user_id):
 def save_sample_form(request,form1, elements_formset, form2, status, experiment, template_name):
     data = dict()
     logged_user = get_logged_user(request)
+    print("in save")
     if request.method == 'POST':
         print("post")
         if form1.is_valid() and form2.is_valid():
             if status == 'new':
-                print("status")
+                print("new")
                 sample_data = {}
                 sample_data.update(form1.cleaned_data)
                 sample_data.update(form2.cleaned_data)
@@ -140,6 +137,13 @@ def save_sample_form(request,form1, elements_formset, form2, status, experiment,
                 sample.experiment = experiment
                 '''sample.set_id = generate_set_id()'''
                 sample.save()
+                print ("sample saved")
+                if elements_formset.is_valid():
+                    if elements_formset.cleaned_data is not None:
+                        for form in elements_formset.forms:
+                            element = form.save()
+                            element.sample = sample
+                            element.save()
                 print ("saved")
             elif status == 'update': 
                 sample_updated = form1.save()
@@ -147,10 +151,14 @@ def save_sample_form(request,form1, elements_formset, form2, status, experiment,
                 sample_updated.status = "Updated"
                 sample_updated.update_by = logged_user
                 sample_updated.save()
+                if elements_formset.is_valid():
+                    elements_formset.save()
             else:
                 sample_updated = form1.save()
                 form2.save()
                 sample_updated.save()
+                if elements_formset.is_valid():
+                    elements_formset.save()
             data['form_is_valid'] = True
             samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
             data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
@@ -160,7 +168,9 @@ def save_sample_form(request,form1, elements_formset, form2, status, experiment,
         else:
             data['form_is_valid'] = False
             logging.warning('Sample data invalid')
+    print("before context")
     context = {'form1': form1,'form2': form2,'elements_formset': elements_formset,'experiment':experiment}
+    print(context)
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
@@ -668,29 +678,36 @@ def sample_new(request, experiment_id):
 
 
 def sample_update(request, experiment_id, pk):
+    SamplesElementsFormset = inlineformset_factory( Samples, SamplesElements, form=SamplesElementsForm, extra=1)
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
+        elements_formset = SamplesElementsFormset(request.POST, instance=sample)
     else:
         form1 = SamplesForm1(instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(instance=sample, experiment_id = experiment.id)
+        elements_formset = SamplesElementsFormset(instance=sample)
     status = 'update'
-    return save_sample_form(request,form1,form2, status,experiment, 'samples_manager/partial_sample_update.html')
+    print('update')
+    return save_sample_form(request, form1, elements_formset, form2, status,experiment, 'samples_manager/partial_sample_update.html')
 
 
 def sample_clone(request, experiment_id, pk):
+    SamplesElementsFormset = inlineformset_factory( Samples, SamplesElements, form=SamplesElementsForm, extra=1)
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
+        elements_formset = SamplesElementsFormset(request.POST)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(experiment_id = experiment.id, instance=sample)
+        elements_formset = SamplesElementsFormset(instance=sample)
     status = 'clone'
-    return save_sample_form(request, form1,form2, status, experiment, 'samples_manager/partial_sample_create.html')
+    return save_sample_form(request, form1, elements_formset, form2, status, experiment, 'samples_manager/partial_sample_create.html')
 
 def sample_delete(request,experiment_id, pk):
     print("in delete")

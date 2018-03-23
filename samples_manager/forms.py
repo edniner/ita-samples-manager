@@ -145,6 +145,7 @@ class ReqFluencesForm(ModelForm):
         }
         exclude = ('experiment',)
 
+
 class MaterialsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(MaterialsForm, self).__init__(*args, **kwargs)
@@ -244,16 +245,20 @@ class SamplesForm2(ModelForm):
             }
 
 
+
 class SamplesElementsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(SamplesElementsForm, self).__init__(*args, **kwargs)
-        self.fields['element_type'].label=mark_safe('Material element')
-        self.fields['element_length'].label=mark_safe('Length')
+        self.fields['element_type'].label='Material element'
+        self.fields['element_length'].label='Length (mm)'
 
     class Meta:
          model = SamplesElements
-         fields = ['id','element_type', 'element_length',]
+         fields = ['id','element_type', 'element_length']
          exclude = ('sample',)
+
+
+
 
 
 
