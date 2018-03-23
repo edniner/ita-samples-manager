@@ -28,10 +28,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()'''
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
+    '''
+    username =  "bgkotse"
+    firstname =  "Blerina"
+    lastname = "Gkotse"
+    email =  "blerina.gkotse@cern.ch"
+
     users = Users.objects.all()
     emails =[]
     for item in users:
@@ -145,6 +151,7 @@ def save_sample_form(request,form1, elements_formset, form2, status, experiment,
                             element.sample = sample
                             element.save()
                 print ("saved")
+                data['state'] = "Created"
             elif status == 'update': 
                 sample_updated = form1.save()
                 form2.save()
@@ -153,6 +160,7 @@ def save_sample_form(request,form1, elements_formset, form2, status, experiment,
                 sample_updated.save()
                 if elements_formset.is_valid():
                     elements_formset.save()
+                data['state'] = "Updated"
             else:
                 sample_updated = form1.save()
                 form2.save()
@@ -605,16 +613,14 @@ def save_user_form(request, form, experiment, template_name):
             logging.warning("form is valid")
             print(form.cleaned_data)
             new_user = form.save()
-            print(new_user)
             experiment.users.add(new_user)
-            print(new_user)
             data['form_is_valid'] = True
             users = experiment.users.all()
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
                 'users': users,
                 'experiment':experiment
             })
-            print('done')
+            data['state'] = "Created"
         else:
             data['form_is_valid'] = False
     context = {'form': form, 'experiment': experiment}
@@ -652,13 +658,13 @@ def user_delete(request,experiment_id,pk):
             'users': users,
             'experiment':experiment
         })
+        data['state'] = "Deleted"
     else:
         context = {'user': user, 'experiment':experiment,}
         data['html_form'] = render_to_string('samples_manager/partial_user_delete.html',
             context,
             request=request,
         )
-        print(data['html_form'])
     return JsonResponse(data)
     
 def sample_new(request, experiment_id):
@@ -742,7 +748,7 @@ def print_experiment_view(request, pk):
     Story.append(Spacer(1,0.2*inch))
     Story.append(Paragraph("Description: %s" %experiment.description, style))
     Story.append(Spacer(1,0.2*inch))
-    Story.append(Paragraph("CERN experiments/Projects: %s" %experiment.description, style))
+    Story.append(Paragraph("CERN experiments/Projects: %s" %experiment.cern_experiment, style))
     Story.append(Spacer(1,0.2*inch))
     Story.append(Paragraph("Responsible person: %s" %experiment.responsible, style))
     Story.append(Spacer(1,0.2*inch))
