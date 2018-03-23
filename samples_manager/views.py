@@ -93,6 +93,9 @@ def experiments_list(request):
 
 def registered_experiments_list(request):
     experiments = Experiments.objects.all().filter(status="Registered").order_by('-updated_at')
+    for experiment in experiments:
+        number_samples = Samples.objects.filter(experiment = experiment.id)
+        
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user.email})
     
