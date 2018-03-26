@@ -22,10 +22,10 @@ import logging
 
 
 def send_mail_notification(title,message,from_mail,to_mail):
-    '''headers = {'Reply-To': 'irrad.ps@cern.ch'}
+    headers = {'Reply-To': 'irrad.ps@cern.ch'}
     from_mail='irrad.ps@cern.ch'
     msg = EmailMessage(title,message,from_mail, to=[to_mail], headers = headers)
-    msg.send()'''
+    msg.send()
 
 def get_logged_user(request):
     '''username =  request.META["HTTP_X_REMOTE_USER"]
@@ -61,7 +61,7 @@ def index(request):
     template = loader.get_template('samples_manager/index.html')
     logged_user = get_logged_user(request)
     print(logged_user)
-    context = {'logged_user': logged_user.email}
+    context = {'logged_user': logged_user}
     return render(request, 'samples_manager/index.html', context)
 
 
@@ -74,48 +74,60 @@ def view_user(request):
 
 def regulations(request):
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user.email})
+    return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user})
 
 def all_experiments_list(request):
     experiments = Experiments.objects.order_by('-updated_at')
+    experiments = get_registered_samples_number(experiments)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user.email})
+    print("Admin")
+    return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiments,'logged_user': logged_user})
+
+def get_registered_samples_number(experiments):
+    experiment_data = []
+    for experiment in experiments:
+            samples = Samples.objects.filter(experiment = experiment)
+            number = samples.count
+            experiment_data.append({  
+            "experiment": experiment,
+            "number_samples": number,
+            })
+    return experiment_data
 
 def experiments_list(request):
     logged_user = get_logged_user(request)
     if logged_user.role == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')
-        logged_user = get_logged_user(request)
-        return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user.email})
+        experiment_data = get_registered_samples_number(experiments)
+        return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data,'logged_user': logged_user})
     else:
         experiments = Experiments.objects.all().filter(responsible=logged_user).order_by('-updated_at')
-        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user.email})
+        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
 
-def registered_experiments_list(request):
-    experiments = Experiments.objects.all().filter(status="Registered").order_by('-updated_at')
-    for experiment in experiments:
-        number_samples = Samples.objects.filter(experiment = experiment.id)
-        
+def admin_experiments_list(request):
+    experiments = Experiments.objects.order_by('-updated_at')
+    experiment_data = get_registered_samples_number(experiments)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/registered_experiments_list.html', {'experiments': experiments,'logged_user': logged_user.email})
+    print(experiment_data)
+    return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data,'logged_user': logged_user})
     
 def users_list(request):
     users = Users.objects.all()
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/users_list.html', {'users': users,'logged_user': logged_user.email})
+    return render(request, 'samples_manager/users_list.html', {'users': users,'logged_user': logged_user})
 
 def experiment_users_list(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
     users= experiment.users.values()
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user.email})
+    return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user})
 
 
 def experiment_samples_list(request, experiment_id):
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
-    return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'experiment': experiment,'logged_user': logged_user.email })
+    return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'experiment': experiment,'logged_user': logged_user })
 
 
 def experiment_details(request, experiment_id):
@@ -202,6 +214,38 @@ def save_dosimeter_form(request,form, template_name):
     return JsonResponse(data)
 
 
+def updated_experiment_data(old_experiment,old_fluences,new_experiment):
+    excluded_keys = 'id', 'status', 'responsible', 'users', 'created_at', 'updated_at', 'created_by','updated_by', '_state'
+    old_dict, new_dict = old_experiment.__dict__, new_experiment.__dict__
+    text = ""
+    print("in update")
+    for k,v in old_dict.items():
+            if k in excluded_keys:
+                continue
+            try:
+                if v != new_dict[k]:
+                    text = text + str(k)+": "+ str(new_dict[k])+" (old value:"+str(old_dict[k])+") \n"
+            except KeyError:
+                print("key error")
+    old_fluences_number = len(old_fluences)
+    new_fluences = ReqFluences.objects.filter(experiment = new_experiment) 
+    new_fluences_number = len(new_fluences)
+    if old_fluences_number < new_fluences_number:
+        fluences_range = new_fluences_number - old_fluences_number
+        rest = new_fluences_number - fluences_range
+    elif new_fluences_number < old_fluences_number:
+        fluences_range = old_fluences_number - new_fluences_number
+        rest = new_fluences_number - fluences_range
+    else:
+        fluences_range = old_fluences_number
+    
+    fluences_text="\nFluences: \n"
+    for i in range(0, fluences_range):
+        if new_fluences[i].req_fluence != old_fluences[i].req_fluence:
+                fluences_text =  fluences_text + str(new_fluences[i].req_fluence) + "(old value:"+str(old_fluences[i].req_fluence)+")\n"
+    text = text + fluences_text
+    return text
+
 def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, template_name):
     data = dict()
     logged_user = get_logged_user(request)
@@ -261,7 +305,8 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['form_is_valid'] = True
                 if logged_user.role == 'Admin':
                     experiments = Experiments.objects.all().order_by('-updated_at')
-                    output_template = 'samples_manager/partial_registered_experiments_list.html'
+                    experiments = get_registered_samples_number(experiments)
+                    output_template = 'samples_manager/partial_admin_experiments_list.html'
                 else: 
                     experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
                     output_template = 'samples_manager/partial_experiments_list.html'
@@ -275,6 +320,10 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 send_mail_notification('New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
             elif  status == 'update':
                 print("update")
+                old_experiment = Experiments.objects.get(pk =  form1.instance.pk)
+                old_fluences = ReqFluences.objects.all().filter(experiment = form1.instance.pk)
+                for f in  old_fluences: 
+                    pass
                 experiment_updated = form1.save()
                 form2.save()
                 form3.save()
@@ -310,7 +359,8 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['form_is_valid'] = True
                 if logged_user.role == 'Admin':
                     experiments = Experiments.objects.all()
-                    output_template = 'samples_manager/partial_registered_experiments_list.html'
+                    experiments = get_registered_samples_number(experiments)
+                    output_template = 'samples_manager/partial_admin_experiments_list.html'
                 else: 
                     experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
                     output_template = 'samples_manager/partial_experiments_list.html'
@@ -318,7 +368,9 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                         'experiments': experiments,
                         })
                 data['state'] = "Updated"
-                message2irrad=mark_safe("The user with e-mail: "+logged_user.email+" updated the experiment with title '"+experiment.title+"'.\nPlease, find all the experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
+                text = updated_experiment_data(old_experiment,old_fluences,experiment)
+                message2irrad=mark_safe("The user with e-mail: "+logged_user.email+" updated the experiment with title '"+experiment.title+"'.\n"
+                +"The updated fields are: \n"+text+"\nPlease, find all the experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
                 send_mail_notification('Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
             elif  status == 'validate':  # validation
                 print("validation")
@@ -351,12 +403,13 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     print("no category")
                 if fluence_formset.is_valid():
                     fluence_formset.save()
-                if  material_formset.is_valid():    
+                if  material_formset.is_valid():   
                     material_formset.save()
                 data['form_is_valid'] = True
                 experiments = Experiments.objects.all().order_by('-updated_at')
+                experiments = get_registered_samples_number(experiments)
                 data['state'] = "Validated"
-                data['html_experiment_list'] = render_to_string('samples_manager/partial_registered_experiments_list.html', {
+                data['html_experiment_list'] = render_to_string('samples_manager/partial_admin_experiments_list.html', {
                             'experiments': experiments,
                         })
                 message='Your experiment with title "%s" was validated. \n Please, find all your experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/'% experiment.title
@@ -586,7 +639,8 @@ def experiment_delete(request, pk):
         data['form_is_valid'] = True
         if logged_user.role == 'Admin':
                 experiments = Experiments.objects.all()
-                output_template = 'samples_manager/partial_registered_experiments_list.html'
+                experiments = get_registered_samples_number(experiments)
+                output_template = 'samples_manager/partial_admin_experiments_list.html'
         else: 
                 experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
                 output_template = 'samples_manager/partial_experiments_list.html'

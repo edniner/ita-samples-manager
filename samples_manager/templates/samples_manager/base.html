@@ -19,8 +19,8 @@
                     <h1 id="cern-mainlink"><a href="http://home.cern" title="CERN">CERN <span>Accelerating science </span></a></h1>
                     <ul class="cern-signedin">                    
                         <li id="ctl00_ctl32_linksLi" class='cern-accountlinks'>
-                            <span id="ctl00_ctl32_accountSpan">Signed in as: <a href="https://cern.ch/account" id="ctl00_ctl32_accountLink" title="Signed in as {{logged_user}}">{{logged_user}}</a></span>
-                            <a href="https://espace.cern.ch/authentication/_layouts/15/SignOut.aspx?Source=%2fauthentication%2fdefault.aspx" id="ctl00_ctl32_signOutALink" class="cern-signout" title="Sign out of your account">Sign out</a></li>
+                            <span id="ctl00_ctl32_accountSpan">Signed in as: <a href="https://cern.ch/account" id="ctl00_ctl32_accountLink" title="Signed in as {{logged_user}}">{{logged_user.email}}</a></span>
+                            <a href="https://espace.cern.ch/authentication/layouts/15/SignOut.aspx?Source=%2fauthentication%2fdefault.aspx" id="ctl00_ctl32_signOutALink" class="cern-signout" title="Sign out of your account">Sign out</a></li>
                         <li><a class="cern-directory" href="http://cern.ch/directory" title="Search CERN resources and browse the directory">Directory</a></li>
                     </ul>
                 </div>	
@@ -37,6 +37,9 @@
                                 <li><a target='_blank' href="https://op-webtools.web.cern.ch/irrad/index.html#/">BPM</a><li>
                                 <li><a target='_blank' href="https://ps-irrad.web.cern.ch/">IRRAD</a><li>
                                 <li><a href='{% url 'samples_manager:regulations' %}'>GENERAL TERMS</a><li>
+                                {% if logged_user.role == 'Admin'%}
+                                <li><a href='https://its.cern.ch/jira/projects/IRRAD/'>JIRA</a><li>
+                                {% endif %}
                             </ul>
                     </div>
                 </div>	

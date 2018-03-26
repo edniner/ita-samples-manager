@@ -1,22 +1,22 @@
 {% for experiment in experiments %}
   <tr>
-    <td>{{ experiment.updated_at|date:"d.m.Y"}} {{ experiment.updated_at|time:"H:i"}}</td>
-    <td>{{ experiment.title }}</td>
-    <td>{{ experiment.availability }}</td>
-    <td>{{ experiment.number_samples }}/{{ experiment.number_samples }}</td>
-    <td>{{ experiment.users.count }}</td>
-    <td>{{ experiment.responsible.name}} {{ experiment.responsible.surname}} </td>
-    <td>{{ experiment.status }}</td>
+    <td>{{ experiment.experiment.updated_at|date:"d.m.Y"}} {{ experiment.experiment.updated_at|time:"H:i"}}</td>
+    <td>{{ experiment.experiment.title }}</td>
+    <td>{{ experiment.experiment.availability }}</td>
+    <td>{{ experiment.number_samples}}/{{ experiment.experiment.number_samples }}</td>
+    <td>{{ experiment.experiment.users.count }}</td>
+    <td>{{ experiment.experiment.responsible.name}} {{ experiment.experiment.responsible.surname}} </td>
+    <td>{{ experiment.experiment.status }}</td>
     <td>
       <button type="button"
               class="btn btn-success btn js-update-experiment"
               title='Check and validate'
-              data-url="{% url 'samples_manager:experiment_validate' experiment.id %}">
+              data-url="{% url 'samples_manager:experiment_validate' experiment.experiment.id %}">
              <span class="glyphicon glyphicon-ok"></span>
       </button>
       </td>
       <td>
-        <a href="{% url 'samples_manager:experiment_users_list' experiment.id  %}">
+        <a href="{% url 'samples_manager:experiment_users_list' experiment.experiment.id  %}">
             <button type="button"
                   class="btn btn-info "
                   title='See and add users'>
@@ -25,7 +25,7 @@
         </a>
       </td>
       <td>
-          <a href="{% url 'samples_manager:experiment_samples_list' experiment.id  %}">     
+          <a href="{% url 'samples_manager:experiment_samples_list' experiment.experiment.id  %}">     
             <button type="button"
                     class="btn btn-primary"
                     title='Add samples'>
@@ -43,9 +43,9 @@
                 <span class="glyphicon glyphicon-menu-hamburger"></span>
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li><button class="js-clone-experiment" data-url="{% url 'samples_manager:experiment_clone' experiment.id %}">Clone</button></li>
-            <li><div><a href="{% url 'samples_manager:print_experiment_view' experiment.id  %}"><button>Print</button></div></a></li>
-            <li><button class="js-delete-experiment" title='Delete' data-url="{% url 'samples_manager:experiment_delete' experiment.id %}">Delete</button></li>
+            <li><button class="js-clone-experiment" data-url="{% url 'samples_manager:experiment_clone' experiment.experiment.id %}">Clone</button></li>
+            <li><div><a href="{% url 'samples_manager:print_experiment_view' experiment.experiment.id  %}"><button>Print</button></div></a></li>
+            <li><button class="js-delete-experiment" title='Delete' data-url="{% url 'samples_manager:experiment_delete' experiment.experiment.id %}">Delete</button></li>
           </ul>
         </div>
       </td>
