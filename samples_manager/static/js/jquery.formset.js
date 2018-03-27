@@ -124,7 +124,11 @@
         $$.each(function(i) {
             var row = $(this),
                 del = row.find('input:checkbox[id $= "-DELETE"]');
-            formset_length = $('.formset_row').length;
+        
+            if (options.prefix=='reqfluences_set')
+                formset_length = $('.formset_row').length;
+            else 
+                formset_length = $('.material_formset_row').length;
             $('#id_' + options.prefix + '-TOTAL_FORMS').val(formset_length);
             if (del.length) {
                 // If you specify "can_delete = True" when creating an inline formset,

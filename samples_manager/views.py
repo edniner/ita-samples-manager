@@ -214,36 +214,132 @@ def save_dosimeter_form(request,form, template_name):
     return JsonResponse(data)
 
 
-def updated_experiment_data(old_experiment,old_fluences,new_experiment):
+def updated_experiment_data(old_experiment,old_fluences,old_materials,old_category,new_experiment):
     excluded_keys = 'id', 'status', 'responsible', 'users', 'created_at', 'updated_at', 'created_by','updated_by', '_state'
     old_dict, new_dict = old_experiment.__dict__, new_experiment.__dict__
+    experiment_flag, category_flag, fluence_flag, material_flag = False, False, False, False
     text = ""
-    print("in update")
     for k,v in old_dict.items():
             if k in excluded_keys:
                 continue
             try:
                 if v != new_dict[k]:
-                    text = text + str(k)+": "+ str(new_dict[k])+" (old value:"+str(old_dict[k])+") \n"
+                    experiment_flag = True
+                    text = text + str(k)+": "+ str(new_dict[k])+" (old value: "+str(old_dict[k])+") \n"
+            except KeyError:
+                print("key error")
+    category_text = "\nCategories:\n"
+    category_excluded_keys = 'id', 'experiment_id', '_state'
+    if new_experiment.category =="Passive Standard":
+        new_category = PassiveStandardCategories.objects.get(experiment = new_experiment)
+        old_category_dict, new_category_dict = old_category.__dict__, new_category.__dict__ 
+        for k,v in old_category_dict.items():
+            if k in excluded_keys:
+                continue
+            try:
+                if v != new_category_dict[k]:
+                    category_flag = True
+                    category_text = category_text + str(k)+"\n"
+            except KeyError:
+                print("key error")
+    elif new_experiment.category =="Passive Custom":
+        new_category = PassiveCustomCategories.objects.get(experiment = new_experiment)
+        old_category_dict, new_category_dict = old_category.__dict__, new_category.__dict__ 
+        for k,v in old_category_dict.items():
+            if k in excluded_keys:
+                continue
+            try:
+                if v != new_category_dict[k]:
+                    category_flag = True
+                    category_text = category_text + str(k)+": "+ str(new_category_dict[k])+" (old value: "+str(old_category_dict[k])+") \n"
+            except KeyError:
+                print("key error")
+    elif new_experiment.category =="Active":
+        new_category = ActiveCategories.objects.get(experiment = new_experiment)
+        old_category_dict, new_category_dict = old_category.__dict__, new_category.__dict__ 
+        for k,v in old_category_dict.items():
+            if k in excluded_keys:
+                continue
+            try:
+                if v != new_category_dict[k]:
+                    category_flag = True
+                    category_text = category_text + str(k)+": "+ str(new_category_dict[k])+" (old value: "+str(old_category_dict[k])+") \n"
             except KeyError:
                 print("key error")
     old_fluences_number = len(old_fluences)
-    new_fluences = ReqFluences.objects.filter(experiment = new_experiment) 
+    new_fluences = ReqFluences.objects.filter(experiment = new_experiment).order_by('id') 
     new_fluences_number = len(new_fluences)
-    if old_fluences_number < new_fluences_number:
-        fluences_range = new_fluences_number - old_fluences_number
-        rest = new_fluences_number - fluences_range
-    elif new_fluences_number < old_fluences_number:
-        fluences_range = old_fluences_number - new_fluences_number
-        rest = new_fluences_number - fluences_range
-    else:
-        fluences_range = old_fluences_number
-    
     fluences_text="\nFluences: \n"
-    for i in range(0, fluences_range):
-        if new_fluences[i].req_fluence != old_fluences[i].req_fluence:
-                fluences_text =  fluences_text + str(new_fluences[i].req_fluence) + "(old value:"+str(old_fluences[i].req_fluence)+")\n"
-    text = text + fluences_text
+    old_fluence_ids = []
+    new_fluence_ids = []
+    for f in new_fluences:
+        new_fluence_ids.append(f.id)
+    fluences_after_removal = []
+    for fluence in old_fluences:
+        if fluence.id not in new_fluence_ids:
+            fluence_flag = True
+            fluences_text =  fluences_text +"value "+ str(fluence.req_fluence) +" was removed\n"
+        else:
+            fluences_after_removal.append(fluence)
+    for f in fluences_after_removal:
+        old_fluence_ids.append(f.id)
+    i=0
+    for fluence in new_fluences: # checking for edited fluences or newly added
+        if fluence.id in old_fluence_ids:
+            if fluence.req_fluence != fluences_after_removal[i].req_fluence:
+                fluence_flag = True
+                fluences_text =  fluences_text + str(fluence.req_fluence) + "(old value: "+str(fluences_after_removal[i].req_fluence)+")\n"
+            else:
+                pass
+            i= i+1
+        else:
+            fluence_flag = True
+            fluences_text =  fluences_text + str(fluence.req_fluence)+ " (New added value)\n"
+
+    old_materials_number = len(old_materials)
+    new_materials = Materials.objects.filter(experiment = new_experiment).order_by('id') 
+    print(new_materials)
+    new_materials_number = len(new_materials)
+    materials_text="\nSample types: \n"
+    old_material_ids = []
+    new_material_ids = []
+    for m in new_materials:
+        new_material_ids.append(m.id)
+    materials_after_removal = []
+    for material in old_materials:
+        if material.id not in new_material_ids:
+            material_flag = True
+            materials_text =  materials_text +"value "+ str(material.material) +" was removed\n"
+        else:
+            materials_after_removal.append(material)
+
+    for m in materials_after_removal:
+        old_material_ids.append(m.id)
+    i=0
+    for material in new_materials: # checking for edited materials or newly added
+        if material.id in old_material_ids:
+            if material.material != materials_after_removal[i].material:
+                material_flag = True
+                materials_text =  materials_text + str(material.material) + "(old value: "+str(materials_after_removal[i].material)+")\n"
+            else:
+                pass
+            i = i + 1
+        else:
+            material_flag = True
+            materials_text =  materials_text + str(material.material)+ " (New added value)\n"
+
+    if category_flag == True:
+        text = text + category_text
+    else:
+        pass
+    if fluence_flag == True:
+        text = text + fluences_text 
+    else:
+        pass
+    if material_flag == True:
+        text = text + materials_text  
+    else:
+        pass 
     return text
 
 def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, template_name):
@@ -321,8 +417,11 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
             elif  status == 'update':
                 print("update")
                 old_experiment = Experiments.objects.get(pk =  form1.instance.pk)
-                old_fluences = ReqFluences.objects.all().filter(experiment = form1.instance.pk)
+                old_fluences = ReqFluences.objects.all().filter(experiment = form1.instance.pk).order_by('id')
+                old_materials = Materials.objects.all().filter(experiment = form1.instance.pk).order_by('id')
                 for f in  old_fluences: 
+                    pass
+                for m in  old_materials: 
                     pass
                 experiment_updated = form1.save()
                 form2.save()
@@ -334,17 +433,20 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 experiment.save()
                 if experiment.category == "Passive Standard":
                     if passive_standard_categories_form.is_valid(): 
+                        old_category = PassiveStandardCategories.objects.get(experiment =  form1.instance.pk)
                         if passive_standard_categories_form.cleaned_data is not None:
                             passive_standard_category = passive_standard_categories_form.save()
                             passive_standard_category.experiment = experiment
                             passive_standard_category.save()
                 elif  experiment.category == "Passive Custom":
+                    old_category = PassiveCustomCategories.objects.get(experiment =  form1.instance.pk)
                     if passive_custom_categories_form.is_valid(): 
                         if  passive_custom_categories_form.cleaned_data is not None:
                             passive_custom_category = passive_custom_categories_form.save()
                             passive_custom_category.experiment = experiment
                             passive_custom_category.save()
                 elif  experiment.category == "Active":
+                    old_category = ActiveCategories.objects.get(experiment =  form1.instance.pk)
                     if active_categories_form.is_valid(): 
                         if active_categories_form.cleaned_data is not None:
                             active_category = active_categories_form.save()
@@ -368,7 +470,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                         'experiments': experiments,
                         })
                 data['state'] = "Updated"
-                text = updated_experiment_data(old_experiment,old_fluences,experiment)
+                text = updated_experiment_data(old_experiment,old_fluences,old_materials,old_category,experiment)
                 message2irrad=mark_safe("The user with e-mail: "+logged_user.email+" updated the experiment with title '"+experiment.title+"'.\n"
                 +"The updated fields are: \n"+text+"\nPlease, find all the experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
                 send_mail_notification('Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
