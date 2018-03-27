@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.admin import widgets   
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,DateTimeInput,Textarea
-from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,SamplesElements
+from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,SamplesLayers,SamplesElements
 from django.forms import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
@@ -213,6 +213,7 @@ class SamplesForm1(ModelForm):
         self.fields['height'].label= 'Height (mm) *'
         self.fields['width'].label= 'Width (mm) *'
         self.fields['weight'].label= 'Weight (kg) '
+        self.fields['weight'].required = False
         self.fields['material'].label= 'Samples type *'
         self.fields['material'] = forms.ModelChoiceField(queryset=get_materials(self.experiment_id))
     class Meta:
@@ -244,18 +245,28 @@ class SamplesForm2(ModelForm):
                 'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
             }
 
+class SamplesLayersForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SamplesLayersForm, self).__init__(*args, **kwargs)
+        self.fields['name'].label='Layer name'
+        self.fields['length'].label='Length (mm)'
+
+    class Meta:
+         model = SamplesLayers
+         fields = ['id','name', 'length']
+         exclude = ('sample',)
 
 
 class SamplesElementsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(SamplesElementsForm, self).__init__(*args, **kwargs)
         self.fields['element_type'].label='Material element'
-        self.fields['element_length'].label='Length (mm)'
+        self.fields['percentage'].label=mark_safe('Percentage of this element\nin the layer (%)')
 
     class Meta:
          model = SamplesElements
-         fields = ['id','element_type', 'element_length']
-         exclude = ('sample',)
+         fields = ['id','element_type', 'percentage']
+         exclude = ('layer',)
 
 
 

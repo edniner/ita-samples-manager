@@ -252,10 +252,15 @@ class MaterialElements(models.Model):
     def __str__(self):              # __str__ on Python 2
         return self.atomic_symbol
 
+class SamplesLayers(models.Model):
+    name = models.CharField(max_length=20)
+    length = models.DecimalField(max_digits=20,decimal_places=6)
+    sample = models.ForeignKey(Samples, null = True)
+
 class SamplesElements(models.Model):
     element_type = models.ForeignKey(MaterialElements)
-    element_length = models.DecimalField(max_digits=20,decimal_places=6)
-    sample = models.ForeignKey(Samples, null = True)
+    percentage = models.PositiveIntegerField(default=0,validators=[MinValueValidator(0)])
+    layer = models.ForeignKey(SamplesLayers, null = True)
 
     
 
