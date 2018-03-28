@@ -23,7 +23,6 @@
   </div>
   <div class="modal-body">
     <div class="row setup-content" id="step-1">
-        <div class="col-xs-12">
             <div class="col-md-12">
                 <h3> Sample details</h3>
                 {% for field in form1 %}
@@ -41,10 +40,12 @@
                             {% if forloop.first %}
                                 <thead>
                                 <tr>
-                                    {% for field in form.visible_fields %}
-                                        <th>{{ field.label|capfirst }}</th>
-                                    {% endfor %}
+                                    <th>Layer name</th>
+                                    <th>Length (mm)</th>
+                                    <th>Delete</th>
+                                    <th>Elements</th>
                                 </tr>
+                    
                                 </thead>
                             {% endif %}
                             <tr class="{% cycle row1 row2 %} formset_row">
@@ -64,17 +65,18 @@
                                     <table  class="table formset_table">
                                             {{ elements_formset.management_form }}
                                             {% for form in elements_formset.forms %}
-                                                {% if forloop.first %}
-                                                    <thead>
+                                            {% if forloop.first %}
+                                                <thead>
                                                     <tr>
-                                                        {% for field in form.visible_fields %}
-                                                            <th>{{ field.label|capfirst }}</th>
-                                                        {% endfor %}
+                                                        <th>Type</th>
+                                                        <th>Percentage(%)</th>
+                                                        <th></th>
                                                     </tr>
-                                                    </thead>
-                                                {% endif %}
+                                                </thead>
+                                            {% endif %}
                                                 <tr class="{% cycle row1 row2 %} elements_formset_row">
                                                     {% for field in form.visible_fields %}
+                                                        
                                                         <td>
                                                             {# Include the hidden fields in the form #}
                                                             {% if forloop.first %}
@@ -95,7 +97,6 @@
                     </table>
                 <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" >Next</button>
             </div>
-        </div>
     </div>
     <div class="row setup-content" id="step-2">
         <div class="col-xs-12">

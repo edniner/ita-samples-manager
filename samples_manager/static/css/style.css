@@ -17,6 +17,10 @@ h1{
 text-align: center;
 }
 
+.modal-dialog{
+    width: 50%
+}
+
 
 
 .mbr-hero__text{

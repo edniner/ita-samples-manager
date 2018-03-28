@@ -162,6 +162,8 @@ def save_sample_form(request,form1, layers_formset, elements_formset, form2, sta
                 if layers_formset.is_valid():
                     if layers_formset.cleaned_data is not None:
                         for form in layers_formset.forms:
+                            '''if elements_formset.cleaned_data is not None: TO BE DONE!!!
+                                for form in layers_formset.forms:'''
                             element = form.save()
                             element.sample = sample
                             element.save()
@@ -852,14 +854,16 @@ def sample_update(request, experiment_id, pk):
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
-        elements_formset = SamplesElementsFormset(request.POST, instance=sample)
+        layers_formset = SamplesLayersFormset(request.POST,instance=sample)
+        elements_formset = SamplesElementsFormset(request.POST,instance=sample)
     else:
         form1 = SamplesForm1(instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(instance=sample, experiment_id = experiment.id)
+        layers_formset = SamplesLayersFormset(instance=sample)
         elements_formset = SamplesElementsFormset(instance=sample)
     status = 'update'
     print('update')
-    return save_sample_form(request, form1, elements_formset, form2, status,experiment, 'samples_manager/partial_sample_update.html')
+    return save_sample_form(request, form1, layers_formset, elements_formset, form2, status,experiment, 'samples_manager/partial_sample_update.html')
 
 
 def sample_clone(request, experiment_id, pk):
@@ -869,13 +873,15 @@ def sample_clone(request, experiment_id, pk):
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
+        layers_formset = SamplesLayersFormset(request.POST)
         elements_formset = SamplesElementsFormset(request.POST)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(experiment_id = experiment.id, instance=sample)
         elements_formset = SamplesElementsFormset(instance=sample)
+        layers_formset = SamplesLayersFormset(instance=sample)
     status = 'clone'
-    return save_sample_form(request, form1, elements_formset, form2, status, experiment, 'samples_manager/partial_sample_create.html')
+    return save_sample_form(request, form1,layers_formset, elements_formset, form2, status, experiment, 'samples_manager/partial_sample_create.html')
 
 def sample_delete(request,experiment_id, pk):
     print("in delete")

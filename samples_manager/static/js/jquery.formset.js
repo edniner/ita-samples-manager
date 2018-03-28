@@ -56,27 +56,40 @@
             insertDeleteLink = function(row) {
                 var delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.'),
                     addCssSelector = $.trim(options.addCssClass).replace(/\s+/g, '.');
-                if (row.is('TR')) {
-                    // If the forms are laid out in table rows, insert
-                    // the remove button into the last table cell:
-                    row.children(':last').append('<a class="' + options.deleteCssClass +'" href="javascript:void(0)">' + options.deleteText + '</a>');
-                } else if (row.is('UL') || row.is('OL')) {
-                    // If they're laid out as an ordered/unordered list,
-                    // insert an <li> after the last list item:
-                    row.append('<li><a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a></li>');
-                } else {
-                    // Otherwise, just insert the remove button as the
-                    // last child element of the form's container:
-                    row.append('<a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a>');
-                }
-                // Check if we're under the minimum number of forms - not to display delete link at rendering
-                if (!showDeleteLinks()){
-                    row.find('a.' + delCssSelector).hide();
+                
+                if (options.prefix=='sampleslayers_set'){
+                    row.children(':nth-child(3)').append('<a class="' + options.deleteCssClass +'" href="javascript:void(0)">' + options.deleteText + '</a>');
+                }else{
+                    if (row.is('TR')) {
+                        // If the forms are laid out in table rows, insert
+                        // the remove button into the last table cell:
+                        row.children(':last').append('<a class="' + options.deleteCssClass +'" href="javascript:void(0)">' + options.deleteText + '</a>');
+                    } else if (row.is('UL') || row.is('OL')) {
+                        // If they're laid out as an ordered/unordered list,
+                        // insert an <li> after the last list item:
+                        row.append('<li><a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a></li>');
+                    } else {
+                        // Otherwise, just insert the remove button as the
+                        // last child element of the form's container:
+                        row.append('<a class="' + options.deleteCssClass + '" href="javascript:void(0)">' + options.deleteText +'</a>');
+                    }
+                    // Check if we're under the minimum number of forms - not to display delete link at rendering
+                    if (!showDeleteLinks()){
+                        row.find('a.' + delCssSelector).hide();
+                    }
                 }
 
                 row.find('a.' + delCssSelector).click(function() {
 
-                    formset_length = $('.formset_row').length;
+                        if (options.prefix=='materials_set')
+                            formset_length = $('.material_formset_row').length;
+                        else if (options.prefix=='sampleselements_set'){
+                            formset_length = $('.elements_formset_row').length;
+                            console.log("elements");
+                            console.log(formset_length);
+                            }
+                        else 
+                            formset_length = $('.formset_row').length;
                     var row = $(this).parents('.' + options.formCssClass),
                         del = row.find('input:hidden[id $= "-DELETE"]'),
                         buttonRow = row.siblings("a." + addCssSelector + ', .' + options.formCssClass + '-add'),
@@ -128,7 +141,7 @@
             if (options.prefix=='materials_set')
                 formset_length = $('.material_formset_row').length;
             else if (options.prefix=='sampleselements_set')
-                formset_length = $('.element_formset_row').length;
+                formset_length = $('.elements_formset_row').length;
             else 
                 formset_length = $('.formset_row').length;
             $('#id_' + options.prefix + '-TOTAL_FORMS').val(formset_length);

@@ -255,6 +255,9 @@ class SamplesLayersForm(ModelForm):
          model = SamplesLayers
          fields = ['id','name', 'length']
          exclude = ('sample',)
+         widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'E.g. Layer1, L1,..'}),
+         }
 
 
 class SamplesElementsForm(ModelForm):
