@@ -56,6 +56,15 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
+            name='Layers',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=20)),
+                ('length', models.DecimalField(max_digits=20, decimal_places=6)),
+                ('percentage', models.PositiveIntegerField(default=0, validators=[django.core.validators.MinValueValidator(0)])),
+            ],
+        ),
+        migrations.CreateModel(
             name='MaterialElements',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
@@ -116,7 +125,7 @@ class Migration(migrations.Migration):
                 ('current_location', models.CharField(max_length=100)),
                 ('height', models.DecimalField(max_digits=12, decimal_places=6)),
                 ('width', models.DecimalField(max_digits=12, decimal_places=6)),
-                ('weight', models.DecimalField(max_digits=12, decimal_places=6)),
+                ('weight', models.DecimalField(null=True, max_digits=12, decimal_places=6)),
                 ('comments', models.TextField()),
                 ('category', models.CharField(max_length=50)),
                 ('storage', models.CharField(max_length=50, choices=[(b'Room', b'Room temperature'), (b'Cold', b'Cold storage <20 \xc2\xb0C')])),
@@ -131,9 +140,17 @@ class Migration(migrations.Migration):
             name='SamplesElements',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('element_length', models.DecimalField(max_digits=20, decimal_places=6)),
+                ('percentage', models.PositiveIntegerField(default=0, validators=[django.core.validators.MinValueValidator(0)])),
                 ('element_type', models.ForeignKey(to='samples_manager.MaterialElements')),
-                ('sample', models.ForeignKey(to='samples_manager.Samples')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='SamplesLayers',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=20)),
+                ('length', models.DecimalField(max_digits=20, decimal_places=6)),
+                ('sample', models.ForeignKey(to='samples_manager.Samples', null=True)),
             ],
         ),
         migrations.CreateModel(
@@ -146,6 +163,11 @@ class Migration(migrations.Migration):
                 ('telephone', models.CharField(max_length=200, null=True)),
                 ('role', models.CharField(default=b'Basic User', max_length=100, null=True, choices=[(b'Owner', b'Owner'), (b'Operator', b'Operator'), (b'Cordinator', b'Cordinator'), (b'Basic', b'Basic User')])),
             ],
+        ),
+        migrations.AddField(
+            model_name='sampleselements',
+            name='layer',
+            field=models.ForeignKey(to='samples_manager.SamplesLayers', null=True),
         ),
         migrations.AddField(
             model_name='samples',
@@ -171,6 +193,16 @@ class Migration(migrations.Migration):
             model_name='samples',
             name='updated_by',
             field=models.ForeignKey(related_name='samples_updated_by', to='samples_manager.Users', null=True),
+        ),
+        migrations.AddField(
+            model_name='layers',
+            name='element_type',
+            field=models.ForeignKey(to='samples_manager.MaterialElements'),
+        ),
+        migrations.AddField(
+            model_name='layers',
+            name='sample',
+            field=models.ForeignKey(to='samples_manager.Samples', null=True),
         ),
         migrations.AddField(
             model_name='experiments',

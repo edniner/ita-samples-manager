@@ -11,8 +11,15 @@
 
 <div class='panel panel-default' id="main_panel">
     <div class="row">
-        <div class="col-sm-10">
-            <h3>Samples of irradiation experiment: {{experiment.title}}</h3>
+        <div class="col-sm-2">
+                <a  href="{% url 'samples_manager:experiments_list' %}" type="button"
+                        class="btn back"
+                        title='Back'>
+                                <span class="glyphicon glyphicon-chevron-left"></span>Back
+                </a>
+        </div>
+        <div class="col-sm-8">
+            <h3>Samples of experiment {{experiment.title}}</h3>
         </div>
         <div class="col-sm-2">
             <button type="button"
@@ -32,7 +39,7 @@
                         <th>Name/Description</th>
                         <th>Category</th>
                         <th>Requested fluence</th>
-                        <th></th><th></th><th></th><th></th>
+                        <th></th>
                         </tr>
                     </thead>
                     <tbody>

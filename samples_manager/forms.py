@@ -3,11 +3,13 @@ from django import forms
 from django.contrib.admin import widgets   
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,DateTimeInput,Textarea
-from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,SamplesLayers,SamplesElements
-from django.forms import inlineformset_factory
+from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,SamplesLayers,SamplesElements, Layers
+from django.forms.models import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
 import logging 
+import models
+from django.forms.models import BaseInlineFormSet
 
 OPTIONS = (
             ("5x5 mm²", "5x5 mm²"),
@@ -245,31 +247,72 @@ class SamplesForm2(ModelForm):
                 'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
             }
 
-class SamplesLayersForm(ModelForm):
+class LayersForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SamplesLayersForm, self).__init__(*args, **kwargs)
-        self.fields['name'].label='Layer name'
-        self.fields['length'].label='Length (mm)'
-
+        super(LayersForm, self).__init__(*args, **kwargs)
+    
     class Meta:
-         model = SamplesLayers
-         fields = ['id','name', 'length']
-         exclude = ('sample',)
-         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'E.g. Layer1, L1,..'}),
-         }
+        model = Layers
+        fields = ['id','name', 'length','element_type', 'percentage']
+        exclude = ('sample',)
 
-
-class SamplesElementsForm(ModelForm):
+'''class SamplesElementsForm(ModelForm):
+    print("SamplesElementsForm")
     def __init__(self, *args, **kwargs):
         super(SamplesElementsForm, self).__init__(*args, **kwargs)
         self.fields['element_type'].label='Material element'
-        self.fields['percentage'].label=mark_safe('Percentage of this element\nin the layer (%)')
+        print("SamplesElements init")
 
     class Meta:
          model = SamplesElements
          fields = ['id','element_type', 'percentage']
          exclude = ('layer',)
+
+print("SamplesElementsFormset out")
+
+SamplesElementsFormset = inlineformset_factory(models.SamplesLayers, models.SamplesElements, form=SamplesElementsForm, extra=1)
+
+
+class SamplesLayersForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SamplesLayersForm, self).__init__(*args, **kwargs)
+    
+    class Meta:
+        model = SamplesLayers
+        fields = ['id','name', 'length']
+        exclude = ('sample',)
+
+
+
+class BaseSamplesLayersFormset(BaseInlineFormSet):
+    print("inside")
+    def add_fields(self, form, index):
+        # allow the super class to create the fields as usual
+        super(BaseSamplesLayersFormset, self).add_fields(form, index)
+        print("BaseSamplesLayersFormset")
+
+        # created the nested formset
+        try:
+            instance = self.get_queryset()[index]
+            pk_value = instance.pk
+        except IndexError:
+            instance=None
+            pk_value = hash(form.prefix)
+            print("pk_value %s" %pk_value)
+            correct_data = None
+            if (self.data):
+               correct_data = self.data
+
+        # store the formset in the .nested property
+        form.nested = [ SamplesElementsFormset(                         
+                        instance=form.instance,
+                        data=correct_data,
+                        prefix='%s-%s' % (
+                            form.prefix,
+                            SamplesElementsFormset.get_default_prefix()))]
+        
+SamplesLayersFormset = inlineformset_factory(models.Samples, models.SamplesLayers,form=SamplesLayersForm, formset=BaseSamplesLayersFormset, extra=1)'''
+
 
 
 

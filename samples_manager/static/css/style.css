@@ -3,6 +3,7 @@ body{
 }
 a {
     color: #FFFFFF;
+    text-decoration: none;
 }
 a hover {
     color: darkorange;
@@ -18,7 +19,7 @@ text-align: center;
 }
 
 .modal-dialog{
-    width: 50%
+    width: 80%
 }
 
 
@@ -36,6 +37,7 @@ text-align: center;
 .lead{
     text-align: center;
 }
+.back{ background: #888; color: white;}
 #modal-sample h1,#modal-sample h2,#modal-sample h3,#modal-sample h4,#modal-sample p {
     color: #333333;
 }
@@ -57,7 +59,9 @@ text-align: center;
 h4{
     font-size: 26px;
 }
-
+h3{
+    text-align: center;
+}
 .formset_table  tr, .formset_table  td, .formset_table  a, .formset_table th{
     color: #333333;
 }

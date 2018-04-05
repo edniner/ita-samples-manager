@@ -17,7 +17,7 @@
             totalForms = $('#id_' + options.prefix + '-TOTAL_FORMS'),
             maxForms = $('#id_' + options.prefix + '-MAX_NUM_FORMS'),
             minForms = $('#id_' + options.prefix + '-MIN_NUM_FORMS'),
-            childElementSelector = 'input,select,textarea,label,div',
+            childElementSelector = 'input,select,textarea,label,div,tr',
             $$ = $(this),
 
             applyExtraClasses = function(row, ndx) {
@@ -57,9 +57,6 @@
                 var delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.'),
                     addCssSelector = $.trim(options.addCssClass).replace(/\s+/g, '.');
                 
-                if (options.prefix=='sampleslayers_set'){
-                    row.children(':nth-child(3)').append('<a class="' + options.deleteCssClass +'" href="javascript:void(0)">' + options.deleteText + '</a>');
-                }else{
                     if (row.is('TR')) {
                         // If the forms are laid out in table rows, insert
                         // the remove button into the last table cell:
@@ -77,7 +74,6 @@
                     if (!showDeleteLinks()){
                         row.find('a.' + delCssSelector).hide();
                     }
-                }
 
                 row.find('a.' + delCssSelector).click(function() {
 
@@ -90,6 +86,8 @@
                             }
                         else 
                             formset_length = $('.formset_row').length;
+                        console.log("formset_length")
+                        console.log(formset_length)
                     var row = $(this).parents('.' + options.formCssClass),
                         del = row.find('input:hidden[id $= "-DELETE"]'),
                         buttonRow = row.siblings("a." + addCssSelector + ', .' + options.formCssClass + '-add'),
@@ -144,6 +142,7 @@
                 formset_length = $('.elements_formset_row').length;
             else 
                 formset_length = $('.formset_row').length;
+            console.log(formset_length)
             $('#id_' + options.prefix + '-TOTAL_FORMS').val(formset_length);
             if (del.length) {
                 // If you specify "can_delete = True" when creating an inline formset,

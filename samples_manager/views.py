@@ -1,10 +1,11 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements
+from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements, Layers
 from django.template import loader
 from django.core.urlresolvers import reverse
 import datetime
-from .forms import ExperimentsForm1,ExperimentsForm2,ExperimentsForm3, UsersForm, ReqFluencesForm, MaterialsForm, PassiveStandardCategoriesForm, PassiveCustomCategoriesForm,ActiveCategoriesForm, SamplesForm1, SamplesForm2,SamplesElementsForm, SamplesLayersForm 
+from .forms import *
+#from .forms import SamplesLayersFormset, ExperimentsForm1,ExperimentsForm2,ExperimentsForm3, UsersForm, ReqFluencesForm, MaterialsForm, PassiveStandardCategoriesForm, PassiveCustomCategoriesForm,ActiveCategoriesForm, SamplesForm1, SamplesForm2,SamplesElementsForm
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.files.storage import FileSystemStorage
@@ -28,15 +29,15 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
-    email =  "blerina.gkotse@cern.ch"'''
+    email =  "blerina.gkotse@cern.ch"
 
     users = Users.objects.all()
     emails =[]
@@ -139,7 +140,7 @@ def user_details(request, user_id):
     user = get_object_or_404(Users, pk=user_id)
     return render(request, 'samples_manager/user_details.html', {'user': user})
     
-def save_sample_form(request,form1, layers_formset, elements_formset, form2, status, experiment, template_name):
+def save_sample_form(request,form1, layers_formset, form2, status, experiment, template_name):
     data = dict()
     logged_user = get_logged_user(request)
     print("in save")
@@ -162,12 +163,9 @@ def save_sample_form(request,form1, layers_formset, elements_formset, form2, sta
                 if layers_formset.is_valid():
                     if layers_formset.cleaned_data is not None:
                         for form in layers_formset.forms:
-                            '''if elements_formset.cleaned_data is not None: TO BE DONE!!!
-                                for form in layers_formset.forms:'''
-                            element = form.save()
-                            element.sample = sample
-                            element.save()
-                print ("saved")
+                            layer = form.save()
+                            layer.sample = sample
+                            layer = save   
                 data['state'] = "Created"
             elif status == 'update': 
                 sample_updated = form1.save()
@@ -194,7 +192,8 @@ def save_sample_form(request,form1, layers_formset, elements_formset, form2, sta
             data['form_is_valid'] = False
             logging.warning('Sample data invalid')
     print("before context")
-    context = {'form1': form1,'form2': form2,'layers_formset': layers_formset,'elements_formset': elements_formset,'experiment':experiment}
+    print(layers_formset.as_table)
+    context = {'form1': form1,'form2': form2,'layers_formset': layers_formset,'experiment':experiment}
     print(context)
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
@@ -384,7 +383,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     print("no category")
                 
                 if fluence_formset.is_valid():
-                    print( fluence_formset)
                     if fluence_formset.cleaned_data is not None:
                         for form in fluence_formset.forms:
                             fluence = form.save()
@@ -829,57 +827,43 @@ def user_delete(request,experiment_id,pk):
     return JsonResponse(data)
     
 def sample_new(request, experiment_id):
-    SamplesLayersFormset = inlineformset_factory( Samples, SamplesLayers, form=SamplesLayersForm, extra=1)
-    SamplesElementsFormset = inlineformset_factory( SamplesLayers, SamplesElements, form=SamplesElementsForm, extra=1)
     experiment = Experiments.objects.get(pk = experiment_id)
+    LayersFormset = inlineformset_factory(models.Samples, models.Layers,form=LayersForm,extra=1)
     print(experiment)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
-        layers_formset = SamplesLayersFormset(request.POST)
-        elements_formset = SamplesElementsFormset(request.POST)
+        layers_formset = LayersFormset(request.POST)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id)
-        layers_formset = SamplesLayersFormset()
-        elements_formset = SamplesElementsFormset()
+        layers_formset = LayersFormset()
         form2 = SamplesForm2(experiment_id = experiment.id)
     status = 'new'
-    return save_sample_form(request,form1, layers_formset, elements_formset, form2,status,experiment,'samples_manager/partial_sample_create.html')
+    return save_sample_form(request,form1, layers_formset, form2,status,experiment,'samples_manager/partial_sample_create.html')
 
 
 def sample_update(request, experiment_id, pk):
-    SamplesElementsFormset = inlineformset_factory( Samples, SamplesElements, form=SamplesElementsForm, extra=1)
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
-        layers_formset = SamplesLayersFormset(request.POST,instance=sample)
-        elements_formset = SamplesElementsFormset(request.POST,instance=sample)
-    else:
         form1 = SamplesForm1(instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(instance=sample, experiment_id = experiment.id)
-        layers_formset = SamplesLayersFormset(instance=sample)
-        elements_formset = SamplesElementsFormset(instance=sample)
     status = 'update'
     print('update')
     return save_sample_form(request, form1, layers_formset, elements_formset, form2, status,experiment, 'samples_manager/partial_sample_update.html')
 
 
 def sample_clone(request, experiment_id, pk):
-    SamplesElementsFormset = inlineformset_factory( Samples, SamplesElements, form=SamplesElementsForm, extra=1)
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
-        layers_formset = SamplesLayersFormset(request.POST)
-        elements_formset = SamplesElementsFormset(request.POST)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(experiment_id = experiment.id, instance=sample)
-        elements_formset = SamplesElementsFormset(instance=sample)
-        layers_formset = SamplesLayersFormset(instance=sample)
     status = 'clone'
     return save_sample_form(request, form1,layers_formset, elements_formset, form2, status, experiment, 'samples_manager/partial_sample_create.html')
 
