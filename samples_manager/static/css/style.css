@@ -15,15 +15,18 @@ table th,table td{
     text-align: center;
 }
 table.table.formset_table th, table.table.formset_table td{
-    text-align: left;
+    width: 20%;
 }
 
+tr.formset_row.row.dynamic-form input{
+    width:100%;
+}
 h1{
 text-align: center;
 }
 
 .modal-dialog{
-    width: 75%
+    width: 50%
 }
 
 

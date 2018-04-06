@@ -46,20 +46,9 @@
     <div class="row setup-content" id="step-2">
         <div class="col-xs-12">
             <div class="col-md-12">
-            <h3>Samples characteristics</h3>
-             {% for field in form2 %}
-                    <div class="form-group{% if field.errors %} has-error{% endif %}">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {% render_field field class="form-control" %}
-                {% for error in field.errors %}
-                    <span class="help-block">{{error }}</span>
-                {% endfor %}
-                    </div>
-                {% endfor %}
-
-            <div id = "passive_standard_category" style="display:none">
-                    <p>Irradiation area:</p>
-                    {% for field in passive_standard_categories_form %}
+            <div class="row">
+                <h3>Samples characteristics</h3>
+                {% for field in form2 %}
                         <div class="form-group{% if field.errors %} has-error{% endif %}">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {% render_field field class="form-control" %}
@@ -68,29 +57,43 @@
                     {% endfor %}
                         </div>
                     {% endfor %}
+                <div id = "passive_standard_category" style="display:none">
+                        <p>Irradiation area:</p>
+                        {% for field in passive_standard_categories_form %}
+                            <div class="form-group{% if field.errors %} has-error{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% render_field field class="form-control" %}
+                        {% for error in field.errors %}
+                            <span class="help-block">{{error }}</span>
+                        {% endfor %}
+                            </div>
+                        {% endfor %}
+                </div>
+                <div id = "passive_custom_category" style="display:none">
+                        {% for field in passive_custom_categories_form %}
+                            <div class="form-group{% if field.errors %} has-error{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% render_field field class="form-control" %}
+                        {% for error in field.errors %}
+                            <span class="help-block">{{error }}</span>
+                        {% endfor %}
+                            </div>
+                        {% endfor %}
+                </div>
+                <div id = "active_category"  style="display:none">
+                        {% for field in active_categories_form %}
+                            <div class="form-group{% if field.errors %} has-error{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% render_field field class="form-control" %}
+                        {% for error in field.errors %}
+                            <span class="help-block">{{error }}</span>
+                        {% endfor %}
+                            </div>
+                        {% endfor %}
+                </div>
             </div>
-            <div id = "passive_custom_category" style="display:none">
-                    {% for field in passive_custom_categories_form %}
-                        <div class="form-group{% if field.errors %} has-error{% endif %}">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {% render_field field class="form-control" %}
-                    {% for error in field.errors %}
-                        <span class="help-block">{{error }}</span>
-                    {% endfor %}
-                        </div>
-                    {% endfor %}
-            </div>
-            <div id = "active_category"  style="display:none">
-                    {% for field in active_categories_form %}
-                        <div class="form-group{% if field.errors %} has-error{% endif %}">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {% render_field field class="form-control" %}
-                    {% for error in field.errors %}
-                        <span class="help-block">{{error }}</span>
-                    {% endfor %}
-                        </div>
-                    {% endfor %}
-            </div>
+            <div class="row">
+                <div class="col-md-6">
                 <table  class="table formset_table">
                         {{ fluence_formset.management_form }}
                         {% for form in fluence_formset.forms %}
@@ -119,6 +122,8 @@
                             </tr>
                         {% endfor %}
                     </table>
+                </div>
+                <div class="col-md-6">
                     <table  class="table formset_table">
                         {{ material_formset.management_form }}
                         {% for form in material_formset.forms %}
@@ -147,6 +152,8 @@
                             </tr>
                         {% endfor %}
                     </table>
+                 </div>
+            </div>
     <button class="btn prevBtn btn-lg pull-left back" type="button"><span class="glyphicon glyphicon-chevron-left"></span>Back</button>
     <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next<span class="glyphicon glyphicon-chevron-right"></span></button>
             </div>

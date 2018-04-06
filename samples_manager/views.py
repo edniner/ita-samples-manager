@@ -38,7 +38,8 @@ def get_logged_user(request):
     firstname =  "Blerina"
     lastname = "Gkotse"
     email =  "blerina.gkotse@cern.ch"
-'''
+    '''
+
     users = Users.objects.all()
     emails =[]
     for item in users:
@@ -161,13 +162,10 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 sample.save()
                 print ("sample saved")
                 if layers_formset.is_valid():
-                    print (layers_formset.cleaned_data)
                     if layers_formset.cleaned_data is not None:
                         for form in layers_formset.forms:
                             layer = form.save()
-                            print(layer)
                             layer.sample = sample
-                            print(layer.sample)
                             layer.save()   
                 data['state'] = "Created"
             elif status == 'update': 

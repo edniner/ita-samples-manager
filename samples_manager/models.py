@@ -208,9 +208,9 @@ class Samples(models.Model):
     set_id = models.CharField(max_length=50, null = True,  unique = True)
     description = models.CharField(max_length=200, unique = True)
     current_location = models.CharField(max_length=100)
-    height = models.DecimalField(max_digits=12,decimal_places=6)
-    width = models.DecimalField(max_digits=12,decimal_places=6)
-    weight = models.DecimalField(max_digits=12,decimal_places=6, null=True)
+    height = models.DecimalField(max_digits=12,decimal_places=3)
+    width = models.DecimalField(max_digits=12,decimal_places=3)
+    weight = models.DecimalField(max_digits=12,decimal_places=3, null=True)
     comments = models.TextField()
     req_fluence =  models.ForeignKey(ReqFluences)
     material = models.ForeignKey(Materials)
@@ -262,12 +262,12 @@ class SamplesElements(models.Model):
     percentage = models.PositiveIntegerField(default=0,validators=[MinValueValidator(0)])
     layer = models.ForeignKey(SamplesLayers, null = True)
 
-
 class Layers(models.Model):
     name = models.CharField(max_length=20)
-    length = models.DecimalField(max_digits=20,decimal_places=6)
+    length = models.DecimalField(max_digits=20,decimal_places=3)
     element_type = models.ForeignKey(MaterialElements)
-    percentage = models.PositiveIntegerField(default=0,validators=[MinValueValidator(0)])
+    density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
+    percentage = models.DecimalField(max_digits=4,decimal_places=1)
     sample = models.ForeignKey(Samples, null = True)
     
 

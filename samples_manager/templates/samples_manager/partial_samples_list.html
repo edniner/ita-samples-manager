@@ -1,6 +1,11 @@
 {% for sample in samples %}
   <tr>
-    <td>{{ sample.updated_at }}</td>
+    {%if sample.set_id %}
+    <td>{{sample.set_id}}</td>
+    {%else %}
+    <td>Not allocated yet</td>
+    {%endif%}
+    <td>{{ sample.updated_at|date:"d.m.Y"}} {{ sample.updated_at|time:"H:i"}}</td>
     <td>{{ sample.description }}</td>
     <td>{{ sample.category}}</td>
     <td>{{ sample.req_fluence}}</td>

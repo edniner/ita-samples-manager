@@ -47,7 +47,7 @@
               <h3>Sample layers details</h3>
               <div class="row">
                 <div class="col-md-12" style="text-align: center" >
-                    <img src={% static 'images/layers.png' %} alt="Layer" width="60%" height="40%">
+                    <img src={% static 'images/layers.png' %} alt="Layer" width="50%">
                 </div>
               </div>
             <div class="row">
@@ -56,17 +56,17 @@
                         {{ layers_formset.management_form }}
                         {% for form in layers_formset.forms %}
                             {% if forloop.first %}
-                                <thead>
-                                <tr>
+                                <thead class="row">
+                                <tr class="row">
                                     {% for field in form.visible_fields %}
-                                        <th>{{ field.label|capfirst }}</th>
+                                        <th class="col-md-2">{{ field.label|capfirst }}</th>
                                     {% endfor %}
                                 </tr>
                                 </thead>
                             {% endif %}
-                            <tr class="{% cycle row1 row2 %} formset_row">
+                            <tr class="{% cycle row1 row2 %} formset_row row">
                                 {% for field in form.visible_fields %}
-                                    <td>
+                                    <td class="col-md-2">
                                         {# Include the hidden fields in the form #}
                                         {% if forloop.first %}
                                             {% for hidden in form.hidden_fields %}

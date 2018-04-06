@@ -90,7 +90,9 @@
                         </div>
                     {% endfor %}
             </div>
-            <table  class="table formset_table">
+            <div class="row">
+                <div class="col-md-6">
+                <table  class="table formset_table">
                         {{ fluence_formset.management_form }}
                         {% for form in fluence_formset.forms %}
                             {% if forloop.first %}
@@ -118,6 +120,8 @@
                             </tr>
                         {% endfor %}
                     </table>
+                </div>
+                <div class="col-md-6">
                     <table  class="table formset_table">
                         {{ material_formset.management_form }}
                         {% for form in material_formset.forms %}
@@ -146,6 +150,8 @@
                             </tr>
                         {% endfor %}
                     </table>
+                 </div>
+            </div>
                 <button class="btn prevBtn btn-lg pull-left back" type="button"><span class="glyphicon glyphicon-chevron-left"></span>Back</button>
                 <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next<span class="glyphicon glyphicon-chevron-right"></span></button>
             </div>

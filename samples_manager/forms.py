@@ -133,13 +133,13 @@ class UsersForm(ModelForm):
 class ReqFluencesForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ReqFluencesForm, self).__init__(*args, **kwargs)
-        self.fields['req_fluence'].label=mark_safe('Requested fluence *<br>(protons/cm²)')
+        self.fields['req_fluence'].label=mark_safe('Requested fluence * (protons/cm²)')
 
     class Meta:
         model = ReqFluences
         fields = ['id','req_fluence']
         widgets = {
-            'req_fluence':  forms.TextInput(attrs={'placeholder': 'e.g. 2E14 '})
+            'req_fluence':  forms.NumberInput(),
         }
         exclude = ('experiment',)
 
@@ -147,7 +147,7 @@ class ReqFluencesForm(ModelForm):
 class MaterialsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(MaterialsForm, self).__init__(*args, **kwargs)
-        self.fields['material'].label='Types of sample *'
+        self.fields['material'].label=mark_safe(' <br>Types of samples *')
 
     class Meta:
         model = Materials
@@ -247,17 +247,16 @@ class LayersForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(LayersForm, self).__init__(*args, **kwargs)
         self.fields['name'].label= 'Name *'
-        self.fields['length'].label= 'Length *'
-        self.fields['length'].label= 'Length *'
+        self.fields['length'].label= 'Length (mm) *'
         self.fields['element_type'].label= 'Element name *'
-        self.fields['percentage'].label= mark_safe('Element percentage (%) *')
+        self.fields['percentage'].label= mark_safe('Fraction by weight (%) *')
     
     class Meta:
         model = Layers
-        fields = ['id','name', 'length','element_type', 'percentage']
+        fields = ['id','name', 'length','element_type', 'percentage','density']
         exclude = ('sample',)
         widgets = {
-                'name':  forms.TextInput(attrs={'placeholder': 'e.g. L1, Layer 1, 1st Layer'}),
+                'name':  forms.TextInput(attrs={'placeholder': 'e.g. L1, 1st Layer'}),
                 'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
             }
 
