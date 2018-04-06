@@ -5,7 +5,7 @@
     <td>{{ experiment.experiment.availability|date:"d.m.Y"}}</td>
     <td>{{ experiment.number_samples}}/{{ experiment.experiment.number_samples }}</td>
     <td>{{ experiment.experiment.users.count }}</td>
-    <td>{{ experiment.experiment.responsible.name}} {{ experiment.experiment.responsible.surname}} </td>
+    <td>{{ experiment.experiment.responsible.name}} {{experiment.experiment.responsible.surname}}</td>
     <td>{{ experiment.experiment.status }}</td>
     <td>
       <button type="button"
@@ -14,8 +14,6 @@
               data-url="{% url 'samples_manager:experiment_validate' experiment.experiment.id %}">
              <span class="glyphicon glyphicon-ok"></span>
       </button>
-      </td>
-      <td>
         <a href="{% url 'samples_manager:experiment_users_list' experiment.experiment.id  %}">
             <button type="button"
                   class="btn btn-info "
@@ -23,17 +21,13 @@
                 <span class="glyphicon glyphicon-user"></span>
           </button>
         </a>
-      </td>
-      <td>
           <a href="{% url 'samples_manager:experiment_samples_list' experiment.experiment.id  %}">     
             <button type="button"
                     class="btn btn-primary"
                     title='Add samples'>
                     <span class="glyphicon glyphicon-book"></span>
-            </button
+            </button>
           </a>
-        </td>
-        <td>
         <div class="dropdown">
           <button type="button"
                   class="btn dropdown-toggle"
