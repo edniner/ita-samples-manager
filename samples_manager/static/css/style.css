@@ -14,11 +14,15 @@ h1,h2,h3,h4,li,p,table th, table td {
 table th,table td{
     text-align: center;
 }
-table.table.formset_table th, table.table.formset_table td{
-    width: 20%;
+
+tr.formset_row.row.dynamic-form {
+    margin-right:1% 
 }
 
-tr.formset_row.row.dynamic-form input{
+tr.formset_row.dynamic-form input{
+    width:100%;
+}
+tr.material_formset_row.dynamic-form input{
     width:100%;
 }
 h1{
@@ -29,7 +33,13 @@ text-align: center;
     width: 50%
 }
 
-
+i.info-i.glyphicon.glyphicon-info-sign{
+        font: 100%;
+}
+button.btn.btn-primary.btn-circle.info{
+    width: 20px;
+    height: 20px;
+}
 
 .mbr-hero__text{
     font-size: 60px;
@@ -78,7 +88,7 @@ h3{
     font-size: medium;
     text-align: center;
     display: inline-block;
-    margin: 0.5% 8% 2% 8%;
+    margin: 0.5% 0% 2% 0%;
 }
 #passive_standard_category p {
     font-size: 15px;

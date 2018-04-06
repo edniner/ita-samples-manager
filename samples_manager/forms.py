@@ -78,7 +78,7 @@ class ExperimentsForm3(forms.ModelForm):
         super(ExperimentsForm3, self).__init__(*args, **kwargs)
         self.fields['comments'].required = False
         self.fields['regulations_flag'].required = True
-        self.fields['regulations_flag'].label=mark_safe('<a target="_blank" style="color:black; text-decoration: underline;" href="/samples_manager/regulations/">Please, accept terms and conditions * </a>')
+        self.fields['regulations_flag'].label=mark_safe('<a target="_blank" style="color:black; text-decoration: underline;" href="/samples_manager/regulations/">Please, accept terms and conditions *</a> <a target="_blank" href="/samples_manager/regulations/"><button type="button" class="info btn btn-primary btn-circle" title="Terms and Conditions"><i class=" glyphicon glyphicon-info-sign" style="font-size: 100%; margin-top:-5px"></i></button></a>')
     class Meta:
         model = Experiments
         exclude = ('title','description','responsible','cern_experiment''availability','constraints','category','number_samples','irradiation_type')
@@ -147,7 +147,7 @@ class ReqFluencesForm(ModelForm):
 class MaterialsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(MaterialsForm, self).__init__(*args, **kwargs)
-        self.fields['material'].label=mark_safe(' <br>Types of samples *')
+        self.fields['material'].label=mark_safe('Types of samples *')
 
     class Meta:
         model = Materials

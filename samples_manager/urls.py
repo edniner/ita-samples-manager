@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^experiment/(?P<experiment_id>\d+)/user/(?P<pk>\d+)/update/$', views.user_update, name='user_update'),
     url(r'^experiment/(?P<experiment_id>\d+)/user/(?P<pk>\d+)/delete/$', views.user_delete, name='user_delete'),
     url(r'^regulations/$',views.regulations, name='regulations'),
+    url(r'^fluence_conversion/$',views.fluence_conversion, name='fluence_conversion'),
     url(r'^experiment/(?P<experiment_id>\d+)/samples/$', views.experiment_samples_list, name='experiment_samples_list'),
     url(r'^experiment/(?P<experiment_id>\d+)/sample/new/$', views.sample_new, name='sample_new'),
     url(r'^experiment/(?P<experiment_id>\d+)/sample/(?P<pk>\d+)/update/$', views.sample_update, name='sample_update'),

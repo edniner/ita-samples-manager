@@ -90,18 +90,20 @@
                         </div>
                     {% endfor %}
             </div>
-            <table  class="table formset_table">
+            <div class="row">
+                <div class="col-md-6">
+                <table  class="table formset_table">
                         {{ fluence_formset.management_form }}
                         {% for form in fluence_formset.forms %}
-                            {% if forloop.first %}
+                        {% if forloop.first %}
                                 <thead>
                                 <tr>
-                                    {% for field in form.visible_fields %}
-                                        <th>{{ field.label|capfirst }}</th>
-                                    {% endfor %}
+                                    <th>Requested fluence * (<a style="color: #333; text-decoration:underline" title="Conversion to protons/cm²" href="{% url 'samples_manager:fluence_conversion' %}"> protons/cm²</a>)
+                                    <a href="{% url 'samples_manager:fluence_conversion' %}"><button type="button" class="info btn btn-primary btn-circle" title="Conversion to protons/cm²"><i class=" glyphicon glyphicon-info-sign" style="font-size: 100%; margin-top:-5px"></i></button></a></th>
+                                    <th>Delete</th>
                                 </tr>
                                 </thead>
-                            {% endif %}
+                        {% endif %}
                             <tr class="{% cycle row1 row2 %} formset_row">
                                 {% for field in form.visible_fields %}
                                     <td>
@@ -118,6 +120,8 @@
                             </tr>
                         {% endfor %}
                     </table>
+                </div>
+                <div class="col-md-6">
                     <table  class="table formset_table">
                         {{ material_formset.management_form }}
                         {% for form in material_formset.forms %}
@@ -146,9 +150,10 @@
                             </tr>
                         {% endfor %}
                     </table>
-                <button class="btn prevBtn btn-lg pull-left back" type="button"><span class="glyphicon glyphicon-chevron-left"></span>Back</button>
-                <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next<span class="glyphicon glyphicon-chevron-right"></span></button>
+                 </div>
             </div>
+    <button class="btn prevBtn btn-lg pull-left back" type="button"><span class="glyphicon glyphicon-chevron-left"></span>Back</button>
+    <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next<span class="glyphicon glyphicon-chevron-right"></span></button>
             </div>
         </div>
     </div>
@@ -166,7 +171,7 @@
                             </div>
                         {% endfor %}
                     <button class="btn prevBtn btn-lg pull-left back" type="button"><span class="glyphicon glyphicon-chevron-left"></span>Back</button>
-                    <button class="btn btn-success btn-lg pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span>Save</button>
+                    <button class="btn btn-success btn-lg pull-right" type="submit">Save <span class="glyphicon glyphicon-save"></span></button>
                 </div>
             </div>
         </div>
@@ -220,13 +225,13 @@
 
     });
         $('.formset_row').formset({
-            addText: 'Add fluence',
-            deleteText: 'remove',
+            addText: 'Add',
+            deleteText: '×',
             prefix: 'reqfluences_set'
         });
         $('.material_formset_row').formset({
             addText: 'Add',
-            deleteText: 'remove',
+            deleteText: '×',
             prefix: 'materials_set'
         });
     $( function() {

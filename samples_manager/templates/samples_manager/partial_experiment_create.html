@@ -57,10 +57,10 @@
                     {% endfor %}
                         </div>
                     {% endfor %}
-                <div id = "passive_standard_category" style="display:none">
+                <div id = "passive_standard_category" style="display:none" class="row">
                         <p>Irradiation area:</p>
                         {% for field in passive_standard_categories_form %}
-                            <div class="form-group{% if field.errors %} has-error{% endif %}">
+                            <div class="col-md-4 form-group{% if field.errors %} has-error{% endif %}">
                             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {% render_field field class="form-control" %}
                         {% for error in field.errors %}
@@ -97,15 +97,15 @@
                 <table  class="table formset_table">
                         {{ fluence_formset.management_form }}
                         {% for form in fluence_formset.forms %}
-                            {% if forloop.first %}
+                        {% if forloop.first %}
                                 <thead>
                                 <tr>
-                                    {% for field in form.visible_fields %}
-                                        <th>{{ field.label|capfirst }}</th>
-                                    {% endfor %}
+                                    <th>Requested fluence * (<a style="color: #333; text-decoration:underline" title="Conversion to protons/cm²" href="{% url 'samples_manager:fluence_conversion' %}"> protons/cm²</a>)
+                                    <a href="{% url 'samples_manager:fluence_conversion' %}"><button type="button" class="info btn btn-primary btn-circle" title="Conversion to protons/cm²"><i class=" glyphicon glyphicon-info-sign" style="font-size: 100%; margin-top:-5px"></i></button></a></th>
+                                    <th>Delete</th>
                                 </tr>
                                 </thead>
-                            {% endif %}
+                         {% endif %}
                             <tr class="{% cycle row1 row2 %} formset_row">
                                 {% for field in form.visible_fields %}
                                     <td>
@@ -204,13 +204,13 @@
         }
     });
         $('.formset_row').formset({
-            addText: 'Add fluence',
-            deleteText: 'remove',
+            addText: 'Add',
+            deleteText: '×',
             prefix: 'reqfluences_set'
         });
         $('.material_formset_row').formset({
             addText: 'Add',
-            deleteText: 'remove',
+            deleteText: '×',
             prefix: 'materials_set'
         });
     $( function() {

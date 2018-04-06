@@ -1,0 +1,32 @@
+{% extends 'samples_manager/base.html' %}
+
+{% block content %}
+<div class='panel panel-default' id="main_panel">
+    <div class="row">
+       <h2><strong>Fluence and dose conversions<strong></h2>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-md-4">  
+            <h3 style="text-align: center">Proton vs. 1MeV neutron equivalent fluence</h3>
+            <p  style="text-align: justify">
+                The equivalent 1 MeV neutron fluence Φ<sub>eq</sub> can be calculated multiplying the proton fluence (Φ<sub>p</sub>) by the hardness factor k: <br>
+                <p style="text-align: center; font-size: 150%"><bold>Φ<sub>eq</sub> = k ×  Φ<sub>p</sub> [cm<sup>-2</sup>] </bold></p>
+               <p style="text-align: justify"> For a 24 GeV/c proton beam (IRRAD) k = 0.58 (best estimate from experimental measurements: <a href="https://cds.cern.ch/record/2162852" style=" text-decoration: underline;"> https://cds.cern.ch/record/2162852 </a>
+            </p>
+        </div>
+        <div class="col-md-4">  
+            <h3 style="text-align: center">Proton fluence vs. Total Ionising Dose</h3>
+            <p style="text-align: justify">
+                Proton of momentum 	&ge;GeV/c and pions &ge;300 MeV/c deposit energy at a rate of ~2 MeV·cm<sup>2</sup>/g in practically all target materials (minimum ionizing energy loss rate). Under these conditions (valid for the CERN PS protons of IRRAD and positive pions at PSI) a good estimation of the absorbed dose [Gy] can be done using: </p>
+                <p style="text-align: center; font-size: 150%">Dose [Gy] = 1.602 × 10<sup>-10</sup> × (dE/dx)<sub>min</sub> [MeV·cm<sup>2</sup>/g] × Φ<sub>p</sub>[cm<sup>-2</sup>]</p>
+                <p style="text-align: justify">Where Φp is the proton (or pion) fluence [cm-2] and (dE/dx)min are the values listed in this table [MeV·cm2/g] for various materials and compounds. </p>
+            </p>
+        </div>
+        <div class="col-md-4">  
+            <h3 style="text-align: center">TID (Gy) vs. TID (rad)</h3>
+            <p style="text-align: justify">Please, find an online converter in this link: <br> <a href="https://www.unitconverters.net/radiation-absorbed-dose/gray-to-rad.htm" style=" text-decoration: underline;">https://www.unitconverters.net/radiation-absorbed-dose/gray-to-rad.htm</a></p>
+        </div>
+      </div>
+</div>
+{% endblock %}

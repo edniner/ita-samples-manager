@@ -39,6 +39,7 @@ def get_logged_user(request):
     lastname = "Gkotse"
     email =  "blerina.gkotse@cern.ch"
     '''
+    
 
     users = Users.objects.all()
     emails =[]
@@ -77,6 +78,10 @@ def view_user(request):
 def regulations(request):
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user})
+
+def fluence_conversion(request):
+    logged_user = get_logged_user(request)
+    return render(request, 'samples_manager/fluence_conversion.html', {'logged_user': logged_user})
 
 def all_experiments_list(request):
     experiments = Experiments.objects.order_by('-updated_at')
@@ -513,7 +518,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['html_experiment_list'] = render_to_string('samples_manager/partial_admin_experiments_list.html', {
                             'experiments': experiments,
                         })
-                message='Your experiment with title "%s" was validated. \n Please, find all your experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/'% experiment.title
+                message='Your experiment with title "%s" was validated. \nYou can now add samples and additional users related to your irradiation experiment.\nPlease, find all your experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/'% experiment.title
                 send_mail_notification('Experiment: %s validation' % experiment.title,message,'irrad.ps@cern.ch',experiment.responsible.email)
                 message2irrad='You validated the experiment with title: %s' % experiment.title
                 send_mail_notification('Experiment: %s validation' % experiment.title,message2irrad,'irrad.ps@cern.ch','irrad.ps@cern.ch')
