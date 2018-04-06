@@ -27,9 +27,6 @@ PARTICLES = (
             ("Protons", "Protons"),
             ("Heavy ions", "Heavy ions"),
             ("Pions", "Pions"),
-            ("Neutrons", "Neutrons"),
-            ("Electrons", "Electrons"),
-            ("Other", "Other"),
             )
 
 
@@ -211,13 +208,13 @@ class SamplesForm1(ModelForm):
     def __init__(self, *args, **kwargs):
         self.experiment_id = kwargs.pop('experiment_id')
         super(SamplesForm1, self).__init__(*args, **kwargs)
-        self.fields['description'].label= 'Name *'
+        self.fields['description'].label= 'Sample Name *'
         self.fields['height'].label= 'Height (mm) *'
         self.fields['width'].label= 'Width (mm) *'
         self.fields['weight'].label= 'Weight (kg) '
         self.fields['weight'].required = False
-        self.fields['material'].label= 'Samples type *'
         self.fields['material'] = forms.ModelChoiceField(queryset=get_materials(self.experiment_id))
+        self.fields['material'].label= 'Type of samples *'
     class Meta:
             model = Samples
             exclude = ('comments','req_fluence','category','current_location')
@@ -250,11 +247,20 @@ class SamplesForm2(ModelForm):
 class LayersForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(LayersForm, self).__init__(*args, **kwargs)
+        self.fields['name'].label= 'Name *'
+        self.fields['length'].label= 'Length *'
+        self.fields['length'].label= 'Length *'
+        self.fields['element_type'].label= 'Element name *'
+        self.fields['percentage'].label= mark_safe('Element percentage (%) *')
     
     class Meta:
         model = Layers
         fields = ['id','name', 'length','element_type', 'percentage']
         exclude = ('sample',)
+        widgets = {
+                'name':  forms.TextInput(attrs={'placeholder': 'e.g. L1, Layer 1, 1st Layer'}),
+                'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
+            }
 
 '''class SamplesElementsForm(ModelForm):
     print("SamplesElementsForm")

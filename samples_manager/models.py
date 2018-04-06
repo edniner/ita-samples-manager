@@ -250,7 +250,7 @@ class MaterialElements(models.Model):
     radiation_length = models.DecimalField(max_digits=4,decimal_places=2)
 
     def __str__(self):              # __str__ on Python 2
-        return self.atomic_symbol 
+        return  str(self.atomic_symbol)+ "("+ str(self.atomic_number) +")"
 
 class SamplesLayers(models.Model):
     name = models.CharField(max_length=20)

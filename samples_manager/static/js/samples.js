@@ -24,6 +24,12 @@ var loadForm = function () {
       dataType: 'json',
       success: function (data) {
         if (data.form_is_valid) {
+          if(data['state']=='Created')
+            alert("Your sample was successfully saved!")
+          else if (data['state']=='Updated')
+            alert("Your sample was successfully updated!")
+          else if (data['state']=='Deleted')
+            alert("The sample was deleted!")
           $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
           $("#modal-sample").modal("hide");  // <-- Close the modal
             /*if(data.experiment_id != -1)

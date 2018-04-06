@@ -161,11 +161,14 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 sample.save()
                 print ("sample saved")
                 if layers_formset.is_valid():
+                    print (layers_formset.cleaned_data)
                     if layers_formset.cleaned_data is not None:
                         for form in layers_formset.forms:
                             layer = form.save()
+                            print(layer)
                             layer.sample = sample
-                            layer = save   
+                            print(layer.sample)
+                            layer.save()   
                 data['state'] = "Created"
             elif status == 'update': 
                 sample_updated = form1.save()
@@ -182,6 +185,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 sample_updated.save()
                 if layers_formset.is_valid():
                     layers_formset.save()
+                data['state'] = "Updated"
             data['form_is_valid'] = True
             samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
             data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
@@ -191,10 +195,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
         else:
             data['form_is_valid'] = False
             logging.warning('Sample data invalid')
-    print("before context")
-    print(layers_formset.as_table)
     context = {'form1': form1,'form2': form2,'layers_formset': layers_formset,'experiment':experiment}
-    print(context)
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
@@ -845,27 +846,34 @@ def sample_new(request, experiment_id):
 def sample_update(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
+    LayersFormset = inlineformset_factory(models.Samples, models.Layers,form=LayersForm,extra=1)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
+        layers_formset = LayersFormset(request.POST, instance=sample)
+    else:
         form1 = SamplesForm1(instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(instance=sample, experiment_id = experiment.id)
+        layers_formset = LayersFormset(instance=sample)
     status = 'update'
     print('update')
-    return save_sample_form(request, form1, layers_formset, elements_formset, form2, status,experiment, 'samples_manager/partial_sample_update.html')
+    return save_sample_form(request, form1, layers_formset, form2, status,experiment, 'samples_manager/partial_sample_update.html')
 
 
 def sample_clone(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
+    LayersFormset = inlineformset_factory(models.Samples, models.Layers,form=LayersForm,extra=1)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
+        layers_formset = LayersFormset(request.POST)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(experiment_id = experiment.id, instance=sample)
+        layers_formset = LayersFormset(instance=sample)
     status = 'clone'
-    return save_sample_form(request, form1,layers_formset, elements_formset, form2, status, experiment, 'samples_manager/partial_sample_create.html')
+    return save_sample_form(request, form1,layers_formset, form2, status, experiment, 'samples_manager/partial_sample_create.html')
 
 def sample_delete(request,experiment_id, pk):
     print("in delete")
