@@ -37,8 +37,8 @@ def get_logged_user(request):
     '''username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
-    email =  "blerina.gkotse@cern.ch"'''
-
+    email =  "blerina.gkotse@cern.ch"
+'''
     users = Users.objects.all()
     emails =[]
     for item in users:
@@ -829,7 +829,7 @@ def user_delete(request,experiment_id,pk):
     
 def sample_new(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
-    LayersFormset = inlineformset_factory(models.Samples, models.Layers,form=LayersForm,extra=1)
+    LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=1)
     print(experiment)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
@@ -846,7 +846,7 @@ def sample_new(request, experiment_id):
 def sample_update(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
-    LayersFormset = inlineformset_factory(models.Samples, models.Layers,form=LayersForm,extra=1)
+    LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=1)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
@@ -863,7 +863,7 @@ def sample_update(request, experiment_id, pk):
 def sample_clone(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
-    LayersFormset = inlineformset_factory(models.Samples, models.Layers,form=LayersForm,extra=1)
+    LayersFormset = inlineformset_factory(Samples,Layers,form=LayersForm,extra=1)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
