@@ -8,7 +8,6 @@ from django.forms.models import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
 import logging 
-import models
 from django.forms.models import BaseInlineFormSet
 
 OPTIONS = (
