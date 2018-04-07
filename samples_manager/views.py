@@ -29,16 +29,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     email =  "blerina.gkotse@cern.ch"
-    '''
+    
     
 
     users = Users.objects.all()
@@ -152,7 +152,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
     print("in save")
     if request.method == 'POST':
         print("post")
-        if form1.is_valid() and form2.is_valid():
+        if form1.is_valid() and form2.is_valid() and layers_formset.is_valid():
             if status == 'new':
                 print("new")
                 sample_data = {}
@@ -167,7 +167,9 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 sample.save()
                 print ("sample saved")
                 if layers_formset.is_valid():
+                    print(layers_formset)
                     if layers_formset.cleaned_data is not None:
+                        print(layers_formset.cleaned_data)
                         for form in layers_formset.forms:
                             layer = form.save()
                             layer.sample = sample
@@ -879,7 +881,6 @@ def sample_clone(request, experiment_id, pk):
     return save_sample_form(request, form1,layers_formset, form2, status, experiment, 'samples_manager/partial_sample_create.html')
 
 def sample_delete(request,experiment_id, pk):
-    print("in delete")
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     data = dict()
@@ -888,7 +889,8 @@ def sample_delete(request,experiment_id, pk):
         data['form_is_valid'] = True  # This is just to play along with the existing code
         samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
-            'samples': samples
+            'samples': samples,
+            'experiment': experiment
         })
     else:
         context = {'sample': sample, 'experiment': experiment }

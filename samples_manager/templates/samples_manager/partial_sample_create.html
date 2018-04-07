@@ -46,8 +46,17 @@
             <div class="col-md-12">
               <h3>Sample layers details</h3>
               <div class="row">
-                <div class="col-md-12" style="text-align: center" >
-                    <img src={% static 'images/layers.png' %} alt="Layer" width="50%">
+                <div class="col-md-6" >
+                    <br>
+                    <img src={% static 'images/layers.png' %} alt="Layer" width="100%">
+                </div>
+                <div class="col-md-6" style="font-size: 90%">
+                    <p>If L1 is made of material M1 which is an Element (e.g. Si) <br>
+                        <b>Si Layer 1 - 0.3 - Si(14) - 100% - 2.33</b></p>
+                    <p>If L1 is made of material M1 which is a Compound (e.g. SiO2) the layer name should be  <b>the same</b> for all elements of the compound<br>
+                        <b>Si diox 1 - 0.5 - Si(14) - 46.7% - 2.33</b><br>
+                        <b>Si diox 1 - 0.5 - O(8) - 53.3% - 0.00143</b>
+                    </p>
                 </div>
               </div>
             <div class="row">
@@ -73,8 +82,11 @@
                                                 {{ hidden }}
                                             {% endfor %}
                                         {% endif %}
-                                        {{ field.errors.as_ul }}
+                                        <div class="form-group{% if field.errors %} has-error{% endif %}">
                                         {{ field }}
+                                        {% for error in field.errors %}
+                                            <span style="font-size: 70%" class="help-block">{{error }}</span>
+                                        {% endfor %}
                                     </td>
                                 {% endfor %}
                             </tr>
@@ -111,7 +123,7 @@
 <script type="text/javascript">
         $('.formset_row').formset({
             addText: 'Add Layer',
-            deleteText: 'remove',
+            deleteText: '×',
             prefix: 'layers_set'
         });
 </script>

@@ -38,6 +38,7 @@ var loadForm = function () {
         else {
           //alert("Something went wrong!");  // <-- This is just a placeholder for now for testing
           $("#modal-sample .modal-content").html(data.html_form);
+          alert("Please, check the form and fill all the required fields!");
         }
       }
     });

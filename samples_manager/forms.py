@@ -207,17 +207,17 @@ class SamplesForm1(ModelForm):
     def __init__(self, *args, **kwargs):
         self.experiment_id = kwargs.pop('experiment_id')
         super(SamplesForm1, self).__init__(*args, **kwargs)
-        self.fields['description'].label= 'Sample Name *'
+        self.fields['name'].label= 'Sample Name *'
         self.fields['height'].label= 'Height (mm) *'
         self.fields['width'].label= 'Width (mm) *'
         self.fields['weight'].label= 'Weight (kg) '
         self.fields['weight'].required = False
         self.fields['material'] = forms.ModelChoiceField(queryset=get_materials(self.experiment_id))
-        self.fields['material'].label= 'Type of samples *'
+        self.fields['material'].label= 'Type of sample *'
     class Meta:
             model = Samples
             exclude = ('comments','req_fluence','category','current_location')
-            fields = ['material','description', 'height','width', 'weight']
+            fields = ['material','name', 'height','width', 'weight']
             widgets = {
                 'description': forms.TextInput(attrs={'placeholder': 'Provide a name or description for your sample. E.g. silicon detector 1'}),
                 'weight': forms.NumberInput(attrs={'placeholder': 'Please provide weigth especially if it is more that 1 kg'})
@@ -236,7 +236,7 @@ class SamplesForm2(ModelForm):
 
     class Meta:
             model = Samples
-            exclude = ('description', 'height','width', 'weight','material')
+            exclude = ('name', 'height','width', 'weight','material')
             fields = ['req_fluence','category','current_location','comments']
             widgets = {
                 'current_location':  forms.TextInput(attrs={'placeholder': 'e.g. Bld. 28 or Out of CERN'}),
@@ -249,14 +249,15 @@ class LayersForm(ModelForm):
         self.fields['name'].label= 'Name *'
         self.fields['length'].label= 'Length (mm) *'
         self.fields['element_type'].label= 'Element name *'
-        self.fields['percentage'].label= mark_safe('Fraction by weight (%) *')
+        self.fields['density'].label= 'Density (g/mL) *'
+        self.fields['percentage'].label= mark_safe('Weight <br>fraction (%) *')
     
     class Meta:
         model = Layers
         fields = ['id','name', 'length','element_type', 'percentage','density']
         exclude = ('sample',)
         widgets = {
-                'name':  forms.TextInput(attrs={'placeholder': 'e.g. L1, 1st Layer'}),
+                'name':  forms.TextInput(attrs={'placeholder': 'e.g. L1'}),
                 'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
             }
 

@@ -56,17 +56,17 @@
                 {% endfor %}
                     </div>
                 {% endfor %}
-            <div id = "passive_standard_category">
-                    <p>Irradiation area:</p>
-                    {% for field in passive_standard_categories_form %}
-                        <div class="form-group{% if field.errors %} has-error{% endif %}">
-                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {% render_field field class="form-control" %}
-                    {% for error in field.errors %}
-                        <span class="help-block">{{error }}</span>
-                    {% endfor %}
-                        </div>
-                    {% endfor %}
+           <div id = "passive_standard_category" style="display:none" class="row">
+                        <p>Irradiation area:</p>
+                        {% for field in passive_standard_categories_form %}
+                            <div class="col-md-4 form-group{% if field.errors %} has-error{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% render_field field class="form-control" %}
+                        {% for error in field.errors %}
+                            <span class="help-block">{{error }}</span>
+                        {% endfor %}
+                            </div>
+                        {% endfor %}
             </div>
             <div id = "passive_custom_category" >
                     {% for field in passive_custom_categories_form %}

@@ -206,7 +206,7 @@ class Boxes(models.Model):
 
 class Samples(models.Model):
     set_id = models.CharField(max_length=50, null = True,  unique = True)
-    description = models.CharField(max_length=200, unique = True)
+    name = models.CharField(max_length=200, unique = True)
     current_location = models.CharField(max_length=100)
     height = models.DecimalField(max_digits=12,decimal_places=3)
     width = models.DecimalField(max_digits=12,decimal_places=3)
