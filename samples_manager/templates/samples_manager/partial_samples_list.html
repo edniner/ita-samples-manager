@@ -22,13 +22,19 @@
                 title='Clone sample'>
           <span class="glyphicon glyphicon-duplicate"></span>
         </button>
-      <a href="#">
+      <a href="{% url 'samples_manager:print_sample_view' experiment.id sample.id  %}">
         <button type="button"
               class="btn btn-info"
               title='Print'>
         <span class="glyphicon glyphicon-print"></span>
       </button>
       </a>
+        <button type="button"
+              class="btn btn-default js-print-sample-label"
+              data-url="{% url 'samples_manager:print_sample_label_view' experiment.id sample.id %}"
+              title='Assign Sample ID and print Label'>
+        <span class="glyphicon glyphicon glyphicon-barcode"></span>
+      </button>
       <button type="button"
                 class="btn btn-danger js-delete-sample"
                 title='Delete'
@@ -42,3 +48,4 @@
     <td colspan="8" class="text-center">There are no samples</td>
   </tr>
 {% endfor %}
+

@@ -19,6 +19,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from django.utils.safestring import mark_safe
 import logging 
+from django.db.models import Q
 
 
 
@@ -37,10 +38,8 @@ def get_logged_user(request):
     '''username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
+    #email =  "ina.gotse@gmail.com"
     email =  "blerina.gkotse@cern.ch"'''
-    
-    
-
     users = Users.objects.all()
     emails =[]
     for item in users:
@@ -101,14 +100,22 @@ def get_registered_samples_number(experiments):
             })
     return experiment_data
 
+def authorised_experiments(logged_user):
+     if logged_user.role == 'Admin':
+        experiments = Experiments.objects.order_by('-updated_at')
+     else:
+         experiments = Experiments.objects.all().filter(Q(users=logged_user) | Q(responsible = logged_user)).order_by('-updated_at')
+     return experiments
+
 def experiments_list(request):
     logged_user = get_logged_user(request)
     if logged_user.role == 'Admin':
-        experiments = Experiments.objects.order_by('-updated_at')
+        experiments = authorised_experiments(logged_user)
         experiment_data = get_registered_samples_number(experiments)
         return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data,'logged_user': logged_user})
     else:
-        experiments = Experiments.objects.all().filter(responsible=logged_user).order_by('-updated_at')
+        experiments = authorised_experiments(logged_user)
+        print(experiments)
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
 
 def admin_experiments_list(request):
@@ -145,6 +152,30 @@ def experiment_details(request, experiment_id):
 def user_details(request, user_id):
     user = get_object_or_404(Users, pk=user_id)
     return render(request, 'samples_manager/user_details.html', {'user': user})
+
+
+def generate_set_id(sample):
+    if sample.set_id =="":
+        print("set id empty")
+        all_samples = Samples.objects.all()
+        print(all_samples)
+        samples_numbers = []
+        for sample in all_samples:
+            if sample.set_id !="": 
+                 samples_numbers.append(int(sample.set_id[4:]))
+            else:
+                samples_numbers.append(0)             
+        samples_numbers.sort(reverse=True)
+        new_sample_set_id_number_int = samples_numbers[0] + 1
+        new_sample_set_id_number = "" + str(new_sample_set_id_number_int)
+        zeros = 6-len(new_sample_set_id_number)
+        for x in range(0,zeros):
+            new_sample_set_id_number = "0"+ new_sample_set_id_number
+        new_sample_set_id = "SET-"+ new_sample_set_id_number
+        return new_sample_set_id
+    else:
+        return sample.set_id
+
     
 def save_sample_form(request,form1, layers_formset, form2, status, experiment, template_name):
     data = dict()
@@ -152,7 +183,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
     print("in save")
     if request.method == 'POST':
         print("post")
-        if form1.is_valid() and form2.is_valid() and layers_formset.is_valid():
+        if form1.is_valid() and form2.is_valid():
             if status == 'new':
                 print("new")
                 sample_data = {}
@@ -172,8 +203,11 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                         print(layers_formset.cleaned_data)
                         for form in layers_formset.forms:
                             layer = form.save()
+                            print(layer)
                             layer.sample = sample
+                            print(layer)
                             layer.save()   
+                            print("layer saved")
                 data['state'] = "Created"
             elif status == 'update': 
                 sample_updated = form1.save()
@@ -184,6 +218,37 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 if layers_formset.is_valid():
                     layers_formset.save()
                 data['state'] = "Updated"
+            elif status == 'clone':
+                print("clone")
+                sample_data = {}
+                sample_data.update(form1.cleaned_data)
+                sample_data.update(form2.cleaned_data)
+                sample_temp = Samples.objects.create(**sample_data)
+                sample = Samples.objects.get(pk = sample_temp.pk)
+                sample.status = "Registered"
+                sample.created_by = logged_user
+                sample.updated_by = logged_user
+                sample.experiment = experiment
+                '''sample.set_id = generate_set_id()'''
+                sample.save()
+                print ("sample saved")
+                if layers_formset.is_valid():
+                    print (layers_formset)
+                    if layers_formset.cleaned_data is not None:
+                        print (layers_formset.cleaned_data)
+                        for layer in layers_formset.cleaned_data:
+                            if  layer.get('name', False):
+                                print(layer ['name'])
+                                new_layer = Layers()
+                                new_layer.name = layer ['name']
+                                new_layer.length = layer ['length']
+                                new_layer.element_type = layer ['element_type']
+                                new_layer.density = layer ['density']
+                                new_layer.percentage = layer ['percentage']
+                                new_layer.sample = sample
+                                new_layer.save()
+                                print("layer saved")
+                data['state'] = "Created"
             else:
                 sample_updated = form1.save()
                 form2.save()
@@ -201,6 +266,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
             data['form_is_valid'] = False
             logging.warning('Sample data invalid')
     context = {'form1': form1,'form2': form2,'layers_formset': layers_formset,'experiment':experiment}
+    print(context)
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
@@ -360,13 +426,11 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 experiment_data.update(form2.cleaned_data)
                 experiment_data.update(form3.cleaned_data)
                 #users=experiment_data.pop('users')
-                logging.warning(experiment_data)
                 experiment_temp = Experiments.objects.create(**experiment_data)
                 experiment = Experiments.objects.get(pk = experiment_temp.pk)
                 experiment.created_by =  logged_user 
                 experiment.status = "Registered"
                 experiment.save()
-                logging.warning('Experiment saved')
                 if experiment.category == "Passive Standard":
                     if passive_standard_categories_form.is_valid(): 
                         if passive_standard_categories_form.cleaned_data is not None:
@@ -775,10 +839,26 @@ def save_user_form(request, form, experiment, template_name):
     if request.method == 'POST':
         logging.warning("post")
         if form.is_valid():
-            logging.warning("form is valid")
-            print(form.cleaned_data)
-            new_user = form.save()
-            experiment.users.add(new_user)
+            users = Users.objects.all()
+            print(users)
+            emails =[]
+            for item in users:
+                emails.append(item.email)
+            if form.cleaned_data is not None:
+                submited_user = form.cleaned_data
+                print(submited_user)
+                print(submited_user["email"])
+                if  not submited_user["email"] in emails:
+                    new_user = form.save()
+                    experiment.users.add(new_user)
+                else:
+                    user = Users.objects.get( email = submited_user["email"])
+                    user.name =  submited_user["name"]
+                    user.surname =  submited_user["surname"]
+                    user.telephone =  submited_user["telephone"]
+                    user.role =  submited_user["role"]
+                    user.save()
+                    experiment.users.add(user)
             data['form_is_valid'] = True
             users = experiment.users.all()
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
@@ -870,15 +950,15 @@ def sample_clone(request, experiment_id, pk):
     sample = get_object_or_404(Samples, pk=pk)
     LayersFormset = inlineformset_factory(Samples,Layers,form=LayersForm,extra=1)
     if request.method == 'POST':
-        form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
-        form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
-        layers_formset = LayersFormset(request.POST)
+        form1 = SamplesForm1(request.POST, experiment_id = experiment.id, instance=sample)
+        form2 = SamplesForm2(request.POST, experiment_id = experiment.id, instance=sample)
+        layers_formset = LayersFormset(request.POST,instance=sample)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(experiment_id = experiment.id, instance=sample)
         layers_formset = LayersFormset(instance=sample)
     status = 'clone'
-    return save_sample_form(request, form1,layers_formset, form2, status, experiment, 'samples_manager/partial_sample_create.html')
+    return save_sample_form(request, form1,layers_formset, form2, status, experiment, 'samples_manager/partial_sample_clone.html')
 
 def sample_delete(request,experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
@@ -985,3 +1065,73 @@ def print_experiment_view(request, pk):
         response['Content-Disposition'] = 'attachment; filename="%s"'%filename
         return response
     return response
+
+
+
+def print_sample_view(request, experiment_id, pk):
+    experiment = Experiments.objects.get(pk = experiment_id)
+    sample = get_object_or_404(Samples, pk=pk)
+    filename="sample %s.pdf" % sample.name
+    doc = SimpleDocTemplate(filename)
+    styles = getSampleStyleSheet()
+    Story = []
+    style = styles["Normal"]
+    #text = "Irradiation experiment title: %" +experiment.title+"\n Description:"+experiment.description+"\n CERN experiment Projects:"+experiment.description+"Constrains\n"+experiment.constraints)
+    Story.append(Paragraph("Irradiation experiment: %s" %experiment.title, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Responsible: %s" %experiment.responsible, style))
+    Story.append(Spacer(1,0.4*inch))
+    Story.append(Paragraph("Type of sample: %s" %sample.material.material, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Sample name: %s" %sample.name, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("SET ID: %s" %sample.set_id, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Height: %s mm" %sample.height, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Width: %s mm" %sample.width, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Weight: %s kg" %sample.weight, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Samples layers:", style))
+    Story.append(Spacer(1,0.1*inch))
+    layers = Layers.objects.all().filter(sample=sample)
+    for layer in layers: 
+        layer_text= "Name: "+layer.name+ " - Length: "+str(layer.length)+" mm  - Element name: "+str(layer.element_type)+ "  - Weight fraction: "+str(layer.percentage)+ "%  - Density: "+str(layer.density)+"  g/mL"
+        Story.append(Paragraph(layer_text, style))
+        Story.append(Spacer(1,0.2*inch))
+    fluences = ReqFluences.objects.all().filter(experiment=experiment)
+    Story.append(Paragraph("Requested fluence: %s" %sample.req_fluence.req_fluence, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Category: %s" %sample.category, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Category: %s" %sample.current_location, style))
+    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Comments: %s" %sample.comments, style))
+    doc.build(Story)
+    fs = FileSystemStorage("")
+    with fs.open(filename) as pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="%s"'%filename
+        return response
+    return response
+
+
+def print_sample_label_view(request, experiment_id, pk):
+    print("hello")
+    data = dict()
+    experiment = Experiments.objects.get(pk = experiment_id)
+    sample = get_object_or_404(Samples, pk=pk)
+    sample.set_id = generate_set_id(sample)
+    sample.save()
+    data['set_id'] = sample.set_id
+    data['req_fluence'] = sample.req_fluence.req_fluence
+    data['category'] = sample.category
+    samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+    data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+            'samples': samples,
+            'experiment': experiment
+        })
+    return JsonResponse(data)
+
+

@@ -227,7 +227,7 @@ class Samples(models.Model):
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
 
     def __str__(self):              # __str__ on Python 2
-        return self.description
+        return self.name
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''

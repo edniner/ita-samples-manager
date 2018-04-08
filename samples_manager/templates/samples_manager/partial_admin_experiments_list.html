@@ -9,6 +9,12 @@
     <td>{{ experiment.experiment.status }}</td>
     <td>
       <button type="button"
+              class="btn btn-warning btn js-update-experiment"
+              title='Check and validate'
+              data-url="{% url 'samples_manager:experiment_update' experiment.experiment.id %}">
+             <span class="glyphicon glyphicon-pencil"></span>
+      </button>
+      <button type="button"
               class="btn btn-success btn js-update-experiment"
               title='Check and validate'
               data-url="{% url 'samples_manager:experiment_validate' experiment.experiment.id %}">
