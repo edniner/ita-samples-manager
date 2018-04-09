@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
         <link rel="stylesheet" href="{% static 'css/widget.css' %}">
         <link rel="stylesheet" href="{% static 'css/cern_toolbar.css' %}">
+        <link rel="stylesheet" href="{% static 'css/number-polyfill.css' %}">
     </head>
     <body>
         <div class="page-header">
@@ -20,7 +21,7 @@
                     <ul class="cern-signedin">                    
                         <li id="ctl00_ctl32_linksLi" class='cern-accountlinks'>
                             <span id="ctl00_ctl32_accountSpan">Signed in as: <a href="https://cern.ch/account" id="ctl00_ctl32_accountLink" title="Signed in as {{logged_user}}">{{logged_user.email}}</a></span>
-                            <a href="https://espace.cern.ch/authentication/layouts/15/SignOut.aspx?Source=%2fauthentication%2fdefault.aspx" id="ctl00_ctl32_signOutALink" class="cern-signout" title="Sign out of your account">Sign out</a></li>
+                            <a href="https://espace.cern.ch/authentication/_layouts/15/SignOut.aspx?Source=%2fauthentication%2fdefault.aspx" id="ctl00_ctl32_signOutALink" class="cern-signout" title="Sign out of your account">Sign out</a></li>
                         <li><a class="cern-directory" href="http://cern.ch/directory" title="Search CERN resources and browse the directory">Directory</a></li>
                     </ul>
                 </div>	
@@ -66,6 +67,7 @@
     <script src="{% static 'js/dosimeters.js' %}"></script>
     <script src="{% static 'js/boxes.js' %}"></script>
     <script src="{% static 'js/soap.js' %}"></script>   
+    <script src="{% static 'js/number-polyfill.js' %}"></script>
     <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         {% block javascript %}

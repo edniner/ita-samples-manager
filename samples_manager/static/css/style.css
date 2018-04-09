@@ -51,6 +51,10 @@ button.btn.btn-primary.btn-circle.info{
     text-align: center;
 }
 .back{ background: #888; color: white;}
+
+button.btn.js-print-sample-label{
+    background: #AAA;
+}
 #modal-sample h1,#modal-sample h2,#modal-sample h3,#modal-sample h4,#modal-sample p {
     color: #333333;
 }

@@ -419,7 +419,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
     data = dict()
     logged_user = get_logged_user(request)
     if request.method == 'POST':
-        if form1.is_valid() and form2.is_valid() and form3.is_valid():
+        if form1.is_valid() and form2.is_valid() and form3.is_valid() and fluence_formset.is_valid() and material_formset.is_valid() and (passive_standard_categories_form.is_valid() or passive_custom_categories_form.is_valid() or active_categories_form.is_valid()):
             if status == 'new' or  status == 'clone': # status experiment
                 experiment_data = {}
                 experiment_data.update(form1.cleaned_data)
@@ -474,14 +474,14 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     experiments = get_registered_samples_number(experiments)
                     output_template = 'samples_manager/partial_admin_experiments_list.html'
                 else: 
-                    experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
+                    experiments = authorised_experiments(logged_user)
                     output_template = 'samples_manager/partial_experiments_list.html'
                 data['html_experiment_list'] = render_to_string(output_template, {
                         'experiments': experiments,
                         })
                 data['state'] = "Created"
-                message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nIRRAD team.')
-                send_mail_notification( 'New experiment registered in the IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
+                message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
+                send_mail_notification( 'New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
                 message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/registered/experiments/")
                 send_mail_notification('New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
             elif  status == 'update':
@@ -530,11 +530,11 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     material_formset.save()
                 data['form_is_valid'] = True
                 if logged_user.role == 'Admin':
-                    experiments = Experiments.objects.all()
+                    experiments = Experiments.objects.all().order_by('-updated_at')
                     experiments = get_registered_samples_number(experiments)
                     output_template = 'samples_manager/partial_admin_experiments_list.html'
                 else: 
-                    experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
+                    experiments = authorised_experiments(logged_user)
                     output_template = 'samples_manager/partial_experiments_list.html'
                 data['html_experiment_list'] = render_to_string(output_template, {
                         'experiments': experiments,
@@ -584,7 +584,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['html_experiment_list'] = render_to_string('samples_manager/partial_admin_experiments_list.html', {
                             'experiments': experiments,
                         })
-                message='Your experiment with title "%s" was validated. \nYou can now add samples and additional users related to your irradiation experiment.\nPlease, find all your experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/'% experiment.title
+                message='Dear user,\nyour experiment with title "%s" was validated. \nYou can now add samples and additional users related to your irradiation experiment.\nPlease, find all your experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch'% experiment.title
                 send_mail_notification('Experiment: %s validation' % experiment.title,message,'irrad.ps@cern.ch',experiment.responsible.email)
                 message2irrad='You validated the experiment with title: %s' % experiment.title
                 send_mail_notification('Experiment: %s validation' % experiment.title,message2irrad,'irrad.ps@cern.ch','irrad.ps@cern.ch')
@@ -810,17 +810,17 @@ def experiment_delete(request, pk):
         experiment.delete()
         data['form_is_valid'] = True
         if logged_user.role == 'Admin':
-                experiments = Experiments.objects.all()
+                experiments = Experiments.objects.all().order_by('-updated_at')
                 experiments = get_registered_samples_number(experiments)
                 output_template = 'samples_manager/partial_admin_experiments_list.html'
         else: 
-                experiments = Experiments.objects.filter(responsible = logged_user ).order_by('-updated_at')
+                experiments = authorised_experiments(logged_user)
                 output_template = 'samples_manager/partial_experiments_list.html'
         data['html_experiment_list'] = render_to_string(output_template, {
                 'experiments': experiments,
         })
         data['state']='Deleted'
-        message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was deleted by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\n\nKind regards,\nIRRAD team.')
+        message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was deleted by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
         send_mail_notification( 'Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
         message2irrad=mark_safe("The user with the account: "+logged_user.email+" deleted the experiment with title '"+ experiment.title+"'.\n")
         send_mail_notification( 'Experiment "%s"  was deleted'%experiment.title,message2irrad,experiment.responsible.email, 'irrad.ps@cern.ch')
@@ -1118,20 +1118,25 @@ def print_sample_view(request, experiment_id, pk):
 
 
 def print_sample_label_view(request, experiment_id, pk):
-    print("hello")
     data = dict()
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
-    sample.set_id = generate_set_id(sample)
-    sample.save()
-    data['set_id'] = sample.set_id
-    data['req_fluence'] = sample.req_fluence.req_fluence
-    data['category'] = sample.category
-    samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
-    data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
-            'samples': samples,
-            'experiment': experiment
-        })
+    if request.method == 'POST':
+        sample.set_id = generate_set_id(sample)
+        sample.save()
+        data['set_id'] = sample.set_id
+        data['req_fluence'] = sample.req_fluence.req_fluence
+        data['category'] = sample.category
+        data['responsible'] = experiment.responsible.email
+        samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+        data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+                'samples': samples,
+                'experiment': experiment
+            })
+    else:
+        context = {'sample': sample, 'experiment': experiment }
+        data['html_form'] = render_to_string('samples_manager/partial_sample_print_label.html',
+            context,
+            request=request,
+        )
     return JsonResponse(data)
-
-

@@ -207,6 +207,9 @@ class SamplesForm1(ModelForm):
     def __init__(self, *args, **kwargs):
         self.experiment_id = kwargs.pop('experiment_id')
         super(SamplesForm1, self).__init__(*args, **kwargs)
+        self.fields['set_id'] = forms.CharField(max_length=10, widget=forms.TextInput(attrs={'placeholder': 'e.g.SET-001029'}))
+        self.fields['set_id'].label= mark_safe('SET ID (<span style="color: #F00">If your sample has already a SET ID assigned from previous irradiation</span>)')
+        self.fields['set_id'].required = False
         self.fields['name'].label= 'Sample Name *'
         self.fields['height'].label= 'Height (mm) *'
         self.fields['width'].label= 'Width (mm) *'
@@ -217,10 +220,10 @@ class SamplesForm1(ModelForm):
     class Meta:
             model = Samples
             exclude = ('comments','req_fluence','category','current_location')
-            fields = ['material','name', 'height','width', 'weight']
+            fields = ['material','name','set_id', 'height','width', 'weight']
             widgets = {
                 'description': forms.TextInput(attrs={'placeholder': 'Provide a name or description for your sample. E.g. silicon detector 1'}),
-                'weight': forms.NumberInput(attrs={'placeholder': 'Please provide weigth especially if it is more that 1 kg'})
+                'weight': forms.NumberInput(attrs={'placeholder': 'Please provide weigth especially if it is more that 1 kg'}),
             }
 
 class SamplesForm2(ModelForm):
@@ -236,7 +239,7 @@ class SamplesForm2(ModelForm):
 
     class Meta:
             model = Samples
-            exclude = ('name', 'height','width', 'weight','material')
+            exclude = ('name','set_id','height','width', 'weight','material')
             fields = ['req_fluence','category','current_location','comments']
             widgets = {
                 'current_location':  forms.TextInput(attrs={'placeholder': 'e.g. Bld. 28 or Out of CERN'}),

@@ -46,19 +46,22 @@ var loadForm = function () {
   };
 
     var printLabel = function (){
-          alert("To print an IRRAD label you need to have a DYMO LabelWriter. Ctrl+P to print the label.")
-          var btn = $(this);
+          var form = $(this);
           $.ajax({
-            url: btn.attr("data-url"),
-            type: 'get',
+            url: form.attr("action"),
+            data: form.serialize(),
+            type: form.attr("method"),
             dataType: 'json',
             success: function (data) {
-                  console.log(data);
-                  var text = '<html><head><title>'+data['set_id']+'</title></head><body"><h1 style ="text-align: center; font-size:300%;">'+data['set_id'] +'</h1><h2 style ="text-align: center;">'+data['req_fluence'] +'</h2><h2 style ="text-align: center;">'+data['category'] +'</h2></body></html>';
+                  $("#modal-sample").modal("hide");  // <-- Close the modal
+                  var text = '<html><head><title>'+data['set_id']+'</title></head><body onafterprint="self.close()"><h1 style ="text-align: center; font-size:350%; margin:0">'+data['set_id'] +'</h1>';
+                  text = text+ '<h2 style = "text-align:center; margin:0">'+data['category'] +' '+data['req_fluence'] +' '+data['responsible'] +' IRRAD</h2></body></html>';
                   my_window = window.open('', 'mywindow', 'status=1,width=300,height=300');
                   my_window.document.write(text);
                   my_window.document.close();
                   $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
+                  
+                  
               }
           });
           console.log("false")
@@ -98,7 +101,9 @@ var loadForm = function () {
   $("#sample-table").on("click", ".js-delete-sample", loadForm);
   $("#modal-sample").on("submit", ".js-sample-delete-form", saveForm);
 
-  $("#sample-table").on("click", ".js-print-sample-label", printLabel);
+  // Print label
+  $("#sample-table").on("click", ".js-print-sample-label", loadForm);
+  $("#modal-sample").on("submit", ".js-print-sample-label-form", printLabel);
 
 
 
