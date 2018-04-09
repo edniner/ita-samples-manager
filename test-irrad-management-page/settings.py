@@ -49,7 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'widget_tweaks',
     #Don't forget to uncomment this part in production!!!
-    #'mod_wsgi.server',
+    'mod_wsgi.server',
     'samples_manager',
 )
 
@@ -63,7 +63,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Uncomment this in production!!!!
-    #'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
 
