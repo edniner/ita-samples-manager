@@ -14,9 +14,11 @@ from django.core.mail import EmailMessage
 from django.utils.safestring import mark_safe
 from io import BytesIO
 from reportlab.pdfgen import canvas
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter, inch
 from django.utils.safestring import mark_safe
 import logging 
 from django.db.models import Q
@@ -33,13 +35,17 @@ def get_logged_user(request):
     username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
+    telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"] 
 
     '''username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
+    telephone = "11111"
     #email =  "ina.gotse@gmail.com"
-    email =  "blerina.gkotse@cern.ch"'''
+    email =  "Blerina.Gkotse@cern.ch" '''
+
+    email =  email.lower()
     users = Users.objects.all()
     emails =[]
     for item in users:
@@ -50,6 +56,8 @@ def get_logged_user(request):
             new_user.name= firstname
         if lastname is not None:
             new_user.surname = lastname
+        if telephone is not None:
+            new_user.telephone = telephone
         if email is not None:
             new_user.email = email
         new_user.save()
@@ -115,14 +123,12 @@ def experiments_list(request):
         return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data,'logged_user': logged_user})
     else:
         experiments = authorised_experiments(logged_user)
-        print(experiments)
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
 
 def admin_experiments_list(request):
     experiments = Experiments.objects.order_by('-updated_at')
     experiment_data = get_registered_samples_number(experiments)
     logged_user = get_logged_user(request)
-    print(experiment_data)
     return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data,'logged_user': logged_user})
     
 def users_list(request):
@@ -156,9 +162,7 @@ def user_details(request, user_id):
 
 def generate_set_id(sample):
     if sample.set_id =="":
-        print("set id empty")
         all_samples = Samples.objects.all()
-        print(all_samples)
         samples_numbers = []
         for sample in all_samples:
             if sample.set_id !="": 
@@ -198,14 +202,11 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 sample.save()
                 print ("sample saved")
                 if layers_formset.is_valid():
-                    print(layers_formset)
                     if layers_formset.cleaned_data is not None:
                         print(layers_formset.cleaned_data)
                         for form in layers_formset.forms:
                             layer = form.save()
-                            print(layer)
                             layer.sample = sample
-                            print(layer)
                             layer.save()   
                             print("layer saved")
                 data['state'] = "Created"
@@ -233,9 +234,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 sample.save()
                 print ("sample saved")
                 if layers_formset.is_valid():
-                    print (layers_formset)
                     if layers_formset.cleaned_data is not None:
-                        print (layers_formset.cleaned_data)
                         for layer in layers_formset.cleaned_data:
                             if  layer.get('name', False):
                                 print(layer ['name'])
@@ -266,7 +265,6 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
             data['form_is_valid'] = False
             logging.warning('Sample data invalid')
     context = {'form1': form1,'form2': form2,'layers_formset': layers_formset,'experiment':experiment}
-    print(context)
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
@@ -371,7 +369,6 @@ def updated_experiment_data(old_experiment,old_fluences,old_materials,old_catego
 
     old_materials_number = len(old_materials)
     new_materials = Materials.objects.filter(experiment = new_experiment).order_by('id') 
-    print(new_materials)
     new_materials_number = len(new_materials)
     materials_text="\nSample types: \n"
     old_material_ids = []
@@ -840,14 +837,11 @@ def save_user_form(request, form, experiment, template_name):
         logging.warning("post")
         if form.is_valid():
             users = Users.objects.all()
-            print(users)
             emails =[]
             for item in users:
                 emails.append(item.email)
             if form.cleaned_data is not None:
                 submited_user = form.cleaned_data
-                print(submited_user)
-                print(submited_user["email"])
                 if  not submited_user["email"] in emails:
                     new_user = form.save()
                     experiment.users.add(new_user)
@@ -894,7 +888,6 @@ def user_delete(request,experiment_id,pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     user = get_object_or_404(Users, pk=pk)
     data = dict()
-    print(experiment)
     if request.method == 'POST':
         user.delete()
         data['form_is_valid'] = True  # This is just to play along with the existing code
@@ -915,7 +908,6 @@ def user_delete(request,experiment_id,pk):
 def sample_new(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
     LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=1)
-    print(experiment)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
         layers_formset = LayersFormset(request.POST)
@@ -1072,42 +1064,79 @@ def print_sample_view(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     filename="sample %s.pdf" % sample.name
+    user = Users.objects.get(email = experiment.responsible)
     doc = SimpleDocTemplate(filename)
     styles = getSampleStyleSheet()
     Story = []
+    header_style = styles["Heading1"]
+    header = "IRRAD Proton Facility Sample " +sample.set_id
+    Story.append(Paragraph(header, header_style))
+    Story.append(Spacer(1,0.3*inch))
     style = styles["Normal"]
     #text = "Irradiation experiment title: %" +experiment.title+"\n Description:"+experiment.description+"\n CERN experiment Projects:"+experiment.description+"Constrains\n"+experiment.constraints)
-    Story.append(Paragraph("Irradiation experiment: %s" %experiment.title, style))
-    Story.append(Spacer(1,0.2*inch))
-    Story.append(Paragraph("Responsible: %s" %experiment.responsible, style))
-    Story.append(Spacer(1,0.4*inch))
-    Story.append(Paragraph("Type of sample: %s" %sample.material.material, style))
-    Story.append(Spacer(1,0.2*inch))
-    Story.append(Paragraph("Sample name: %s" %sample.name, style))
-    Story.append(Spacer(1,0.2*inch))
-    Story.append(Paragraph("SET ID: %s" %sample.set_id, style))
-    Story.append(Spacer(1,0.2*inch))
-    Story.append(Paragraph("Height: %s mm" %sample.height, style))
-    Story.append(Spacer(1,0.2*inch))
-    Story.append(Paragraph("Width: %s mm" %sample.width, style))
-    Story.append(Spacer(1,0.2*inch))
-    Story.append(Paragraph("Weight: %s kg" %sample.weight, style))
-    Story.append(Spacer(1,0.2*inch))
-    Story.append(Paragraph("Samples layers:", style))
+    sample_identification = "Sample details: "+ sample.material.material+" "+sample.name
+    Story.append(Paragraph(sample_identification, style))
     Story.append(Spacer(1,0.1*inch))
+    experiment_text = "Experiment: " +experiment.title+ " " +experiment.responsible.email+ " " + user.telephone
+    Story.append(Paragraph(experiment_text, style))
+    Story.append(Spacer(1,0.1*inch))
+    dimensions_text = "Height: "+str(sample.height)+"mm Width: " +str(sample.width)+ "mm"
+    Story.append(Paragraph(dimensions_text, style))
+    Story.append(Spacer(1,0.1*inch))
+    Story.append(Paragraph("Weight: %s kg" %sample.weight, style))
+    Story.append(Spacer(1,0.1*inch))
+    Story.append(Paragraph("Samples layers:", style))
+    Story.append(Spacer(1,0.05*inch))
     layers = Layers.objects.all().filter(sample=sample)
     for layer in layers: 
         layer_text= "Name: "+layer.name+ " - Length: "+str(layer.length)+" mm  - Element name: "+str(layer.element_type)+ "  - Weight fraction: "+str(layer.percentage)+ "%  - Density: "+str(layer.density)+"  g/mL"
         Story.append(Paragraph(layer_text, style))
-        Story.append(Spacer(1,0.2*inch))
+        Story.append(Spacer(1,0.05*inch))
     fluences = ReqFluences.objects.all().filter(experiment=experiment)
-    Story.append(Paragraph("Requested fluence: %s" %sample.req_fluence.req_fluence, style))
-    Story.append(Spacer(1,0.2*inch))
+    Story.append(Paragraph("Requested fluence: %s protons/cm2" %sample.req_fluence.req_fluence, style))
+    Story.append(Spacer(1,0.1*inch))
     Story.append(Paragraph("Category: %s" %sample.category, style))
-    Story.append(Spacer(1,0.2*inch))
-    Story.append(Paragraph("Category: %s" %sample.current_location, style))
-    Story.append(Spacer(1,0.2*inch))
+    Story.append(Spacer(1,0.1*inch))
+    Story.append(Paragraph("Storage: %s" %sample.storage, style))
+    Story.append(Spacer(1,0.1*inch))
+    Story.append(Paragraph("Location: %s" %sample.current_location, style))
+    Story.append(Spacer(1,0.1*inch))
     Story.append(Paragraph("Comments: %s" %sample.comments, style))
+    Story.append(Spacer(1,0.5*inch))
+
+    data=[['SEC\nwanted', 'Time IN', 'Time OUT', 'SEC\nachieved', 'AL#','Fluence\nachieved','Comment'],
+       ['Step\nReal SEC', 'DD/MM\nHH:MM', 'DD/MM\nHH:MM', 'Start\nStop', 'Nb.','p/cm2',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','',''],
+       ['', '', '', '', '','','']]
+    t=Table(data,7*[1.1*inch], 27*[0.5*inch])
+    t.setStyle(TableStyle([('ALIGN',(1,1),(-2,-2),'CENTER'),
+                       ('INNERGRID', (0,0), (-1,-1), 1, colors.black),
+                       ('BOX', (0,0), (-1,-1), 1, colors.black),
+                       ]))
+    Story.append(t)
     doc.build(Story)
     fs = FileSystemStorage("")
     with fs.open(filename) as pdf:

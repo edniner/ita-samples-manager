@@ -9,7 +9,7 @@ from django.core.validators import MinValueValidator
 
 CERN_EXPERIMENTS=(('ATLAS','ATLAS'),('CMS','CMS'), ('ALICE', 'ALICE'),('LHCb', 'LHCb'), ('TOTEM', 'TOTEM'), ('Other','Other'))
 CATEGORIES=(('','Please,choose category'),('Passive Standard','Passive Standard'),('Passive Custom','Passive Custom'),('Active','Active'))
-STORAGE=(('Room','Room temperature'),('Cold','Cold storage <20 °C'))
+STORAGE=(('Room temperature','Room temperature'),('Cold storage <20','Cold storage <20 °C'))
 STATUS=(('Registered','Registered'),('Updated','Updated'),('Approved','Approved'),('Ready','Ready'),('InBeam','In beam'),('OutBeam','Out of beam'),('CoolingDown','Cooling down'),('Completed','Completed'), ('InStorage','In Storage'),('OutOfIRRAD','Out of IRRAD'),('Waste','Waste'))
 EXPERIMENT_STATUS=(('Registered','Registered'),('Updated','Updated'),('Approved','Approved'),('Ready','Ready'),('OnGoing','On going'),('Paused','Paused'),('Completed','Completed')) 
 DOSIMETER_CATEGORY=(('Aluminium','Aluminium'),('Film','Film'), ('Diamond','Diamond'), ('Other','Other'))

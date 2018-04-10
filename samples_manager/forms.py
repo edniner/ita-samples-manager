@@ -219,7 +219,7 @@ class SamplesForm1(ModelForm):
         self.fields['material'].label= 'Type of sample *'
     class Meta:
             model = Samples
-            exclude = ('comments','req_fluence','category','current_location')
+            exclude = ('comments','req_fluence','category','current_location','storage')
             fields = ['material','name','set_id', 'height','width', 'weight']
             widgets = {
                 'description': forms.TextInput(attrs={'placeholder': 'Provide a name or description for your sample. E.g. silicon detector 1'}),
@@ -240,10 +240,10 @@ class SamplesForm2(ModelForm):
     class Meta:
             model = Samples
             exclude = ('name','set_id','height','width', 'weight','material')
-            fields = ['req_fluence','category','current_location','comments']
+            fields = ['req_fluence','category','storage','current_location','comments']
             widgets = {
                 'current_location':  forms.TextInput(attrs={'placeholder': 'e.g. Bld. 28 or Out of CERN'}),
-                'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
+                'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments  e.g some emergency phone', 'rows':2}),
             }
 
 class LayersForm(ModelForm):
