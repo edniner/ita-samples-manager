@@ -43,7 +43,7 @@ def get_logged_user(request):
     lastname = "Gkotse"
     telephone = "11111"
     #email =  "ina.gotse@gmail.com"
-    email =  "Blerina.Gkotse@cern.ch" '''
+    email =  "Blerina.Gkotse@cern.ch"'''
 
     email =  email.lower()
     users = Users.objects.all()
@@ -479,7 +479,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['state'] = "Created"
                 message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
                 send_mail_notification( 'New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
-                message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/registered/experiments/")
+                message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
                 send_mail_notification('New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
             elif  status == 'update':
                 print("update")
@@ -833,8 +833,8 @@ def experiment_delete(request, pk):
 
 def save_user_form(request, form, experiment, template_name):
     data = dict()
+    logged_user = get_logged_user(request)
     if request.method == 'POST':
-        logging.warning("post")
         if form.is_valid():
             users = Users.objects.all()
             emails =[]
@@ -843,8 +843,8 @@ def save_user_form(request, form, experiment, template_name):
             if form.cleaned_data is not None:
                 submited_user = form.cleaned_data
                 if  not submited_user["email"] in emails:
-                    new_user = form.save()
-                    experiment.users.add(new_user)
+                    user = form.save()
+                    experiment.users.add(user)
                 else:
                     user = Users.objects.get( email = submited_user["email"])
                     user.name =  submited_user["name"]
@@ -853,6 +853,8 @@ def save_user_form(request, form, experiment, template_name):
                     user.role =  submited_user["role"]
                     user.save()
                     experiment.users.add(user)
+                message=mark_safe('Dear user,\nyou were assigned as a user for the experiment '+experiment.title+' by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
+                send_mail_notification('Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
             data['form_is_valid'] = True
             users = experiment.users.all()
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
