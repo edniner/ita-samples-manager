@@ -1,34 +1,48 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
-<div class='panel panel-default' id="main_panel">        
-    <div class="row">
-        <button type="button"
-                class="btn btn-primary js-create-dosimeter"
-                data-url="{% url 'samples_manager:dosimeter_new' %}">
-                <span class="glyphicon glyphicon-plus"></span> New Dosimeter
-        </button>
-        <table class="table" id="dosimeter-table">
-            <thead>
-                <tr>
-                <th>Dosimeter</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Current location</th>
-                </tr>
-            </thead>
-            <tbody>
-                 {% include 'samples_manager/partial_dosimeters_list.html' %}
-            </tbody>
-        </table>
-</div>
-
-
-
-</div>
  <!-- THE MODAL WE WILL BE USING -->
-  <div class="modal" id="modal-dosimeter">
+<div class="modal" id="modal-dosimeter">
     <div class="modal-dialog">
       <div class="modal-content">
       </div>
+    </div>
+</div>
+<div class='panel panel-default' id="main_panel">    
+    <div class="row">
+        <div class="col-sm-2">
+                <a  href="{% url 'samples_manager:experiments_list' %}" type="button"
+                        class="btn back"
+                        title='Back'>
+                                <span class="glyphicon glyphicon-chevron-left"></span>Back
+                </a>
+        </div>
+        <div class="col-sm-8">
+            <h3><span style="font-size: 150%;">Dosimeters</h3>
+        </div>
+        <div class="col-sm-2">
+            <button type="button"
+                    class="btn btn-primary js-create-dosimeter"
+                    data-url="{% url 'samples_manager:dosimeter_new'%}">
+                    <span class="glyphicon glyphicon-plus"></span>New Dosimeter
+            </button>  
+        </div>  
+    </div>
+    <div class="panel-body">    
+        <div class="row">
+            <table class="table" id="dosimeter-table">
+                <thead>
+                    <tr>
+                    <th>Last Update</th>
+                    <th>Dosimeter ID</th>
+                    <th>Size</th>
+                    <th>Weight</th>
+                    <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% include 'samples_manager/partial_dosimeters_list.html' %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}

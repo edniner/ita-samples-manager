@@ -100,8 +100,8 @@
                         {% if forloop.first %}
                                 <thead>
                                 <tr>
-                                    <th>Requested fluence * (<a style="color: #333; text-decoration:underline" title="Conversion to protons/cm²" href="{% url 'samples_manager:fluence_conversion' %}"> protons/cm²</a>)
-                                    <a href="{% url 'samples_manager:fluence_conversion' %}"><button type="button" class="info btn btn-primary btn-circle" title="Conversion to protons/cm²"><i class=" glyphicon glyphicon-info-sign" style="font-size: 100%; margin-top:-5px"></i></button></a></th>
+                                    <th>Requested fluence * (<a target='_blank' style="color: #333; text-decoration:underline" title="Conversion to protons/cm²" href="{% url 'samples_manager:fluence_conversion' %}"> protons/cm²</a>)
+                                    <a target='_blank' href="{% url 'samples_manager:fluence_conversion' %}"><button type="button" class="info btn btn-primary btn-circle" title="Conversion to protons/cm²"><i class=" glyphicon glyphicon-info-sign" style="font-size: 100%; margin-top:-5px"></i></button></a></th>
                                     <th>Delete</th>
                                 </tr>
                                 </thead>

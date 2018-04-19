@@ -57,7 +57,7 @@
                         <b>Si diox 1 - 0.5 - Si(14) - 46.7% - 2.33</b><br>
                         <b>Si diox 1 - 0.5 - O(8) - 53.3% - 0.00143</b>
                     </p>
-                    <p><i><a style ="color: #333; text-decoration: underline; font-size: 80%" href="http://pdg.lbl.gov/2017/AtomicNuclearProperties/index.html">See  Atomic and Nuclear Properties of Materials</a></i></p>
+                    <p><i><a target='_blank' style ="color: #333; text-decoration: underline; font-size: 80%" href="http://pdg.lbl.gov/2017/AtomicNuclearProperties/index.html">See  Atomic and Nuclear Properties of Materials</a></i></p>
                 </div>
               </div>
             <div class="row">
@@ -126,5 +126,8 @@
             addText: 'Add Layer',
             deleteText: '×',
             prefix: 'layers_set'
+        });
+        $("#id_set_id").click(function() {
+            alert("Please, make sure you already have an assigned SET-ID from IRRAD or TREC.")
         });
 </script>

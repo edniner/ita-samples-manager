@@ -214,7 +214,7 @@ class Samples(models.Model):
     comments = models.TextField()
     req_fluence =  models.ForeignKey(ReqFluences)
     material = models.ForeignKey(Materials)
-    category = models.CharField(max_length=50)
+    category = models.CharField(max_length=200)
     storage = models.CharField(max_length=50, choices=STORAGE)
     #samples characteristics
     status = models.CharField(max_length=50, choices=STATUS)
@@ -235,6 +235,35 @@ class Samples(models.Model):
             self.created_at= timezone.now()
         self.updated_at = timezone.now()
         return super(Samples, self).save(*args, **kwargs)
+
+class Dosimeters(models.Model):
+    dos_id= models.CharField(max_length=50, null= True, unique = True)
+    responsible = models.ForeignKey(Users, related_name="%(class)s_responsible")
+    current_location = models.CharField(max_length=100)
+    length = models.DecimalField(max_digits=18,decimal_places=6)
+    height = models.DecimalField(max_digits=18,decimal_places=6)
+    width =  models.DecimalField(max_digits=18,decimal_places=6)
+    weight = models.DecimalField(max_digits=18,decimal_places=6, null=True)
+    foils_number = models.PositiveIntegerField()
+    status = models.CharField(max_length=50, choices=STATUS)
+    dos_type = models.CharField(max_length=50, choices=DOSIMETER_CATEGORY)
+    comments = models.TextField(null=True)
+    box = models.ForeignKey(Boxes, null=True)
+    created_at=models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField()
+    created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
+    updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
+    last_location = models.CharField(max_length=100)
+
+    def __str__(self):              # __str__ on Python 2
+        return self.dosimeter_id
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created_at= timezone.now()
+        self.updated_at = timezone.now()
+        return super(Dosimeters, self).save(*args, **kwargs)
 
 
 class MaterialElements(models.Model):
@@ -264,10 +293,10 @@ class SamplesElements(models.Model):
 
 class Layers(models.Model):
     name = models.CharField(max_length=20)
-    length = models.DecimalField(max_digits=20,decimal_places=3)
+    length = models.DecimalField(max_digits=26,decimal_places=6)
     element_type = models.ForeignKey(MaterialElements)
     density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
-    percentage = models.DecimalField(max_digits=4,decimal_places=1)
+    percentage = models.DecimalField(max_digits=8,decimal_places=4)
     sample = models.ForeignKey(Samples, null = True)
     
 

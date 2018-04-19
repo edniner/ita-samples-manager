@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements, Layers
+from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements, Layers, Dosimeters
 from django.template import loader
 from django.core.urlresolvers import reverse
 import datetime
@@ -32,18 +32,18 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"] 
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
     #email =  "ina.gotse@gmail.com"
-    email =  "Blerina.Gkotse@cern.ch"'''
+    email =  "Blerina.Gkotse@cern.ch" 
 
     email =  email.lower()
     users = Users.objects.all()
@@ -90,13 +90,6 @@ def fluence_conversion(request):
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/fluence_conversion.html', {'logged_user': logged_user})
 
-def all_experiments_list(request):
-    experiments = Experiments.objects.order_by('-updated_at')
-    experiments = get_registered_samples_number(experiments)
-    logged_user = get_logged_user(request)
-    print("Admin")
-    return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiments,'logged_user': logged_user})
-
 def get_registered_samples_number(experiments):
     experiment_data = []
     for experiment in experiments:
@@ -134,7 +127,7 @@ def admin_experiments_list(request):
 def users_list(request):
     users = Users.objects.all()
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/users_list.html', {'users': users,'logged_user': logged_user})
+    return render(request, 'samples_manager/admin_users_list.html', {'users': users,'logged_user': logged_user})
 
 def experiment_users_list(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
@@ -149,6 +142,10 @@ def experiment_samples_list(request, experiment_id):
     samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
     return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'experiment': experiment,'logged_user': logged_user })
 
+def dosimeters_list(request):
+    logged_user = get_logged_user(request)
+    dosimeters = Dosimeters.objects.all()
+    return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user})
 
 def experiment_details(request, experiment_id):
     experiment = get_object_or_404(Experiments, pk=experiment_id)
@@ -168,9 +165,30 @@ def generate_set_id(sample):
             if sample.set_id !="": 
                  samples_numbers.append(int(sample.set_id[4:]))
             else:
-                samples_numbers.append(0)             
-        samples_numbers.sort(reverse=True)
-        new_sample_set_id_number_int = samples_numbers[0] + 1
+                samples_numbers.append(0)  
+        samples_numbers.sort(reverse=False)
+        assigned_samples = []
+        for sample in samples_numbers: 
+            if 3199<sample:
+                assigned_samples.append(sample)
+        available_set_id = 0
+        for (idx,val) in enumerate(assigned_samples):
+            if idx == 0:
+                pass
+            else:
+                if val==assigned_samples[idx-1]+1:
+                    pass 
+                else:
+                    available_set_id = assigned_samples[idx-1]+1
+                    break
+        if available_set_id == 0:
+            samples_numbers.sort(reverse=True)
+            if 3199<samples_numbers[0]:
+                new_sample_set_id_number_int = samples_numbers[0] + 1
+            else:
+                new_sample_set_id_number_int = 3200
+        else:
+            new_sample_set_id_number_int = available_set_id
         new_sample_set_id_number = "" + str(new_sample_set_id_number_int)
         zeros = 6-len(new_sample_set_id_number)
         for x in range(0,zeros):
@@ -180,6 +198,48 @@ def generate_set_id(sample):
     else:
         return sample.set_id
 
+
+def generate_dos_id(dosimeter):
+    if dosimeter.dos_id =="":
+        all_dosimeters = Dosimeters.objects.all()
+        dosimeters_numbers = []
+        for dosimeter in all_dosimeters:
+            if dosimeter.dos_id !="": 
+                 dosimeters_numbers.append(int(dosimeter.dos_id[4:]))
+            else:
+                dosimeters_numbers.append(0)  
+        dosimeters_numbers.sort(reverse=False)
+        assigned_dosimeters = []
+        for dosimeter in dosimeters_numbers: 
+            if 3999<dosimeter:
+                assigned_dosimeters.append(dosimeter)
+        available_dos_id = 0
+        for (idx,val) in enumerate(assigned_dosimeters):
+            if idx == 0:
+                pass
+            else:
+                if val==assigned_dosimeters[idx-1]+1:
+                    pass 
+                else:
+                    available_dos_id = assigned_dosimeters[idx-1]+1
+                    break
+        if available_dos_id == 0:
+            dosimeters_numbers.sort(reverse=True)
+            if 3999<dosimeters_numbers[0]:
+                new_dosimeter_dos_id_number_int = dosimeters_numbers[0] + 1
+            else:
+                new_dosimeter_dos_id_number_int = 4000
+        else:
+            new_dosimeter_dos_id_number_int = available_dos_id
+        new_dosimeter_dos_id_number = "" + str(new_dosimeter_dos_id_number_int)
+        zeros = 6-len(new_dosimeter_dos_id_number)
+        for x in range(0,zeros):
+            new_dosimeter_dos_id_number = "0"+ new_dosimeter_dos_id_number
+        new_dosimeter_dos_id = "DOS-"+ new_dosimeter_dos_id_number
+        return new_dosimeter_dos_id
+    else:
+        return dosimeter.dos_id
+
     
 def save_sample_form(request,form1, layers_formset, form2, status, experiment, template_name):
     data = dict()
@@ -187,67 +247,103 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
     print("in save")
     if request.method == 'POST':
         print("post")
-        if form1.is_valid() and form2.is_valid():
+        print(layers_formset)
+        if form1.is_valid() and form2.is_valid() and layers_formset.is_valid():
             if status == 'new':
-                print("new")
-                sample_data = {}
-                sample_data.update(form1.cleaned_data)
-                sample_data.update(form2.cleaned_data)
-                sample_temp = Samples.objects.create(**sample_data)
-                sample = Samples.objects.get(pk = sample_temp.pk)
-                sample.status = "Registered"
-                sample.created_by = logged_user
-                sample.experiment = experiment
-                '''sample.set_id = generate_set_id()'''
-                sample.save()
-                print ("sample saved")
-                if layers_formset.is_valid():
-                    if layers_formset.cleaned_data is not None:
+                if form1.checking_unique_sample() == True:
+                    print("check true")
+                    sample_data = {}
+                    sample_data.update(form1.cleaned_data)
+                    sample_data.update(form2.cleaned_data)
+                    sample_temp = Samples.objects.create(**sample_data)
+                    sample = Samples.objects.get(pk = sample_temp.pk)
+                    sample.status = "Registered"
+                    sample.created_by = logged_user
+                    sample.experiment = experiment
+                    '''sample.set_id = generate_set_id()'''
+                    sample.save()
+                    print ("sample saved")
+                    if layers_formset.is_valid():
                         print(layers_formset.cleaned_data)
-                        for form in layers_formset.forms:
-                            layer = form.save()
-                            layer.sample = sample
-                            layer.save()   
-                            print("layer saved")
-                data['state'] = "Created"
+                        if  not layers_formset.cleaned_data:
+                            data['state'] = 'layers missing'
+                            data['form_is_valid'] = False
+                        else: 
+                            print(layers_formset.cleaned_data)
+                            for form in layers_formset.forms:
+                                layer = form.save()
+                                layer.sample = sample
+                                layer.save()   
+                                print("layer saved")
+                            data['state'] = "Created"
+                            data['form_is_valid'] = True
+                            samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+                            data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+                                'samples':samples,
+                                'experiment': experiment
+                            })
+                else:
+                    data['form_is_valid'] = False
+                    data['state'] = "not unique"     
             elif status == 'update': 
+                print("update")
                 sample_updated = form1.save()
                 form2.save()
                 sample_updated.status = "Updated"
                 sample_updated.update_by = logged_user
                 sample_updated.save()
+                print("before layers")
                 if layers_formset.is_valid():
                     layers_formset.save()
+                print(layers_formset)
                 data['state'] = "Updated"
+                data['form_is_valid'] = True
+                samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+                data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+                        'samples':samples,
+                        'experiment': experiment
+                })
             elif status == 'clone':
                 print("clone")
-                sample_data = {}
-                sample_data.update(form1.cleaned_data)
-                sample_data.update(form2.cleaned_data)
-                sample_temp = Samples.objects.create(**sample_data)
-                sample = Samples.objects.get(pk = sample_temp.pk)
-                sample.status = "Registered"
-                sample.created_by = logged_user
-                sample.updated_by = logged_user
-                sample.experiment = experiment
-                '''sample.set_id = generate_set_id()'''
-                sample.save()
-                print ("sample saved")
-                if layers_formset.is_valid():
-                    if layers_formset.cleaned_data is not None:
-                        for layer in layers_formset.cleaned_data:
-                            if  layer.get('name', False):
-                                print(layer ['name'])
-                                new_layer = Layers()
-                                new_layer.name = layer ['name']
-                                new_layer.length = layer ['length']
-                                new_layer.element_type = layer ['element_type']
-                                new_layer.density = layer ['density']
-                                new_layer.percentage = layer ['percentage']
-                                new_layer.sample = sample
-                                new_layer.save()
-                                print("layer saved")
-                data['state'] = "Created"
+                if form1.checking_unique_sample() == True:
+                    sample_data = {}
+                    sample_data.update(form1.cleaned_data)
+                    sample_data.update(form2.cleaned_data)
+                    sample_temp = Samples.objects.create(**sample_data)
+                    sample = Samples.objects.get(pk = sample_temp.pk)
+                    sample.status = "Registered"
+                    sample.created_by = logged_user
+                    sample.updated_by = logged_user
+                    sample.experiment = experiment
+                    '''sample.set_id = generate_set_id()'''
+                    sample.save()
+                    print ("sample saved")
+                    if layers_formset.is_valid():
+                        print(layers_formset)
+                        if layers_formset.cleaned_data is not None:
+                            print(layers_formset.cleaned_data)
+                            for layer in layers_formset.cleaned_data:
+                                if  layer.get('name', False):
+                                    print(layer ['name'])
+                                    new_layer = Layers()
+                                    new_layer.name = layer ['name']
+                                    new_layer.length = layer ['length']
+                                    new_layer.element_type = layer ['element_type']
+                                    new_layer.density = layer ['density']
+                                    new_layer.percentage = layer ['percentage']
+                                    new_layer.sample = sample
+                                    new_layer.save()
+                                    print("layer saved")
+                    data['state'] = "Created"
+                    data['form_is_valid'] = True
+                    samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+                    data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+                        'samples':samples,
+                        'experiment': experiment
+                    })
+                else:
+                    data['form_is_valid'] = False
+                    data['state'] = "not unique"   
             else:
                 sample_updated = form1.save()
                 form2.save()
@@ -255,24 +351,48 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 if layers_formset.is_valid():
                     layers_formset.save()
                 data['state'] = "Updated"
-            data['form_is_valid'] = True
-            samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
-            data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
-                'samples':samples,
-                'experiment': experiment
-            })
+                data['form_is_valid'] = True
+                samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+                data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+                    'samples':samples,
+                    'experiment': experiment
+                })
         else:
             data['form_is_valid'] = False
+            data['state'] = "missing fields"   
             logging.warning('Sample data invalid')
     context = {'form1': form1,'form2': form2,'layers_formset': layers_formset,'experiment':experiment}
     data['html_form'] = render_to_string(template_name, context, request=request)
+    print(layers_formset)
     return JsonResponse(data)
 
-def save_dosimeter_form(request,form, template_name):
+def save_dosimeter_form(request,form1, form2, status, template_name):
     data = dict()
+    logged_user = get_logged_user(request)
     if request.method == 'POST':
-        if form.is_valid():
-            form.save()
+        if form1.is_valid() and form2.is_valid():
+            print("valid")
+            if status == 'new' or  status == 'clone':
+                dosimeter_data = {}
+                dosimeter_data.update(form1.cleaned_data)
+                dosimeter_data.update(form2.cleaned_data)
+                dosimeter_temp = Dosimeters.objects.create(**dosimeter_data)
+                dosimeter = Dosimeters.objects.get(pk = dosimeter_temp.pk)
+                dosimeter.status = "Registered"
+                dosimeter.created_by = logged_user
+                dosimeter.dos_id = generate_dos_id(dosimeter)
+                dosimeter.save()
+            elif status == 'update':
+                print("update")
+                dosimeter_updated = form1.save()
+                form2.save()
+                dosimeter_updated.status = "Updated"
+                dosimeter_updated.update_by = logged_user
+                dosimeter_updated.save()
+                print("sample updated")
+            else:
+                pass
+            print ("dosimeter saved")
             data['form_is_valid'] = True
             dosimeters = Dosimeters.objects.all()
             data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
@@ -280,10 +400,9 @@ def save_dosimeter_form(request,form, template_name):
             })
         else:
             data['form_is_valid'] = False
-    context = {'form': form}
+    context = {'form1': form1, 'form2': form2}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
-
 
 def updated_experiment_data(old_experiment,old_fluences,old_materials,old_category,new_experiment):
     excluded_keys = 'id', 'status', 'responsible', 'users', 'created_at', 'updated_at', 'created_by','updated_by', '_state'
@@ -416,71 +535,76 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
     data = dict()
     logged_user = get_logged_user(request)
     if request.method == 'POST':
-        if form1.is_valid() and form2.is_valid() and form3.is_valid() and fluence_formset.is_valid() and material_formset.is_valid() and (passive_standard_categories_form.is_valid() or passive_custom_categories_form.is_valid() or active_categories_form.is_valid()):
+        if form1.is_valid() and form2.is_valid() and form3.is_valid():
             if status == 'new' or  status == 'clone': # status experiment
-                experiment_data = {}
-                experiment_data.update(form1.cleaned_data)
-                experiment_data.update(form2.cleaned_data)
-                experiment_data.update(form3.cleaned_data)
-                #users=experiment_data.pop('users')
-                experiment_temp = Experiments.objects.create(**experiment_data)
-                experiment = Experiments.objects.get(pk = experiment_temp.pk)
-                experiment.created_by =  logged_user 
-                experiment.status = "Registered"
-                experiment.save()
-                if experiment.category == "Passive Standard":
-                    if passive_standard_categories_form.is_valid(): 
-                        if passive_standard_categories_form.cleaned_data is not None:
-                            passive_standard_category = passive_standard_categories_form.save()
-                            passive_standard_category.experiment = experiment
-                            passive_standard_category.save()
-                elif  experiment.category == "Passive Custom":
-                    if passive_custom_categories_form.is_valid(): 
-                        if  passive_custom_categories_form.cleaned_data is not None:
-                            passive_custom_category = passive_custom_categories_form.save()
-                            passive_custom_category.experiment = experiment
-                            passive_custom_category.save()
-                elif  experiment.category == "Active":
-                    if active_categories_form.is_valid(): 
-                        if active_categories_form.cleaned_data is not None:
-                            active_category = active_categories_form.save()
-                            active_category.experiment = experiment
-                            active_category.save()
-                else: 
-                    print("no category")
-                
-                if fluence_formset.is_valid():
-                    if fluence_formset.cleaned_data is not None:
-                        for form in fluence_formset.forms:
-                            fluence = form.save()
-                            fluence.experiment = experiment
-                            fluence.save()
-                if material_formset.is_valid():
-                    if material_formset.cleaned_data is not None:
-                        for form in material_formset.forms:
-                            material= form.save()
-                            material.experiment = experiment
-                            material.save()
-                if  status == 'clone':
-                    previous_experiment = Experiments.objects.get(pk =  form1.instance.pk)
-                    for user in previous_experiment.users.all():
-                        experiment.users.add(user)
-                data['form_is_valid'] = True
-                if logged_user.role == 'Admin':
-                    experiments = Experiments.objects.all().order_by('-updated_at')
-                    experiments = get_registered_samples_number(experiments)
-                    output_template = 'samples_manager/partial_admin_experiments_list.html'
-                else: 
-                    experiments = authorised_experiments(logged_user)
-                    output_template = 'samples_manager/partial_experiments_list.html'
-                data['html_experiment_list'] = render_to_string(output_template, {
-                        'experiments': experiments,
-                        })
-                data['state'] = "Created"
-                message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                send_mail_notification( 'New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
-                message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
-                send_mail_notification('New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+                if form1.checking_unique() == True:
+                    experiment_data = {}
+                    experiment_data.update(form1.cleaned_data)
+                    experiment_data.update(form2.cleaned_data)
+                    experiment_data.update(form3.cleaned_data)
+                    #users=experiment_data.pop('users')
+                    experiment_temp = Experiments.objects.create(**experiment_data)
+                    experiment = Experiments.objects.get(pk = experiment_temp.pk)
+                    experiment.created_by =  logged_user 
+                    experiment.status = "Registered"
+                    experiment.save()
+                    if experiment.category == "Passive Standard":
+                        if passive_standard_categories_form.is_valid(): 
+                            if passive_standard_categories_form.cleaned_data is not None:
+                                passive_standard_category = passive_standard_categories_form.save()
+                                passive_standard_category.experiment = experiment
+                                passive_standard_category.save()
+                    elif  experiment.category == "Passive Custom":
+                        if passive_custom_categories_form.is_valid(): 
+                            if  passive_custom_categories_form.cleaned_data is not None:
+                                passive_custom_category = passive_custom_categories_form.save()
+                                passive_custom_category.experiment = experiment
+                                passive_custom_category.save()
+                    elif  experiment.category == "Active":
+                        if active_categories_form.is_valid(): 
+                            if active_categories_form.cleaned_data is not None:
+                                active_category = active_categories_form.save()
+                                active_category.experiment = experiment
+                                active_category.save()
+                    else: 
+                        print("no category")
+                    
+                    if fluence_formset.is_valid():
+                        if fluence_formset.cleaned_data is not None:
+                            for form in fluence_formset.forms:
+                                fluence = form.save()
+                                fluence.experiment = experiment
+                                fluence.save()
+                    if material_formset.is_valid():
+                        if material_formset.cleaned_data is not None:
+                            for form in material_formset.forms:
+                                material= form.save()
+                                material.experiment = experiment
+                                material.save()
+                    if  status == 'clone':
+                        previous_experiment = Experiments.objects.get(pk =  form1.instance.pk)
+                        for user in previous_experiment.users.all():
+                            experiment.users.add(user)
+                    data['form_is_valid'] = True
+                    if logged_user.role == 'Admin':
+                        experiments = Experiments.objects.all().order_by('-updated_at')
+                        experiments = get_registered_samples_number(experiments)
+                        output_template = 'samples_manager/partial_admin_experiments_list.html'
+                    else: 
+                        experiments = authorised_experiments(logged_user)
+                        output_template = 'samples_manager/partial_experiments_list.html'
+                    data['html_experiment_list'] = render_to_string(output_template, {
+                            'experiments': experiments,
+                            })
+                    data['state'] = "Created"
+                    message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
+                    send_mail_notification( 'New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
+                    message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
+                    send_mail_notification('New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+                else:
+                    data['form_is_valid'] = False
+                    data['state'] = "not unique"
+                    print("not unique")
             elif  status == 'update':
                 print("update")
                 old_experiment = Experiments.objects.get(pk =  form1.instance.pk)
@@ -495,7 +619,9 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 form3.save()
                 experiment = Experiments.objects.get(pk =  experiment_updated.pk)
                 if experiment.status=='Validated':
-                    experiment.status = "Updated"
+                    pass
+                else:
+                    experiment.status ='Updated'
                 experiment.update_by = logged_user
                 experiment.save()
                 if experiment.category == "Passive Standard":
@@ -590,6 +716,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                  print("nothing to do")
         else:
             data['form_is_valid'] = False
+            data['state'] = "missing fields"
             print("not valid")
     context = {'form1': form1,'form2': form2, 'form3': form3, 'fluence_formset': fluence_formset, 'material_formset': material_formset, 'passive_standard_categories_form': passive_standard_categories_form, 'passive_custom_categories_form': passive_custom_categories_form, 'active_categories_form': active_categories_form}
     data['html_form'] = render_to_string(template_name, context, request=request)
@@ -616,7 +743,7 @@ def experiment_new(request):
         passive_custom_categories_form =  PassiveCustomCategoriesForm(request.POST)
         active_categories_form = ActiveCategoriesForm(request.POST)
     else:
-        form1 = ExperimentsForm1(data_list=cern_experiments_list,)
+        form1 = ExperimentsForm1(data_list=cern_experiments_list,initial={'responsible': logged_user})
         form2 = ExperimentsForm2()
         form3 = ExperimentsForm3()
         fluence_formset = FluenceReqFormSet()
@@ -633,8 +760,8 @@ def experiment_update(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm, extra=1)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=1)
+    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm, extra=0)
+    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
@@ -705,8 +832,8 @@ def experiment_validate(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm, extra=1)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=1)
+    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm, extra=0)
+    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
@@ -776,8 +903,8 @@ def experiment_clone(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm, extra=1)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=1)
+    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0)
+    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm,extra=0)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
@@ -852,7 +979,8 @@ def save_user_form(request, form, experiment, template_name):
                     user.telephone =  submited_user["telephone"]
                     user.role =  submited_user["role"]
                     user.save()
-                    experiment.users.add(user)
+                    if submited_user["email"] !=  experiment.responsible.email:
+                        experiment.users.add(user)
                 message=mark_safe('Dear user,\nyou were assigned as a user for the experiment '+experiment.title+' by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
                 send_mail_notification('Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
             data['form_is_valid'] = True
@@ -925,7 +1053,7 @@ def sample_new(request, experiment_id):
 def sample_update(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
-    LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=1)
+    LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=0)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
@@ -942,7 +1070,7 @@ def sample_update(request, experiment_id, pk):
 def sample_clone(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
-    LayersFormset = inlineformset_factory(Samples,Layers,form=LayersForm,extra=1)
+    LayersFormset = inlineformset_factory(Samples,Layers,form=LayersForm,extra=0)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id, instance=sample)
@@ -973,6 +1101,64 @@ def sample_delete(request,experiment_id, pk):
             request=request,
         )
     return JsonResponse(data)
+
+
+def dosimeter_new(request):
+    logged_user = get_logged_user(request)
+    if request.method == 'POST':
+        form1 = DosimetersForm1(request.POST)
+        form2 = DosimetersForm2(request.POST)
+    else:
+        form1 = DosimetersForm1()
+        form2 = DosimetersForm2(initial={'responsible': logged_user })
+    status = 'new'
+    return save_dosimeter_form(request, form1, form2,status, 'samples_manager/partial_dosimeter_create.html')
+
+def dosimeter_update(request, pk):
+    dosimeter = get_object_or_404(Dosimeters, pk=pk)
+    if request.method == 'POST':
+        form1 = DosimetersForm1(request.POST, instance=dosimeter)
+        form2 = DosimetersForm2(request.POST, instance=dosimeter)
+    else:
+        form1 = DosimetersForm1(instance=dosimeter)
+        form2 = DosimetersForm2(instance=dosimeter)
+    status = 'update'
+    print("dosimeter_update")
+    return save_dosimeter_form(request, form1, form2, status,'samples_manager/partial_dosimeter_update.html')
+
+def dosimeter_clone(request, pk):
+    dosimeter = get_object_or_404(Dosimeters, pk=pk)
+    if request.method == 'POST':
+        form1 = DosimetersForm1(request.POST)
+        form2 = DosimetersForm2(request.POST)
+    else:
+        form1 = DosimetersForm1(instance=dosimeter)
+        form2 = DosimetersForm2(instance=dosimeter)
+    status = 'clone'
+    return save_dosimeter_form(request,  form1, form2, status,'samples_manager/partial_dosimeter_create.html')
+
+def dosimeter_delete(request, pk):
+    dosimeter = get_object_or_404(Dosimeters, pk=pk)
+    data = dict()
+    if request.method == 'POST':
+        dosimeter.delete()
+        data['form_is_valid'] = True  # This is just to play along with the existing code
+        dosimeters = Dosimeters.objects.all()
+        data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
+            'dosimeters': dosimeters
+        })
+    else:
+        context = {'dosimeter': dosimeter}
+        data['html_form'] = render_to_string('samples_manager/partial_dosimeter_delete.html',
+            context,
+            request=request,
+        )
+    return JsonResponse(data)
+
+
+
+
+
 
 def print_experiment_view(request, pk):
     print("printing")
@@ -1150,14 +1336,19 @@ def print_sample_view(request, experiment_id, pk):
 
 def print_sample_label_view(request, experiment_id, pk):
     data = dict()
+    print("label")
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     if request.method == 'POST':
         sample.set_id = generate_set_id(sample)
         sample.save()
+        print(sample.set_id)
         data['set_id'] = sample.set_id
         data['req_fluence'] = sample.req_fluence.req_fluence
-        data['category'] = sample.category
+        category = sample.category
+        print(category)
+        data['category'] = category.split(": ",1)[1]
+        print(data['category'])
         data['responsible'] = experiment.responsible.email
         samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
@@ -1167,6 +1358,24 @@ def print_sample_label_view(request, experiment_id, pk):
     else:
         context = {'sample': sample, 'experiment': experiment }
         data['html_form'] = render_to_string('samples_manager/partial_sample_print_label.html',
+            context,
+            request=request,
+        )
+    return JsonResponse(data)
+
+
+def print_dosimeter_label_view(request, pk):
+    data = dict()
+    dosimeter = get_object_or_404(Dosimeters, pk=pk)
+    if request.method == 'POST':
+        data['dos_id'] = dosimeter.dos_id
+        dosimeters = Dosimeters.objects.order_by('-updated_at')
+        data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
+                'dosimeters': dosimeters,
+            })
+    else:
+        context = {'dosimeter': dosimeter}
+        data['html_form'] = render_to_string('samples_manager/partial_dosimeter_print_label.html',
             context,
             request=request,
         )

@@ -36,9 +36,13 @@ var loadForm = function () {
             samplesloadForm(data.experiment_id);*/
         }
         else {
-          //alert("Something went wrong!");  // <-- This is just a placeholder for now for testing
           $("#modal-sample .modal-content").html(data.html_form);
-          alert("Please, check the form and fill all the required fields!");
+          if(data['state']=='not unique')
+            alert("This name already exists! Please, choose a different name.");
+          else if (data['state']=='layers missing')
+            alert("Please, fill the layers fields!")
+          else
+            alert("Please, check the form and fill all the required fields!");
         }
       }
     });
@@ -55,7 +59,7 @@ var loadForm = function () {
             success: function (data) {
                   $("#modal-sample").modal("hide");  // <-- Close the modal
                   var text = '<html><head><title>'+data['set_id']+'</title></head><body onafterprint="self.close()"><h1 style ="text-align: center; font-size:350%; margin:0">'+data['set_id'] +'</h1>';
-                  text = text+ '<h2 style = "text-align:center; margin:0">'+data['category'] +' '+data['req_fluence'] +' '+data['responsible'] +' IRRAD</h2></body></html>';
+                  text = text+ '<h2 style = "text-align:center; margin:0">'+data['category'] +'<br>'+data['req_fluence'] +' '+data['responsible'] +' IRRAD</h2></body></html>';
                   my_window = window.open('', 'mywindow', 'status=1,width=300,height=300');
                   my_window.document.write(text);
                   my_window.document.close();
@@ -104,7 +108,4 @@ var loadForm = function () {
   // Print label
   $("#sample-table").on("click", ".js-print-sample-label", loadForm);
   $("#modal-sample").on("submit", ".js-print-sample-label-form", printLabel);
-
-
-
 });

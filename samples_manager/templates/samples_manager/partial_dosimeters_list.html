@@ -1,34 +1,37 @@
-{% for sample in samples %}
+{% for dosimeter in dosimeters %}
   <tr>
-    <td>{{ sample.set_id }}</td>
-    <td>{{ sample.description }}</td>
-    <td>{{ sample.experiment.title}}</td>
-    <td>{{ sample.responsible }}</td>
+    <td>{{ dosimeter.updated_at|date:"d.m.Y"}} {{ dosimeter.updated_at|time:"H:i"}}</td>
+    <td>{{ dosimeter.dos_id }}</td>
+    <td>{{ dosimeter.height}}×{{dosimeter.width}}</td>
+    <td>{{ dosimeter.weight }}</td>
+    <td>{{ dosimeter.status }}</td>
     <td></td>
      <td>
       <button type="button"
-              class="btn btn-warning btn-sm js-update-sample"
-              data-url="{% url 'samples_manager:sample_update' sample.id %}">
-              <span class="glyphicon glyphicon-pencil"></span>View-Edit
+              class="btn btn-warning js-update-dosimeter"
+              data-url="{% url 'samples_manager:dosimeter_update' dosimeter.id %}">
+              <span class="glyphicon glyphicon-pencil"></span>
       </button>
       <button type="button"
-              class="btn btn-primary btn-sm js-clone-sample"
-              data-url="{% url 'samples_manager:sample_clone' sample.id %}">
-        <span class="glyphicon glyphicon-duplicate"></span> Clone
+              class="btn btn-primary js-clone-dosimeter"
+              data-url="{% url 'samples_manager:dosimeter_clone' dosimeter.id %}">
+        <span class="glyphicon glyphicon-duplicate"></span>
       </button>
        <button type="button"
-              class="btn btn-danger btn-sm js-delete-sample"
-              data-url="{% url 'samples_manager:sample_delete' sample.id %}">
-        <span class="glyphicon glyphicon-trash"></span> Delete
+              class="btn btn-danger js-delete-dosimeter"
+              data-url="{% url 'samples_manager:dosimeter_delete' dosimeter.id %}">
+        <span class="glyphicon glyphicon-trash"></span>
       </button>
-      <!--<button type="button"
-                class="btn btn-primary soap">
-                <span class="glyphicon glyphicon-plus"></span>Soap Request
-      </button> -->
+       <button type="button"
+              class="btn js-print-dosimeter-label"
+              data-url="{% url 'samples_manager:print_dosimeter_label_view' dosimeter.id %}"
+              title='Print Label'>
+        <span class="glyphicon glyphicon glyphicon-barcode"></span>
+      </button>
     </td>
   </tr>
 {% empty %}
   <tr>
-    <td colspan="8" class="text-center bg-warning">No sample</td>
+    <td colspan="8" class="text-center bg-warning">No dosimeter</td>
   </tr>
 {% endfor %}

@@ -25,9 +25,9 @@ var loadForm = function () {
       success: function (data) {
         if (data.form_is_valid) {
           if(data['state']=='Created')
-            alert("Your irradiation experiment was successfully saved!\nSoon, the facility coordinators will validate your request.")
+            alert("Your irradiation experiment was successfully saved!\nSoon, the facility coordinators will validate your request and you will be able to add samples and additional users.")
           else if (data['state']=='Updated')
-            alert("Your irradiation experiment was successfully updated!\nSoon, the facility coordinators will validate your request.")
+            alert("Your irradiation experiment was successfully updated!")
           else if (data['state']=='Validated')
             alert("The experiment was validated. The users will be notified now. ")
           else if (data['state']=='Deleted')
@@ -38,7 +38,11 @@ var loadForm = function () {
         }
         else {
           $("#modal-experiment .modal-content").html(data.html_form);
-          alert("Please, fill all the required fields!");
+          if(data['state']=='not unique')
+            alert("This title already exists! Please, choose a different title.");
+          else
+            alert("Please, fill all the required fields!");
+          
         }
       }
     });

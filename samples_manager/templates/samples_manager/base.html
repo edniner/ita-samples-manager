@@ -38,9 +38,11 @@
                                 <li><a href="{% url 'samples_manager:experiments_list' %}">EXPERIMENTS</a><li>
                                 <li><a target='_blank' href="https://op-webtools.web.cern.ch/irrad/index.html#/">BPM</a><li>
                                 <li><a target='_blank' href="https://ps-irrad.web.cern.ch/">IRRAD</a><li>
-                                <li><a href='{% url 'samples_manager:regulations' %}'>GENERAL TERMS</a><li>
+                                <li><a href="{% url 'samples_manager:regulations' %}">GENERAL TERMS</a><li>
                                 {% if logged_user.role == 'Admin'%}
-                                <li><a href='https://its.cern.ch/jira/projects/IRRAD/'>JIRA</a><li>
+                                    <li><a href='https://its.cern.ch/jira/projects/IRRAD/'>JIRA</a><li>
+                                    <li><a href="{% url 'samples_manager:users_list' %}">USERS</a><li>
+                                    <li><a href="{% url 'samples_manager:dosimeters_list' %}">DOSIMETERS</a><li>
                                 {% endif %}
                             </ul>
                     </div>
