@@ -82,15 +82,15 @@ IRRAD_POSITION=(
                  )
 )
 
-ROLE=(('Owner','Owner'),('Operator','Operator'),('Cordinator','Cordinator'),('Basic','Basic User'))
+ROLE=(('Owner','Owner'),('Operator','Operator'),('Coordinator','Coordinator'),('User','User'))
 
 
 class Users(models.Model):
     email= models.EmailField(max_length=200)
     name= models.CharField(max_length=200,  null=True)
-    surname= models.CharField(max_length=200, null=True)
-    telephone=models.CharField(max_length=200, null=True)
-    role=models.CharField(max_length=100, choices= ROLE, default='Basic User', null=True)
+    surname = models.CharField(max_length=200, null=True)
+    telephone = models.CharField(max_length=200, null=True)
+    role=models.CharField(max_length=100, choices= ROLE, default='User', null=True)
 
     def __str__(self):              # __str__ on Python 2
         return self.email

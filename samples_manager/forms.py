@@ -577,6 +577,9 @@ class LayersForm(ModelForm):
 class DosimetersForm1(ModelForm):
     def __init__(self, *args, **kwargs):
         super(DosimetersForm1, self).__init__(*args, **kwargs)
+        self.fields['dos_id'] = forms.CharField(max_length=10, widget=forms.TextInput(attrs={'placeholder': 'e.g.DOS-002929'}))
+        self.fields['dos_id'].label = "Dosimeter ID"
+        self.fields['dos_id'].required  = False
         self.fields['length'].required = False
         self.fields['length'].label = "Length (mm)"
         self.fields['height'].required = False
@@ -590,10 +593,10 @@ class DosimetersForm1(ModelForm):
 
     class Meta:
         model = Dosimeters
-        fields = ['length','height','width', 'weight','foils_number','dos_type']
+        fields = ['dos_id','length','height','width', 'weight','foils_number','dos_type']
         exclude = ('responsible','current_location','comments')
         widgets = {
-                'weight': forms.TextInput(attrs={'placeholder': 'Please, provide wright expecially if it is more than 1 kg'}),
+                'weight': forms.TextInput(attrs={'placeholder': 'Please, provide weight expecially if it is more than 1 kg'}),
         }
 
 class DosimetersForm2(ModelForm):
@@ -605,9 +608,9 @@ class DosimetersForm2(ModelForm):
     class Meta:
         model = Dosimeters
         fields = ['responsible','current_location','comments']
-        exclude = ('length','height','width', 'weight','foils_number','dos_type')
+        exclude = ('dos_id','length','height','width', 'weight','foils_number','dos_type')
         widgets = {
-            'current_location': forms.TextInput(attrs={'placeholder': 'Any additional comments?','placeholder': 'e.g. Blg.14 or Out of CERN'}),
+            'current_location': forms.TextInput(attrs={'placeholder': 'e.g. Blg.14 or Out of CERN'}),
             'comments': forms.Textarea(attrs={'rows':3}),
         }
 

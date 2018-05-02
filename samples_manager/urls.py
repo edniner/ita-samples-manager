@@ -34,7 +34,8 @@ urlpatterns = [
     url(r'^dosimeter/(?P<pk>\d+)/update/$', views.dosimeter_update, name='dosimeter_update'),
     url(r'^dosimeter/(?P<pk>\d+)/clone/$', views.dosimeter_clone, name='dosimeter_clone'),
     url(r'^dosimeter/(?P<pk>\d+)/delete/$', views.dosimeter_delete, name='dosimeter_delete'),
-     url(r'^dosimeter/(?P<pk>\d+)/print/label/$', views.print_dosimeter_label_view, name='print_dosimeter_label_view'),
+    url(r'^dosimeter/(?P<pk>\d+)/print/label/$', views.print_dosimeter_label_view, name='print_dosimeter_label_view'),
+    url(r'^user/(?P<pk>\d+)/update/$', views.admin_user_update, name='admin_user_update'),
 
     ]
 

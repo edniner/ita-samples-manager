@@ -32,18 +32,18 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
     #email =  "ina.gotse@gmail.com"
-    email =  "Blerina.Gkotse@cern.ch" '''
+    email =  "Blerina.Gkotse@cern.ch" 
 
     email =  email.lower()
     users = Users.objects.all()
@@ -144,7 +144,7 @@ def experiment_samples_list(request, experiment_id):
 
 def dosimeters_list(request):
     logged_user = get_logged_user(request)
-    dosimeters = Dosimeters.objects.all()
+    dosimeters = Dosimeters.objects.all().order_by('-updated_at')
     return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user})
 
 def experiment_details(request, experiment_id):
@@ -200,11 +200,11 @@ def generate_set_id(sample):
 
 
 def generate_dos_id(dosimeter):
-    if dosimeter.dos_id =="":
+    if dosimeter.dos_id =='':
         all_dosimeters = Dosimeters.objects.all()
         dosimeters_numbers = []
         for dosimeter in all_dosimeters:
-            if dosimeter.dos_id !="": 
+            if dosimeter.dos_id !='': 
                  dosimeters_numbers.append(int(dosimeter.dos_id[4:]))
             else:
                 dosimeters_numbers.append(0)  
@@ -380,7 +380,12 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
                 dosimeter = Dosimeters.objects.get(pk = dosimeter_temp.pk)
                 dosimeter.status = "Registered"
                 dosimeter.created_by = logged_user
+                print("id")
+                print(dosimeter.dos_id)
+                if dosimeter.dos_id =='':
+                    print("generating")
                 dosimeter.dos_id = generate_dos_id(dosimeter)
+                print(dosimeter.dos_id)
                 dosimeter.save()
             elif status == 'update':
                 print("update")
@@ -394,7 +399,7 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
                 pass
             print ("dosimeter saved")
             data['form_is_valid'] = True
-            dosimeters = Dosimeters.objects.all()
+            dosimeters = Dosimeters.objects.all().order_by('-updated_at')
             data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
                 'dosimeters':dosimeters
             })
@@ -997,6 +1002,24 @@ def save_user_form(request, form, experiment, template_name):
     return JsonResponse(data)
 
 
+def save_admin_user_form(request, form, template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            users = Users.objects.all()
+            data['html_user_list'] = render_to_string('samples_manager/admin_partial_users_list.html', {
+                'users': users
+            })
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+
+
 def user_new(request,experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
     if request.method == 'POST':
@@ -1034,6 +1057,15 @@ def user_delete(request,experiment_id,pk):
             request=request,
         )
     return JsonResponse(data)
+
+def admin_user_update(request,pk):
+    user = get_object_or_404(Users, pk=pk)
+    if request.method == 'POST':
+        form = UsersForm(request.POST, instance=user)
+    else:
+        form = UsersForm(instance=user)
+    return save_admin_user_form(request, form,'samples_manager/admin_partial_user_update.html')
+
     
 def sample_new(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
@@ -1132,7 +1164,7 @@ def dosimeter_clone(request, pk):
         form1 = DosimetersForm1(request.POST)
         form2 = DosimetersForm2(request.POST)
     else:
-        form1 = DosimetersForm1(instance=dosimeter)
+        form1 = DosimetersForm1(instance=dosimeter, initial={'dos_id': ''})
         form2 = DosimetersForm2(instance=dosimeter)
     status = 'clone'
     return save_dosimeter_form(request,  form1, form2, status,'samples_manager/partial_dosimeter_create.html')
@@ -1143,7 +1175,7 @@ def dosimeter_delete(request, pk):
     if request.method == 'POST':
         dosimeter.delete()
         data['form_is_valid'] = True  # This is just to play along with the existing code
-        dosimeters = Dosimeters.objects.all()
+        dosimeters = Dosimeters.objects.all().order_by('-updated_at')
         data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
             'dosimeters': dosimeters
         })
@@ -1369,7 +1401,7 @@ def print_dosimeter_label_view(request, pk):
     dosimeter = get_object_or_404(Dosimeters, pk=pk)
     if request.method == 'POST':
         data['dos_id'] = dosimeter.dos_id
-        dosimeters = Dosimeters.objects.order_by('-updated_at')
+        dosimeters = Dosimeters.objects.all().order_by('-updated_at')
         data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
                 'dosimeters': dosimeters,
             })

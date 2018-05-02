@@ -37,6 +37,31 @@ button.btn.btn-primary.btn-circle.info{
     height: 20px;
 }
 
+#experiment-table thead,#user-table thead,#sample-table thead{
+      background-color: #333;
+      color: #cccccc;
+      font-weight: bold;
+      cursor: default;
+     }
+#experiment-table th:hover{
+     background-color: rgb(44, 44, 44);
+     }
+#user-table th:hover{
+     background-color: rgb(44, 44, 44);
+     }     
+
+#sample-table th:hover{
+     background-color: rgb(44, 44, 44);
+     } 
+
+.dropdown-menu>li>a {
+        color: #337ab7;
+}
+
+.dropdown-menu>li>a:hover {
+        color: #337ab7;
+}
+
 .mbr-hero__text{
     font-size: 60px;
     font-weight: bold;
