@@ -759,6 +759,32 @@ def experiment_new(request):
     status = 'new'
     return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, 'samples_manager/partial_experiment_create.html')
 
+def experiment_status_update(request, pk):
+    data = dict()
+    experiment = get_object_or_404(Experiments, pk=pk)
+    if request.method == 'POST':
+        form =  ExperimentStatus(request.POST,instance=experiment)
+        if form.is_valid():
+            print("form is valid")
+            form.save()
+            data['form_is_valid'] = True
+            experiments = Experiments.objects.all().order_by('-updated_at')
+            experiments = get_registered_samples_number(experiments)
+            data['state'] = experiment.status
+            data['html_experiment_list'] = render_to_string('samples_manager/partial_admin_experiments_list.html', {
+                            'experiments': experiments,
+                        })
+        else:
+            print("form is not valid")
+    else:
+        form = ExperimentStatus(instance=experiment)
+    context = {'form': form, 'experiment': experiment}
+    data['html_form'] = render_to_string('samples_manager/experiment_status_update.html',
+        context,
+        request=request,
+    )
+    return JsonResponse(data)
+
 def experiment_update(request, pk):
     cern_experiments = Experiments.objects.order_by().values('cern_experiment').distinct()
     cern_experiments_list = []

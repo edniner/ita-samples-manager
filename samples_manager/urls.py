@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^experiments/(?P<pk>\d+)/delete/$', views.experiment_delete, name='experiment_delete'),
     url(r'^experiments/(?P<pk>\d+)/clone/$', views.experiment_clone, name='experiment_clone'),
     url(r'^experiments/(?P<pk>\d+)/validate/$', views.experiment_validate, name='experiment_validate'),
+    url(r'^experiments/(?P<pk>\d+)/status/$', views.experiment_status_update, name='experiment_status_update'),
     url(r'^experiments/(?P<pk>\d+)/print/$', views.print_experiment_view, name='print_experiment_view'),
     url(r'^users/$', views.users_list, name='users_list'),
     url(r'^experiment/(?P<experiment_id>\d+)/users/$', views.experiment_users_list, name='experiment_users_list'),

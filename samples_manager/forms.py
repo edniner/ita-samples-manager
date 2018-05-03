@@ -28,6 +28,7 @@ PARTICLES = (
             ("Pions", "Pions"),
             )
 
+STATUSES=(('Registered','Registered'),('Updated','Updated'),('Validated','Validated'),('Irradiation in progress','Irradiation in progress'),('Completed','Completed'))
 
 
 class ExperimentsForm1(forms.ModelForm):
@@ -68,13 +69,14 @@ class ExperimentsForm1(forms.ModelForm):
 
         
 
-
 def validate_negative(value):
     if value < 0:
         raise ValidationError(
             _('%(value)s is negative'),
             params={'value': value},
         )
+
+
 class ExperimentsForm2(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ExperimentsForm2, self).__init__(*args, **kwargs)
@@ -101,6 +103,14 @@ class ExperimentsForm3(forms.ModelForm):
         widgets = {
            'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':4}),
         }
+
+class ExperimentStatus(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ExperimentStatus, self).__init__(*args, **kwargs)
+        self.fields['status'].label = "Choose status:"
+    class Meta:
+        model = Experiments
+        fields = ['status']
 
 
 def get_fluences(experiment_id):
