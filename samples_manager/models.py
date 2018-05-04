@@ -243,7 +243,7 @@ class Dosimeters(models.Model):
     length = models.DecimalField(max_digits=18,decimal_places=6)
     height = models.DecimalField(max_digits=18,decimal_places=6)
     width =  models.DecimalField(max_digits=18,decimal_places=6)
-    weight = models.DecimalField(max_digits=18,decimal_places=6, null=True)
+    weight = models.DecimalField(max_digits=21,decimal_places=9, null=True)
     foils_number = models.PositiveIntegerField()
     status = models.CharField(max_length=50, choices=STATUS)
     dos_type = models.CharField(max_length=50, choices=DOSIMETER_CATEGORY)
