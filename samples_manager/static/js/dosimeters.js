@@ -32,7 +32,7 @@ var loadForm = function () {
           $("#modal-dosimeter").modal("hide");  // <-- Close the modal
         }
         else {
-          alert("Something went wrong!");  // <-- This is just a placeholder for now for testing
+          alert("Something went wrong!"); 
           $("#modal-dosimeter .modal-content").html(data.html_form);
         }
       }
@@ -49,7 +49,7 @@ var loadForm = function () {
             dataType: 'json',
             success: function (data) {
                   $("#modal-dosimeter").modal("hide");  // <-- Close the modal
-                  var text = '<html><head><title>'+data['dos_id']+'</title></head><body onafterprint="self.close()"><h1 style ="text-align: center; font-size:350%; margin:0">'+data['dos_id'] +'</h1>';
+                  var text = '<html><head><title>'+data['dos_id']+'</title></head><body onafterprint="self.close()"><h1 style ="text-align: center; font-size:350%; margin:0">'+data['dos_id'] + '<h1 style ="text-align: center; margin:0">'+data['dos_type'] +'</h1>';
                   text = text+ '<h2 style = "text-align:center; margin:0">IRRAD</h2></body></html>';
                   my_window = window.open('', 'mywindow', 'status=1,width=350,height=300');
                   my_window.document.write(text);

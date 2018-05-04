@@ -32,18 +32,18 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
     #email =  "ina.gotse@gmail.com"
-    email =  "Blerina.Gkotse@cern.ch" '''
+    email =  "Blerina.Gkotse@cern.ch" 
 
     email =  email.lower()
     users = Users.objects.all()
@@ -92,14 +92,21 @@ def fluence_conversion(request):
 
 def get_registered_samples_number(experiments):
     experiment_data = []
+    total_registered_samples = 0
+    total_declared_samples = 0
+    row = 0
     for experiment in experiments:
             samples = Samples.objects.filter(experiment = experiment)
-            number = samples.count
+            number = samples.count()
+            total_registered_samples = total_registered_samples + number
+            total_declared_samples = total_declared_samples + int(experiment.number_samples)
+            row = row + 1
             experiment_data.append({  
             "experiment": experiment,
             "number_samples": number,
+            "row":row,
             })
-    return experiment_data
+    return {"experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples}
 
 def authorised_experiments(logged_user):
      if logged_user.role == 'Admin':
@@ -113,7 +120,8 @@ def experiments_list(request):
     if logged_user.role == 'Admin':
         experiments = authorised_experiments(logged_user)
         experiment_data = get_registered_samples_number(experiments)
-        return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data,'logged_user': logged_user})
+        print(experiment_data["experiments"])
+        return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data["experiments"],"total_registered_samples": experiment_data["total_registered_samples"], "total_declared_samples": experiment_data["total_declared_samples"], 'logged_user': logged_user})
     else:
         experiments = authorised_experiments(logged_user)
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
@@ -122,7 +130,7 @@ def admin_experiments_list(request):
     experiments = Experiments.objects.order_by('-updated_at')
     experiment_data = get_registered_samples_number(experiments)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data,'logged_user': logged_user})
+    return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data["experiments"],"total_registered_samples": experiment_data["total_registered_samples"], "total_declared_samples": experiment_data["total_declared_samples"],'logged_user': logged_user})
     
 def users_list(request):
     users = Users.objects.all()
@@ -1427,6 +1435,7 @@ def print_dosimeter_label_view(request, pk):
     dosimeter = get_object_or_404(Dosimeters, pk=pk)
     if request.method == 'POST':
         data['dos_id'] = dosimeter.dos_id
+        data['dos_type'] = dosimeter.dos_type
         dosimeters = Dosimeters.objects.all().order_by('-updated_at')
         data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
                 'dosimeters': dosimeters,

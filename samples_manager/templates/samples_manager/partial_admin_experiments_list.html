@@ -1,5 +1,6 @@
 {% for experiment in experiments %}
   <tr>
+    <td>{{ experiment.row}}</td>
     <td>{{ experiment.experiment.updated_at|date:"d.m.Y"}} {{ experiment.experiment.updated_at|time:"H:i"}}</td>
     <td>{{ experiment.experiment.title }}</td>
     <td>{{ experiment.experiment.availability|date:"d.m.Y"}}</td>
@@ -51,3 +52,4 @@
       <td colspan="10">There are no experiments</td>
     </tr>
   {% endfor %}
+  

@@ -18,7 +18,7 @@
     <div class="row">
         <div class="col-sm-2">
         </div>
-        <div class="col-sm-8">
+        <div class="col-sm-6">
             <h3>IRRADIATION EXPERIMENTS</h3>
         </div>
         <div class="col-sm-2">
@@ -27,6 +27,14 @@
                         title='Register new irradiation experiment'
                         data-url="{% url 'samples_manager:experiment_new' %}">
                         <span class="glyphicon glyphicon-plus"></span>New Irradiation
+                </button> 
+        </div>
+        <div class="col-sm-2">
+                <button type="button"
+                        class="btn"
+                        title='Select'>
+                        <span class="glyphicon glyphicon-ok"></span>
+                        Select
                 </button> 
         </div>
         <!--<div class="col-sm-2">
@@ -42,6 +50,7 @@
             <table class="table table-responsive sortable" id="experiment-table">
                 <thead>
                     <tr>
+                        <th>Row</th>
                         <th>Last update</th>
                         <th>Irradiation title</th>
                         <th>Availability</th>
@@ -52,6 +61,12 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
+                <tfoot>
+                    <tr>
+
+                    <tr><td></td><td></td><td></td><td><b>Total: {{total_registered_samples}}/{{total_declared_samples}}</b></td><td></td><td></td><td></td><td></td></tr>
+                    </tr>
+                </tfoot>
                 <tbody>
                     {% include 'samples_manager/partial_admin_experiments_list.html' %}
                 </tbody>

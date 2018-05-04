@@ -37,7 +37,7 @@ button.btn.btn-primary.btn-circle.info{
     height: 20px;
 }
 
-#experiment-table thead,#user-table thead,#sample-table thead{
+#experiment-table thead,#user-table thead,#sample-table thead, #dosimeter-table thead{
       background-color: #333;
       color: #cccccc;
       font-weight: bold;
@@ -51,6 +51,10 @@ button.btn.btn-primary.btn-circle.info{
      }     
 
 #sample-table th:hover{
+     background-color: rgb(44, 44, 44);
+     } 
+
+#dosimeter-table th:hover{
      background-color: rgb(44, 44, 44);
      } 
 
