@@ -206,6 +206,10 @@ def generate_set_id(sample):
     else:
         return sample.set_id
 
+#def generate_multiple_dos(request):
+
+
+
 
 def generate_dos_id(dosimeter):
     if dosimeter.dos_id =='':
@@ -388,7 +392,6 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
                 dosimeter = Dosimeters.objects.get(pk = dosimeter_temp.pk)
                 dosimeter.status = "Registered"
                 dosimeter.created_by = logged_user
-                print("id")
                 print(dosimeter.dos_id)
                 if dosimeter.dos_id =='':
                     print("generating")
@@ -1089,6 +1092,28 @@ def user_delete(request,experiment_id,pk):
         data['html_form'] = render_to_string('samples_manager/partial_user_delete.html',
             context,
             request=request,
+        )
+    return JsonResponse(data)
+
+def generate_dos_ids(request):
+    data = dict()
+    if request.method == 'POST':
+        number_ids = int(request.POST['number_ids'])
+        print(number_ids)
+        for i in range(0,number_ids):
+            dosimeter = Dosimeters(status = "Registered", dos_type = "Aluminium")
+            dosimeter.save()
+            dosimeter.dos_id = generate_dos_id(dosimeter)
+            dosimeter.save()
+        data['form_is_valid'] = True
+        dosimeters = Dosimeters.objects.all().order_by('-updated_at')
+        data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
+                'dosimeters':dosimeters
+            })
+    context = {}
+    data['html_form'] = render_to_string('samples_manager/generate_dos_ids.html',
+        context,
+        request=request,
         )
     return JsonResponse(data)
 

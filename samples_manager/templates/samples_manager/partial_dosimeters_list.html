@@ -1,9 +1,18 @@
 {% for dosimeter in dosimeters %}
   <tr>
+    <td><input type="checkbox"class="chk" name="check-{{dosimeter.id}}" value="{{dosimeter.id}}"></td>
     <td>{{ dosimeter.updated_at|date:"d.m.Y"}} {{ dosimeter.updated_at|time:"H:i"}}</td>
     <td>{{ dosimeter.dos_id }}</td>
+    {% if dosimeter.height and dosimeter.width %}
     <td>{{ dosimeter.height}}×{{dosimeter.width}}</td>
+    {% else %}
+    <td></td>
+    {% endif %}
+    {% if dosimeter.weight %}
     <td>{{ dosimeter.weight }}</td>
+    {% else %}
+    <td></td>
+    {% endif %}
     <td>{{ dosimeter.status }}</td>
      <td>
       <button type="button"
@@ -17,15 +26,15 @@
         <span class="glyphicon glyphicon-duplicate"></span>
       </button>
        <button type="button"
-              class="btn btn-danger js-delete-dosimeter"
-              data-url="{% url 'samples_manager:dosimeter_delete' dosimeter.id %}">
-        <span class="glyphicon glyphicon-trash"></span>
-      </button>
-       <button type="button"
               class="btn js-print-dosimeter-label"
               data-url="{% url 'samples_manager:print_dosimeter_label_view' dosimeter.id %}"
               title='Print Label'>
         <span class="glyphicon glyphicon glyphicon-barcode"></span>
+      </button>
+      <button type="button"
+              class="btn btn-danger js-delete-dosimeter"
+              data-url="{% url 'samples_manager:dosimeter_delete' dosimeter.id %}">
+        <span class="glyphicon glyphicon-trash"></span>
       </button>
     </td>
   </tr>

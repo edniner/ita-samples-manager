@@ -16,9 +16,9 @@
   
 <div class='panel panel-default' id="main_panel">
     <div class="row">
-        <div class="col-sm-2">
+                <div class="col-sm-2">
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-8">
             <h3>IRRADIATION EXPERIMENTS</h3>
         </div>
         <div class="col-sm-2">
@@ -27,14 +27,6 @@
                         title='Register new irradiation experiment'
                         data-url="{% url 'samples_manager:experiment_new' %}">
                         <span class="glyphicon glyphicon-plus"></span>New Irradiation
-                </button> 
-        </div>
-        <div class="col-sm-2">
-                <button type="button"
-                        class="btn"
-                        title='Select'>
-                        <span class="glyphicon glyphicon-ok"></span>
-                        Select
                 </button> 
         </div>
         <!--<div class="col-sm-2">
@@ -62,10 +54,7 @@
                     </tr>
                 </thead>
                 <tfoot>
-                    <tr>
-
-                    <tr><td></td><td></td><td></td><td><b>Total: {{total_registered_samples}}/{{total_declared_samples}}</b></td><td></td><td></td><td></td><td></td></tr>
-                    </tr>
+                    <tr><td></td><td></td><td></td><td><b>Total: {{total_registered_samples}}/{{total_declared_samples}}</b></td><td></td><td></td><td></td><td></td><td></td></tr>
                 </tfoot>
                 <tbody>
                     {% include 'samples_manager/partial_admin_experiments_list.html' %}

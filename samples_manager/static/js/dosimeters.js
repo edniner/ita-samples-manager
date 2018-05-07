@@ -1,5 +1,43 @@
 $(function () {
 
+  checked_values = 0;
+
+  $('.chk').change(function() {
+    /*if(this.checked) {
+            alert($(this).val());
+        }   */
+    if (this.checked){
+        checked_values = checked_values + 1;
+        $('#new_dos').hide();
+        $('#print_dos').show();
+        $('#generate_dos').hide();
+      } 
+    else{
+      checked_values = checked_values - 1;
+      if (checked_values == 0){
+        $('#new_dos').show();
+        $('#print_dos').hide();
+        $('#generate_dos').show();
+      }
+    }
+  });
+  
+var  generate_ids = function () {
+    console.log("generate");
+    var btn = $(this);
+    $.ajax({
+      url: btn.attr("data-url"),
+      type: 'get',
+      dataType: 'json',
+      beforeSend: function () {
+        $("#modal-dosimeter").modal("show");
+      },
+      success: function (data) {
+        $("#modal-dosimeter .modal-content").html(data.html_form);
+      }
+    });
+  };
+
 var loadForm = function () {
     var btn = $(this);
     $.ajax({
@@ -63,6 +101,10 @@ var loadForm = function () {
 
   // Create dosimeter
   $(".js-create-dosimeter").click(loadForm);
+
+  $("#generate_dos").click(generate_ids);
+  $("#modal-dosimeter").on("submit", ".js-generate-ids-form", saveForm);
+
   $("#modal-dosimeter").on("submit", ".js-dosimeter-create-form",saveForm );
 
    // Update dosimeter
@@ -72,12 +114,14 @@ var loadForm = function () {
     //Clone dosimeter
   $("#dosimeter-table").on("click", ".js-clone-dosimeter", loadForm);
 
-  // Delete book
+  // Delete dosimeter
   $("#dosimeter-table").on("click", ".js-delete-dosimeter", loadForm);
   $("#modal-dosimeter").on("submit", ".js-dosimeter-delete-form", saveForm);
 
   // Print label
   $("#dosimeter-table").on("click", ".js-print-dosimeter-label", loadForm);
   $("#modal-dosimeter").on("submit", ".js-print-dosimeter-label-form", printLabel);
+
+  
 
 });

@@ -238,13 +238,13 @@ class Samples(models.Model):
 
 class Dosimeters(models.Model):
     dos_id= models.CharField(max_length=50, null= True, unique = True)
-    responsible = models.ForeignKey(Users, related_name="%(class)s_responsible")
-    current_location = models.CharField(max_length=100)
-    length = models.DecimalField(max_digits=18,decimal_places=6)
-    height = models.DecimalField(max_digits=18,decimal_places=6)
-    width =  models.DecimalField(max_digits=18,decimal_places=6)
+    responsible = models.ForeignKey(Users, related_name="%(class)s_responsible",  null= True)
+    current_location = models.CharField(max_length=100, null= True)
+    length = models.DecimalField(max_digits=18,decimal_places=6, null= True)
+    height = models.DecimalField(max_digits=18,decimal_places=6, null= True)
+    width =  models.DecimalField(max_digits=18,decimal_places=6, null= True)
     weight = models.DecimalField(max_digits=21,decimal_places=9, null=True)
-    foils_number = models.PositiveIntegerField()
+    foils_number = models.PositiveIntegerField(null=True)
     status = models.CharField(max_length=50, choices=STATUS)
     dos_type = models.CharField(max_length=50, choices=DOSIMETER_CATEGORY)
     comments = models.TextField(null=True)
@@ -253,7 +253,7 @@ class Dosimeters(models.Model):
     updated_at = models.DateTimeField()
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
-    last_location = models.CharField(max_length=100)
+    last_location = models.CharField(max_length=100,null=True)
 
     def __str__(self):              # __str__ on Python 2
         return self.dosimeter_id
