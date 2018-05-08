@@ -60,10 +60,8 @@ var loadForm = function () {
   };
 
   var dymoPrint = function(){
-            alert("printing!");
             try
             {
-                // open label
             console.log("in the print button");
             var labelXml = '<?xml version="1.0" encoding="utf-8"?>\
                                 <DieCutLabel Version="8.0" Units="twips" MediaType="Default">\
@@ -99,14 +97,16 @@ var loadForm = function () {
 
                 // create label set to print data
                 var labelSetBuilder = new dymo.label.framework.LabelSetBuilder();
-
+                var textMarkup = '<b>DOS-000000</b><br/>';
+                 textMarkup += 'Aluminum<br/>';
+                 textMarkup += 'IRRAD';
                 // first label
                 var record = labelSetBuilder.addRecord();
-                record.setText("Text", "text1");
+                record.setTextMarkup('Text', textMarkup);
 
                 // second label
                 record = labelSetBuilder.addRecord();
-                record.setText("Text", "text2");
+                record.setTextMarkup('Text', textMarkup);
 
                 
                 // select printer to print on
