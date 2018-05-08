@@ -1,5 +1,5 @@
 {% load staticfiles %}
-<script src = "http://www.labelwriter.com/software/dls/sdk/js/DYMO.Label.Framework.2.0.2.js" type="text/javascript" charset="UTF-8"> </script>
+<script src="{% static 'js/DYMO.Label.Framework.2.0.2.js' %}"></script>
 <form method="post"  class="js-print-dosimeter-label-form">
   {% csrf_token %}
   <div class="modal-header">
