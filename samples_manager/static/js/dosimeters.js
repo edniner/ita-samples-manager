@@ -39,6 +39,8 @@ var  generate_ids = function () {
   };
 
 var loadForm = function () {
+   alert("loadForm");
+   console.log("loadForm");
     var btn = $(this);
     $.ajax({
       url: btn.attr("data-url"),
@@ -51,9 +53,87 @@ var loadForm = function () {
         $("#modal-dosimeter .modal-content").html(data.html_form);
       }
     });
+    var text1 = "text1";
+    var text2 = "text2";
+    var printButton = document.getElementById('printButton');
+
   };
 
+  var dymoPrint = function(){
+            alert("printing!");
+            try
+            {
+                // open label
+            console.log("in the print button");
+            var labelXml = '<?xml version="1.0" encoding="utf-8"?>\
+                                <DieCutLabel Version="8.0" Units="twips" MediaType="Default">\
+                                    <PaperOrientation>Landscape</PaperOrientation>\
+                                    <Id>Small30332</Id>\
+                                    <IsOutlined>false</IsOutlined>\
+                                    <PaperName>30332 1 in x 1 in</PaperName>\
+                                    <DrawCommands>\
+                                        <RoundRectangle X="0" Y="0" Width="1440" Height="1440" Rx="180" Ry="180" />\
+                                    </DrawCommands>\
+                                    <ObjectInfo>\
+                                        <TextObject>\
+                                            <Name>Text</Name>\
+                                            <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />\
+                                            <BackColor Alpha="0" Red="255" Green="255" Blue="255" />\
+                                            <LinkedObjectName />\
+                                            <Rotation>Rotation0</Rotation>\
+                                            <IsMirrored>False</IsMirrored>\
+                                            <IsVariable>True</IsVariable>\
+                                            <GroupID>-1</GroupID>\
+                                            <IsOutlined>False</IsOutlined>\
+                                            <HorizontalAlignment>Center</HorizontalAlignment>\
+                                            <VerticalAlignment>Middle</VerticalAlignment>\
+                                            <TextFitMode>ShrinkToFit</TextFitMode>\
+                                            <UseFullFontHeight>True</UseFullFontHeight>\
+                                            <Verticalized>False</Verticalized>\
+                                            <StyledText/>\
+                                            </TextObject>\
+                                        <Bounds X="144" Y="57" Width="1207.55907325383" Height="1298.26773603346" />\
+                                    </ObjectInfo>\
+                            </DieCutLabel>';
+                var label = dymo.label.framework.openLabelXml(labelXml);
+
+                // create label set to print data
+                var labelSetBuilder = new dymo.label.framework.LabelSetBuilder();
+
+                // first label
+                var record = labelSetBuilder.addRecord();
+                record.setText("Text", "text1");
+
+                // second label
+                record = labelSetBuilder.addRecord();
+                record.setText("Text", "text2");
+
+                
+                // select printer to print on
+                // for simplicity sake just use the first LabelWriter printer
+                var printers = dymo.label.framework.getPrinters();
+                if (printers.length == 0)
+                    throw "No DYMO printers are installed. Install DYMO printers.";
+
+                var printerName = "DYMO LabelWriter 450 Turbo";
+                
+                if (printerName == "")
+                    throw "No LabelWriter printers found. Install LabelWriter printer";
+
+                // finally print the label with default print params
+                console.log("before label print");
+                label.print(printerName, "", labelSetBuilder);
+                console.log("after label print");
+            }
+            catch(e)
+            {
+                alert(e.message || e);
+            }
+        }
+
+
   var saveForm = function () {
+    alert("save form");
     console.log("In the save form");
     var form = $(this);
     console.log(form);
@@ -66,8 +146,9 @@ var loadForm = function () {
         console.log("Success");
         console.log(data);
         if (data.form_is_valid) {
+          alert("data is valid");
           $("#dosimeter-table tbody").html(data.html_dosimeter_list);  // <-- Replace the table body
-          $("#modal-dosimeter").modal("hide");  // <-- Close the modal
+          //$("#modal-dosimeter").modal("hide");  // <-- Close the modal
         }
         else {
           alert("Something went wrong!"); 
@@ -79,6 +160,8 @@ var loadForm = function () {
   };
 
   var printLabel = function (){
+         alert("print label");
+          console.log("data is valid");
           var form = $(this);
           $.ajax({
             url: form.attr("action"),
@@ -86,7 +169,7 @@ var loadForm = function () {
             type: form.attr("method"),
             dataType: 'json',
             success: function (data) {
-                  $("#modal-dosimeter").modal("hide");  // <-- Close the modal
+                  //$("#modal-dosimeter").modal("hide");  // <-- Close the modal
                   var text = '<html><head><title>'+data['dos_id']+'</title></head><body onafterprint="self.close()"><h1 style ="text-align: center; font-size:350%; margin:0">'+data['dos_id'] + '<h1 style ="text-align: center; margin:0">'+data['dos_type'] +'</h1>';
                   text = text+ '<h2 style = "text-align:center; margin:0">IRRAD</h2></body></html>';
                   my_window = window.open('', 'mywindow', 'status=1,width=350,height=300');
@@ -120,8 +203,6 @@ var loadForm = function () {
 
   // Print label
   $("#dosimeter-table").on("click", ".js-print-dosimeter-label", loadForm);
-  $("#modal-dosimeter").on("submit", ".js-print-dosimeter-label-form", printLabel);
-
-  
+  $("#modal-dosimeter").on("submit", ".js-print-dosimeter-label-form", dymoPrint);
 
 });
