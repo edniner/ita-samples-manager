@@ -36,14 +36,14 @@ def get_logged_user(request):
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"] 
 
     '''username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
     #email =  "ina.gotse@gmail.com"
-    email =  "Blerina.Gkotse@cern.ch" '''
+    email =  "Blerina.Gkotse@cern.ch"'''
 
     email =  email.lower()
     users = Users.objects.all()
