@@ -1,4 +1,23 @@
 $(function () {
+  checked_sample_values = 0;
+
+  $('.chkbox').change(function() {
+    /*if(this.checked) {
+            alert($(this).val());
+        }   */ 
+    if (this.checked){
+        checked_sample_values = checked_sample_values + 1;
+        $('#new_sample').hide();
+        $('#print_samples').show();
+      } 
+    else{
+      checked_sample_values = checked_sample_values - 1;
+      if (checked_sample_values == 0){
+        $('#new_sample').show();
+        $('#print_samples').hide();
+      }
+    }
+  });
 
 var loadForm = function () {
     var btn = $(this);
@@ -72,6 +91,91 @@ var loadForm = function () {
           return false;
   }
 
+
+var dymoPrintSamples = function(){
+            console.log('sample print dymo');
+            var val = [];
+            checked_samples = [];
+            $('.chkbox:checked').each(function(i){
+                checked_samples[i] = $(this).val();
+            });
+            console.log(checked_samples);
+            try
+            {
+            var labelXml = '<?xml version="1.0" encoding="utf-8"?>\
+                                <DieCutLabel Version="8.0" Units="twips" MediaType="Default">\
+                                    <PaperOrientation>Landscape</PaperOrientation>\
+                                    <Id>Small30332</Id>\
+                                    <IsOutlined>false</IsOutlined>\
+                                    <PaperName>30332 1 in x 1 in</PaperName>\
+                                    <DrawCommands>\
+                                        <RoundRectangle X="0" Y="0" Width="1440" Height="1440" Rx="180" Ry="180" />\
+                                    </DrawCommands>\
+                                    <ObjectInfo>\
+                                        <TextObject>\
+                                            <Name>Text</Name>\
+                                            <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />\
+                                            <BackColor Alpha="0" Red="255" Green="255" Blue="255" />\
+                                            <LinkedObjectName />\
+                                            <Rotation>Rotation0</Rotation>\
+                                            <IsMirrored>False</IsMirrored>\
+                                            <IsVariable>True</IsVariable>\
+                                            <GroupID>-1</GroupID>\
+                                            <IsOutlined>False</IsOutlined>\
+                                            <HorizontalAlignment>Center</HorizontalAlignment>\
+                                            <VerticalAlignment>Middle</VerticalAlignment>\
+                                            <TextFitMode>ShrinkToFit</TextFitMode>\
+                                            <UseFullFontHeight>True</UseFullFontHeight>\
+                                            <Verticalized>False</Verticalized>\
+                                            <StyledText/>\
+                                            </TextObject>\
+                                        <Bounds X="144" Y="57" Width="1207.55907325383" Height="1298.26773603346" />\
+                                    </ObjectInfo>\
+                            </DieCutLabel>';
+
+                var label = dymo.label.framework.openLabelXml(labelXml);
+                console.log(label);
+
+                // create label set to print data
+                var labelSetBuilder = new dymo.label.framework.LabelSetBuilder();
+                console.log(labelSetBuilder);
+                var i;
+                var textMarkup = '';
+                for (i = 0; i <checked_samples.length; i++) { 
+                    textMarkup = '<b>'+checked_samples[i]+'<br/>';
+                    textMarkup += 'IRRAD';
+                    console.log(textMarkup);
+                    var record = labelSetBuilder.addRecord();
+                    record.setTextMarkup('Text', textMarkup);
+                }
+                
+                // select printer to print on
+                // for simplicity sake just use the first LabelWriter printer
+                var printers = dymo.label.framework.getPrinters();
+                console.log(printers);
+                if (printers.length == 0)
+                    throw "No DYMO printers are installed. Install DYMO printers.";
+
+                var printerName = "DYMO LabelWriter 450 Turbo";
+                
+                if (printerName == "")
+                    throw "No LabelWriter printers found. Install LabelWriter printer";
+                
+                // finally print the label with default print params
+                console.log(printers[0]);
+                console.log(labelSetBuilder);
+                label.print(printerName, "", labelSetBuilder);
+                $('.chkbox:checked').removeAttr('checked');
+                checked_sample_values = 0;
+                $('#new_sample').show();
+                $('#print_samples').hide();
+            }
+            catch(e)
+            {
+                alert(e.message || e);
+            }
+        }
+
   var samplesloadForm = function (experiment_id) {
     var btn = $(this);
     link = 'experiment/'+experiment_id+'/sample/new/';
@@ -108,4 +212,5 @@ var loadForm = function () {
   // Print label
   $("#sample-table").on("click", ".js-print-sample-label", loadForm);
   $("#modal-sample").on("submit", ".js-print-sample-label-form", printLabel);
+  $("#print_samples").click(dymoPrintSamples);
 });

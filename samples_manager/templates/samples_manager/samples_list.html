@@ -23,10 +23,18 @@
         </div>
         <div class="col-sm-2">
             <button type="button"
+                    id = "new_sample"
                     class="btn btn-primary js-create-sample"
                     data-url="{% url 'samples_manager:sample_new' experiment.id %}">
                     <span class="glyphicon glyphicon-plus"></span>New Sample
-            </button>  
+            </button> 
+             <button  type="button"
+                    id = "print_samples"
+                    class="btn js-print-labels"
+                    data-url="{% url 'samples_manager:sample_new' experiment.id %}"
+                    style="color:white;display:none">
+                    <span class="glyphicon glyphicon-barcode"></span> Print labels
+            </button>    
         </div>  
     </div>
     <div class="panel-body">
@@ -35,6 +43,7 @@
                 <table class="table table-responsive sortable" id="sample-table">
                     <thead>
                         <tr>
+                        <th></th>
                         <th>Last update</th>
                         <th>Sample ID</th>    
                         <th>Sample Name</th>

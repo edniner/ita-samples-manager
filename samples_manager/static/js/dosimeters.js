@@ -1,9 +1,6 @@
 $(function () {
 
   checked_values = 0;
-  var text1 = "text1";
-  var text2 = "text2";
-  var printButton = document.getElementById('printButton');
 
   $('.chk').change(function() {
     /*if(this.checked) {
@@ -57,15 +54,15 @@ var loadForm = function () {
   };
 
   var dymoPrint = function(){
+            console.log("dymo print");
             var val = [];
-            checked_dosimeters = [] 
+            checked_dosimeters = []; 
             $('.chk:checked').each(function(i){
                 checked_dosimeters[i] = $(this).val();
             });
             console.log(checked_dosimeters);
             try
             {
-            console.log("dymo print");
             var labelXml = '<?xml version="1.0" encoding="utf-8"?>\
                                 <DieCutLabel Version="8.0" Units="twips" MediaType="Default">\
                                     <PaperOrientation>Landscape</PaperOrientation>\
@@ -98,10 +95,10 @@ var loadForm = function () {
                             </DieCutLabel>';
 
                 var label = dymo.label.framework.openLabelXml(labelXml);
-
+                console.log(label);
                 // create label set to print data
                 var labelSetBuilder = new dymo.label.framework.LabelSetBuilder();
-
+                console.log(labelSetBuilder);
                 var i;
                 var textMarkup = '';
                 for (i = 0; i <checked_dosimeters.length; i++) { 
@@ -115,6 +112,7 @@ var loadForm = function () {
                 // select printer to print on
                 // for simplicity sake just use the first LabelWriter printer
                 var printers = dymo.label.framework.getPrinters();
+                console.log(printers);
                 if (printers.length == 0)
                     throw "No DYMO printers are installed. Install DYMO printers.";
 
@@ -122,9 +120,12 @@ var loadForm = function () {
                 
                 if (printerName == "")
                     throw "No LabelWriter printers found. Install LabelWriter printer";
-
+                
                 // finally print the label with default print params
+                console.log(printers[0]);
+                console.log(labelSetBuilder);
                 label.print(printerName, "", labelSetBuilder);
+                document.getElementById("load").style.display = "none";
                 $('.chk:checked').removeAttr('checked');
                 checked_values = 0;
                 $('#new_dos').show();
