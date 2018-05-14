@@ -19,6 +19,45 @@ $(function () {
     }
   });
 
+  
+var load_values = function() {
+  checked_sample_values = 0;
+  $("#samples-select-all").prop("checked", false);
+  $('.chkbox').change(function() {
+    if (this.checked){
+        checked_sample_values = checked_sample_values + 1;
+        $('#new_sample').hide();
+        $('#print_samples').show();
+      } 
+    else{
+      checked_sample_values = checked_sample_values - 1;
+      if (checked_sample_values == 0){
+        $('#new_sample').show();
+        $('#print_samples').hide();
+      }
+    }
+  });  
+
+$("#samples-select-all").click(function(){
+    $('.chkbox').not(this).prop('checked', this.checked);
+        if (this.checked){
+        checked_sample_values = checked_sample_values + 1;
+        $('#new_sample').hide();
+        $('#print_samples').show();
+      } 
+    else{
+      checked_sample_values = checked_sample_values - 1;
+      if (checked_sample_values == 0){
+        $('#new_sample').show();
+        $('#print_samples').hide();
+      }
+    }
+  });
+}
+
+load_values();  
+
+
 var loadForm = function () {
     var btn = $(this);
     $.ajax({
@@ -63,6 +102,7 @@ var loadForm = function () {
           else
             alert("Please, check the form and fill all the required fields!");
         }
+        load_values();  
       }
     });
     return false;
@@ -83,8 +123,7 @@ var loadForm = function () {
                   my_window.document.write(text);
                   my_window.document.close();
                   $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
-                  
-                  
+                  load_values();
               }
           });
           console.log("false")
@@ -142,7 +181,7 @@ var dymoPrintSamples = function(){
                 var i;
                 var textMarkup = '';
                 for (i = 0; i <checked_samples.length; i++) { 
-                    textMarkup = '<b>'+checked_samples[i]+'<br/>';
+                    textMarkup = '<b><font family="Arial" size="48">'+checked_samples[i]+'<br/>';
                     textMarkup += 'IRRAD';
                     console.log(textMarkup);
                     var record = labelSetBuilder.addRecord();
@@ -152,23 +191,26 @@ var dymoPrintSamples = function(){
                 // select printer to print on
                 // for simplicity sake just use the first LabelWriter printer
                 var printers = dymo.label.framework.getPrinters();
-                console.log(printers);
-                if (printers.length == 0)
-                    throw "No DYMO printers are installed. Install DYMO printers.";
-
-                var printerName = "DYMO LabelWriter 450 Turbo";
-                
-                if (printerName == "")
-                    throw "No LabelWriter printers found. Install LabelWriter printer";
-                
-                // finally print the label with default print params
-                console.log(printers[0]);
-                console.log(labelSetBuilder);
-                label.print(printerName, "", labelSetBuilder);
+                 if (printers.length == 0)
+                    alert("No DYMO printers are installed. Install DYMO printers.");
+                else{
+                      var printerName = "DYMO LabelWriter 450 Turbo";
+                      if (printerName == "")
+                          throw "No LabelWriter printers found. Install LabelWriter printer";
+                      
+                      // finally print the label with default print params
+                      if (printers[0].isConnected){
+                        console.log("in the print");
+                        label.print(printerName, "", labelSetBuilder);
+                        }
+                      else
+                        alert('No Dymo printer connected!')
+                }
                 $('.chkbox:checked').removeAttr('checked');
                 checked_sample_values = 0;
                 $('#new_sample').show();
                 $('#print_samples').hide();
+                load_values();
             }
             catch(e)
             {

@@ -383,7 +383,6 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
     logged_user = get_logged_user(request)
     if request.method == 'POST':
         if form1.is_valid() and form2.is_valid():
-            print("valid")
             if status == 'new' or  status == 'clone':
                 dosimeter_data = {}
                 dosimeter_data.update(form1.cleaned_data)
@@ -408,7 +407,6 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
                 print("sample updated")
             else:
                 pass
-            print ("dosimeter saved")
             data['form_is_valid'] = True
             dosimeters = Dosimeters.objects.all().order_by('-updated_at')
             data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
@@ -558,7 +556,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     experiment_data.update(form1.cleaned_data)
                     experiment_data.update(form2.cleaned_data)
                     experiment_data.update(form3.cleaned_data)
-                    #users=experiment_data.pop('users')
                     experiment_temp = Experiments.objects.create(**experiment_data)
                     experiment = Experiments.objects.get(pk = experiment_temp.pk)
                     experiment.created_by =  logged_user 
@@ -748,7 +745,6 @@ def experiment_new(request):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     if request.method == 'POST':
-        print("in the post!")
         logging.warning('POST request')
         form1 = ExperimentsForm1(request.POST,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST)
@@ -794,7 +790,6 @@ def experiment_status_update(request, pk):
         context,
         request=request,
     )
-    print(data)
     return JsonResponse(data)
 
 def experiment_update(request, pk):
@@ -1100,7 +1095,6 @@ def generate_dos_ids(request):
     data = dict()
     if request.method == 'POST':
         number_ids = int(request.POST['number_ids'])
-        print(number_ids)
         for i in range(0,number_ids):
             dosimeter = Dosimeters(status = "Registered", dos_type = "Aluminium")
             dosimeter.save()
@@ -1155,7 +1149,6 @@ def sample_update(request, experiment_id, pk):
         form2 = SamplesForm2(instance=sample, experiment_id = experiment.id)
         layers_formset = LayersFormset(instance=sample)
     status = 'update'
-    print('update')
     return save_sample_form(request, form1, layers_formset, form2, status,experiment, 'samples_manager/partial_sample_update.html')
 
 
@@ -1253,7 +1246,6 @@ def dosimeter_delete(request, pk):
 
 
 def print_experiment_view(request, pk):
-    print("printing")
     experiment = get_object_or_404(Experiments, pk=pk)
     filename="experiment %s.pdf" % experiment.title
     doc = SimpleDocTemplate(filename)
@@ -1439,14 +1431,21 @@ def print_sample_label_view(request, experiment_id, pk):
         data['req_fluence'] = sample.req_fluence.req_fluence
         category = sample.category
         print(category)
-        data['category'] = category.split(": ",1)[1]
+        print("data category")
+        if experiment.category == 'Passive Standard':
+            data['category'] = sample.category
+        else:
+            data['category'] = category.split(":",1)[1]
         print(data['category'])
+        print('responsible')
         data['responsible'] = experiment.responsible.email
+        print(data['responsible'])
         samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                 'samples': samples,
                 'experiment': experiment
             })
+        print(data['html_sample_list'])
     else:
         context = {'sample': sample, 'experiment': experiment }
         data['html_form'] = render_to_string('samples_manager/partial_sample_print_label.html',

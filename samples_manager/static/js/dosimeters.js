@@ -1,6 +1,64 @@
 $(function () {
 
-  checked_values = 0;     
+  
+var load_values = function() {
+  checked_values = 0;
+  $("#dosimeters-select-all").prop("checked", false);
+  $('input.chk').change(function() {
+    if (this.checked){
+        checked_values = checked_values + 1;
+        $('#new_dos').hide();
+        $('#print_dos').show();
+        $('#generate_dos').hide();
+      } 
+    else{
+      checked_values = checked_values - 1;
+      if (checked_values == 0){
+        $('#new_dos').show();
+        $('#print_dos').hide();
+        $('#generate_dos').show();
+      }
+    }
+  });  
+
+$("#dosimeters-select-all").click(function(){
+    $('.chk').not(this).prop('checked', this.checked);
+    if (this.checked){
+              checked_values = checked_values + 1;
+              $('#new_dos').hide();
+              $('#print_dos').show();
+              $('#generate_dos').hide();
+            } 
+          else{
+            checked_values = checked_values - 1;
+            if (checked_values == 0){
+              $('#new_dos').show();
+              $('#print_dos').hide();
+              $('#generate_dos').show();
+            }
+          }  
+});
+}
+
+load_values();  
+
+$("#dosimeters-select-all").click(function(){
+    $('.chk').not(this).prop('checked', this.checked);
+    if (this.checked){
+              checked_values = checked_values + 1;
+              $('#new_dos').hide();
+              $('#print_dos').show();
+              $('#generate_dos').hide();
+            } 
+          else{
+            checked_values = checked_values - 1;
+            if (checked_values == 0){
+              $('#new_dos').show();
+              $('#print_dos').hide();
+              $('#generate_dos').show();
+            }
+          }  
+}); 
   
 var  generate_ids = function () {
     console.log("generate");
@@ -92,25 +150,28 @@ var loadForm = function () {
                 // select printer to print on
                 // for simplicity sake just use the first LabelWriter printer
                 var printers = dymo.label.framework.getPrinters();
-                console.log(printers);
+                
                 if (printers.length == 0)
-                    throw "No DYMO printers are installed. Install DYMO printers.";
-
-                var printerName = "DYMO LabelWriter 450 Turbo";
-                
-                if (printerName == "")
-                    throw "No LabelWriter printers found. Install LabelWriter printer";
-                
-                // finally print the label with default print params
-                console.log(printers[0]);
-                console.log(labelSetBuilder);
-                label.print(printerName, "", labelSetBuilder);
-                document.getElementById("load").style.display = "none";
+                    alert("No DYMO printers are installed. Install DYMO printers.");
+                else{
+                      var printerName = "DYMO LabelWriter 450 Turbo";
+                      if (printerName == "")
+                          throw "No LabelWriter printers found. Install LabelWriter printer";
+                      
+                      // finally print the label with default print params
+                      if (printers[0].isConnected){
+                        console.log("in the print");
+                        label.print(printerName, "", labelSetBuilder);
+                        }
+                      else
+                        alert('No Dymo printer connected!')
+                }
                 $('.chk:checked').removeAttr('checked');
-                checked_values = 0;
                 $('#new_dos').show();
                 $('#print_dos').hide();
                 $('#generate_dos').show();
+                checked_values = 0;
+                load_values();    
             }
             catch(e)
             {
@@ -139,6 +200,7 @@ var loadForm = function () {
           alert("Something went wrong!"); 
           $("#modal-dosimeter .modal-content").html(data.html_form);
         }
+        load_values();
       }
     });
     return false;
@@ -159,6 +221,7 @@ var loadForm = function () {
                   my_window.document.write(text);
                   my_window.document.close();
                   $("#dosimeter-table tbody").html(data.html_dosimeter_list);  // <-- Replace the table body
+                  load_values();
               }
           });
           return false;
@@ -187,26 +250,5 @@ var loadForm = function () {
   $("#dosimeter-table").on("click", ".js-print-dosimeter-label", loadForm);
   $("#modal-dosimeter").on("submit", ".js-print-dosimeter-label-form", printLabel);
   $("#print_dos").click(dymoPrint);
-
-
-  $('input.chk').change(function() {
-    console.log(checked_values);
-    if (this.checked){
-        alert("checked");
-        checked_values = checked_values + 1;
-        $('#new_dos').hide();
-        $('#print_dos').show();
-        $('#generate_dos').hide();
-      } 
-    else{
-      checked_values = checked_values - 1;
-      alert("unchecked");
-      if (checked_values == 0){
-        $('#new_dos').show();
-        $('#print_dos').hide();
-        $('#generate_dos').show();
-      }
-    }
-  });    
-  
+      
 });
