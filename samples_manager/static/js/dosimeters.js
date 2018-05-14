@@ -1,26 +1,6 @@
 $(function () {
 
-  checked_values = 0;
-
-  $('.chk').change(function() {
-    /*if(this.checked) {
-            alert($(this).val());
-        }   */ 
-    if (this.checked){
-        checked_values = checked_values + 1;
-        $('#new_dos').hide();
-        $('#print_dos').show();
-        $('#generate_dos').hide();
-      } 
-    else{
-      checked_values = checked_values - 1;
-      if (checked_values == 0){
-        $('#new_dos').show();
-        $('#print_dos').hide();
-        $('#generate_dos').show();
-      }
-    }
-  });         
+  checked_values = 0;     
   
 var  generate_ids = function () {
     console.log("generate");
@@ -148,9 +128,12 @@ var loadForm = function () {
       dataType: 'json',
       success: function (data) {
         if (data.form_is_valid) {
-          alert("data is valid");
           $("#dosimeter-table tbody").html(data.html_dosimeter_list);  // <-- Replace the table body
           $("#modal-dosimeter").modal("hide");  // <-- Close the modal
+          checked_values = 0;
+          $('#new_dos').show();
+          $('#print_dos').hide();
+          $('#generate_dos').show();
         }
         else {
           alert("Something went wrong!"); 
@@ -204,5 +187,26 @@ var loadForm = function () {
   $("#dosimeter-table").on("click", ".js-print-dosimeter-label", loadForm);
   $("#modal-dosimeter").on("submit", ".js-print-dosimeter-label-form", printLabel);
   $("#print_dos").click(dymoPrint);
+
+
+  $('input.chk').change(function() {
+    console.log(checked_values);
+    if (this.checked){
+        alert("checked");
+        checked_values = checked_values + 1;
+        $('#new_dos').hide();
+        $('#print_dos').show();
+        $('#generate_dos').hide();
+      } 
+    else{
+      checked_values = checked_values - 1;
+      alert("unchecked");
+      if (checked_values == 0){
+        $('#new_dos').show();
+        $('#print_dos').hide();
+        $('#generate_dos').show();
+      }
+    }
+  });    
   
 });

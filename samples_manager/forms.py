@@ -597,7 +597,7 @@ class DosimetersForm1(ModelForm):
         self.fields['width'].required = False
         self.fields['width'].label = "Width (mm)"
         self.fields['weight'].required = False
-        self.fields['weight'].label = "Weight (Kg)"
+        self.fields['weight'].label = "Weight (g)"
         self.fields['dos_type'].label = "Dosimeter type"
         self.fields['foils_number'].required = False
 
@@ -683,14 +683,6 @@ class BaseSamplesLayersFormset(BaseInlineFormSet):
                             SamplesElementsFormset.get_default_prefix()))]
         
 SamplesLayersFormset = inlineformset_factory(models.Samples, models.SamplesLayers,form=SamplesLayersForm, formset=BaseSamplesLayersFormset, extra=1)'''
-
-
-
-
-
-
-
-
 
 
 class LayersForm(ModelForm):
