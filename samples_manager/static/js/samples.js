@@ -9,12 +9,14 @@ $(function () {
         checked_sample_values = checked_sample_values + 1;
         $('#new_sample').hide();
         $('#print_samples').show();
+        $('#assign_dosimeters').show();
       } 
     else{
       checked_sample_values = checked_sample_values - 1;
       if (checked_sample_values == 0){
         $('#new_sample').show();
         $('#print_samples').hide();
+        $('#assign_dosimeters').hide();
       }
     }
   });
@@ -28,12 +30,14 @@ var load_values = function() {
         checked_sample_values = checked_sample_values + 1;
         $('#new_sample').hide();
         $('#print_samples').show();
+        $('#assign_dosimeters').show();
       } 
     else{
       checked_sample_values = checked_sample_values - 1;
       if (checked_sample_values == 0){
         $('#new_sample').show();
         $('#print_samples').hide();
+        $('#assign_dosimeters').hide();
       }
     }
   });  
@@ -44,12 +48,14 @@ $("#samples-select-all").click(function(){
         checked_sample_values = checked_sample_values + 1;
         $('#new_sample').hide();
         $('#print_samples').show();
+        $('#assign_dosimeters').show();
       } 
     else{
       checked_sample_values = checked_sample_values - 1;
       if (checked_sample_values == 0){
         $('#new_sample').show();
         $('#print_samples').hide();
+        $('#assign_dosimeters').hide();
       }
     }
   });
@@ -59,6 +65,21 @@ load_values();
 
 
 var loadForm = function () {
+    var btn = $(this);
+    $.ajax({
+      url: btn.attr("data-url"),
+      type: 'get',
+      dataType: 'json',
+      beforeSend: function () {
+        $("#modal-sample").modal("show");
+      },
+      success: function (data) {
+        $("#modal-sample .modal-content").html(data.html_form);
+      }
+    });
+  };
+
+  var loadForm = function () {
     var btn = $(this);
     $.ajax({
       url: btn.attr("data-url"),
@@ -238,6 +259,7 @@ var dymoPrintSamples = function(){
 
   // Create sample
   $(".js-create-sample").click(loadForm);
+  $(".js-assign-dosimeter").click(loadForm);
   $("#modal-sample").on("submit", ".js-sample-create-form",saveForm);
 
    // Update sample

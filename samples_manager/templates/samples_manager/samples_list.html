@@ -18,8 +18,17 @@
                                 <span class="glyphicon glyphicon-chevron-left"></span>Back
                 </a>
         </div>
-        <div class="col-sm-8">
+        <div class="col-sm-6">
             <h3><span style="font-size: 150%;">{{experiment.title}} </span>samples </h3>
+        </div>
+        <div class="col-sm-2">
+             <button  type="button"
+                    id = "assign_dosimeters"
+                    class="btn btn-warning js-assign-dosimeter"
+                    data-url="{% url 'samples_manager:assign_dosimeters' %}"
+                    style="display:none">
+                    <span class="glyphicon glyphicon-plus"></span> Assign Dosimeter
+            </button>
         </div>
         <div class="col-sm-2">
             <button type="button"
@@ -36,6 +45,8 @@
                     <span class="glyphicon glyphicon-barcode"></span> Print labels
             </button>    
         </div>  
+    
+        
     </div>
     <div class="panel-body">
         <div class="row">

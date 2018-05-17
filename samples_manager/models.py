@@ -256,7 +256,7 @@ class Dosimeters(models.Model):
     last_location = models.CharField(max_length=100,null=True)
 
     def __str__(self):              # __str__ on Python 2
-        return self.dosimeter_id
+        return self.dos_id
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
@@ -298,7 +298,29 @@ class Layers(models.Model):
     density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
     percentage = models.DecimalField(max_digits=8,decimal_places=4)
     sample = models.ForeignKey(Samples, null = True)
+
+class Irradation(models.Model):
+    sample = models.ForeignKey(Samples, null = True)
+    dosimeter = models.ForeignKey(Dosimeters, null = True)
+    date_in = models.DateTimeField(blank=True, null=True)
+    date_out = models.DateTimeField(blank=True, null=True)
+    position = models.CharField(max_length=50)
+    accumulated_fluence =  models.DecimalField(max_digits=30,decimal_places=6)
+    created_at = models.DateTimeField(editable=False)
+    updated_at = models.DateTimeField()
+    created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
+    updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
+
+    def __str__(self):             # __str__ on Python 2
+        return (self.irradiation_id)
     
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.created_at= timezone.now()
+        self.updated_at = timezone.now()
+        return super(Irradation, self).save(*args, **kwargs)
+
 
 
 

@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements, Layers, Dosimeters
+from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements, Layers, Dosimeters, Irradation
 from django.template import loader
 from django.core.urlresolvers import reverse
 import datetime
@@ -120,7 +120,6 @@ def experiments_list(request):
     if logged_user.role == 'Admin':
         experiments = authorised_experiments(logged_user)
         experiment_data = get_registered_samples_number(experiments)
-        print(experiment_data["experiments"])
         return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data["experiments"],"total_registered_samples": experiment_data["total_registered_samples"], "total_declared_samples": experiment_data["total_declared_samples"], 'logged_user': logged_user})
     else:
         experiments = authorised_experiments(logged_user)
@@ -601,7 +600,8 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     data['form_is_valid'] = True
                     if logged_user.role == 'Admin':
                         experiments = Experiments.objects.all().order_by('-updated_at')
-                        experiments = get_registered_samples_number(experiments)
+                        experiments_data = get_registered_samples_number(experiments)
+                        experiments = experiments_data['experiments']
                         output_template = 'samples_manager/partial_admin_experiments_list.html'
                     else: 
                         experiments = authorised_experiments(logged_user)
@@ -667,7 +667,8 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['form_is_valid'] = True
                 if logged_user.role == 'Admin':
                     experiments = Experiments.objects.all().order_by('-updated_at')
-                    experiments = get_registered_samples_number(experiments)
+                    experiments_data = get_registered_samples_number(experiments)
+                    experiments = experiments_data['experiments']
                     output_template = 'samples_manager/partial_admin_experiments_list.html'
                 else: 
                     experiments = authorised_experiments(logged_user)
@@ -715,7 +716,8 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     material_formset.save()
                 data['form_is_valid'] = True
                 experiments = Experiments.objects.all().order_by('-updated_at')
-                experiments = get_registered_samples_number(experiments)
+                experiments_data = get_registered_samples_number(experiments)
+                experiments = experiments_data['experiments']
                 data['state'] = "Validated"
                 data['html_experiment_list'] = render_to_string('samples_manager/partial_admin_experiments_list.html', {
                             'experiments': experiments,
@@ -973,7 +975,8 @@ def experiment_delete(request, pk):
         data['form_is_valid'] = True
         if logged_user.role == 'Admin':
                 experiments = Experiments.objects.all().order_by('-updated_at')
-                experiments = get_registered_samples_number(experiments)
+                experiments_data = get_registered_samples_number(experiments)
+                experiments = experiments_data['experiments']
                 output_template = 'samples_manager/partial_admin_experiments_list.html'
         else: 
                 experiments = authorised_experiments(logged_user)
@@ -993,7 +996,24 @@ def experiment_delete(request, pk):
             request=request,
         )
     return JsonResponse(data)
-    
+
+
+
+def assign_dosimeters(request):
+    data = dict()
+    print("assign_dosimeters")
+    if request.method == 'POST':
+        form = IrradiationForm(request.POST)
+    else:
+        form = IrradiationForm()
+    context = {'form': form}
+    print("context: " + str(context))
+    data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html',
+            context,
+            request=request,
+        )
+    print(data)
+    return JsonResponse(data)
 
 
 def save_user_form(request, form, experiment, template_name):
@@ -1009,6 +1029,9 @@ def save_user_form(request, form, experiment, template_name):
                 submited_user = form.cleaned_data
                 if  not submited_user["email"] in emails:
                     user = form.save()
+                    email = user.email 
+                    user.email = email.lower()
+                    user.save()
                     experiment.users.add(user)
                 else:
                     user = Users.objects.get( email = submited_user["email"])

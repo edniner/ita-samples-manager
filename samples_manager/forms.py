@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.admin import widgets   
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,DateTimeInput,Textarea
-from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,SamplesLayers,SamplesElements, Layers
+from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,SamplesLayers,SamplesElements,Layers, Irradation
 from django.forms.models import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
@@ -626,65 +626,6 @@ class DosimetersForm2(ModelForm):
 
 
 
-
-'''class SamplesElementsForm(ModelForm):
-    print("SamplesElementsForm")
-    def __init__(self, *args, **kwargs):
-        super(SamplesElementsForm, self).__init__(*args, **kwargs)
-        self.fields['element_type'].label='Material element'
-        print("SamplesElements init")
-
-    class Meta:
-         model = SamplesElements
-         fields = ['id','element_type', 'percentage']
-         exclude = ('layer',)
-
-print("SamplesElementsFormset out")
-
-SamplesElementsFormset = inlineformset_factory(models.SamplesLayers, models.SamplesElements, form=SamplesElementsForm, extra=1)
-
-
-class SamplesLayersForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(SamplesLayersForm, self).__init__(*args, **kwargs)
-    
-    class Meta:
-        model = SamplesLayers
-        fields = ['id','name', 'length']
-        exclude = ('sample',)
-
-
-
-class BaseSamplesLayersFormset(BaseInlineFormSet):
-    print("inside")
-    def add_fields(self, form, index):
-        # allow the super class to create the fields as usual
-        super(BaseSamplesLayersFormset, self).add_fields(form, index)
-        print("BaseSamplesLayersFormset")
-
-        # created the nested formset
-        try:
-            instance = self.get_queryset()[index]
-            pk_value = instance.pk
-        except IndexError:
-            instance=None
-            pk_value = hash(form.prefix)
-            print("pk_value %s" %pk_value)
-            correct_data = None
-            if (self.data):
-               correct_data = self.data
-
-        # store the formset in the .nested property
-        form.nested = [ SamplesElementsFormset(                         
-                        instance=form.instance,
-                        data=correct_data,
-                        prefix='%s-%s' % (
-                            form.prefix,
-                            SamplesElementsFormset.get_default_prefix()))]
-        
-SamplesLayersFormset = inlineformset_factory(models.Samples, models.SamplesLayers,form=SamplesLayersForm, formset=BaseSamplesLayersFormset, extra=1)'''
-
-
 class LayersForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(LayersForm, self).__init__(*args, **kwargs)
@@ -704,65 +645,15 @@ class LayersForm(ModelForm):
                 'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
             }
 
-'''class SamplesElementsForm(ModelForm):
-    print("SamplesElementsForm")
+class IrradiationForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SamplesElementsForm, self).__init__(*args, **kwargs)
-        self.fields['element_type'].label='Material element'
-        print("SamplesElements init")
-
-    class Meta:
-         model = SamplesElements
-         fields = ['id','element_type', 'percentage']
-         exclude = ('layer',)
-
-print("SamplesElementsFormset out")
-
-SamplesElementsFormset = inlineformset_factory(models.SamplesLayers, models.SamplesElements, form=SamplesElementsForm, extra=1)
-
-
-class SamplesLayersForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(SamplesLayersForm, self).__init__(*args, **kwargs)
-    
-    class Meta:
-        model = SamplesLayers
-        fields = ['id','name', 'length']
-        exclude = ('sample',)
-
-
-
-class BaseSamplesLayersFormset(BaseInlineFormSet):
-    print("inside")
-    def add_fields(self, form, index):
-        # allow the super class to create the fields as usual
-        super(BaseSamplesLayersFormset, self).add_fields(form, index)
-        print("BaseSamplesLayersFormset")
-
-        # created the nested formset
-        try:
-            instance = self.get_queryset()[index]
-            pk_value = instance.pk
-        except IndexError:
-            instance=None
-            pk_value = hash(form.prefix)
-            print("pk_value %s" %pk_value)
-            correct_data = None
-            if (self.data):
-               correct_data = self.data
-
-        # store the formset in the .nested property
-        form.nested = [ SamplesElementsFormset(                         
-                        instance=form.instance,
-                        data=correct_data,
-                        prefix='%s-%s' % (
-                            form.prefix,
-                            SamplesElementsFormset.get_default_prefix()))]
+        super(IrradiationForm, self).__init__(*args, **kwargs)
+        self.fields['dosimeter'].required = True
         
-SamplesLayersFormset = inlineformset_factory(models.Samples, models.SamplesLayers,form=SamplesLayersForm, formset=BaseSamplesLayersFormset, extra=1)'''
-
-
-
+    class Meta:
+        model = Irradation
+        fields = ['dosimeter']
+        exclude = ('sample','date_in', 'date_out', 'position', 'accumulated_fluence')
 
 
 
