@@ -79,22 +79,8 @@ var loadForm = function () {
     });
   };
 
-  var loadForm = function () {
-    var btn = $(this);
-    $.ajax({
-      url: btn.attr("data-url"),
-      type: 'get',
-      dataType: 'json',
-      beforeSend: function () {
-        $("#modal-sample").modal("show");
-      },
-      success: function (data) {
-        $("#modal-sample .modal-content").html(data.html_form);
-      }
-    });
-  };
 
-  var saveForm = function () {
+ var saveForm = function () {
     var form = $(this);
     $.ajax({
       url: form.attr("action"),
@@ -123,7 +109,6 @@ var loadForm = function () {
           else
             alert("Please, check the form and fill all the required fields!");
         }
-        load_values();  
       }
     });
     return false;
@@ -256,11 +241,23 @@ var dymoPrintSamples = function(){
   };
 
 
+  var get_sample_id = function(){
+            $('.chkbox:checked').each(function(i){
+                set_id = $(this).val().split("<");
+                link = 'sample/'+set_id+'/assign/dosimeter/';
+                console.log(set_id[0]);
+                alert(set_id[0]);
+            });
+            
+  }
+
 
   // Create sample
   $(".js-create-sample").click(loadForm);
   $(".js-assign-dosimeter").click(loadForm);
+  //$(".js-assign-dosimeter").click(get_sample_id);
   $("#modal-sample").on("submit", ".js-sample-create-form",saveForm);
+  $("#modal-sample").on("submit", ".js-assign-dosimeters-form",get_sample_id);
 
    // Update sample
   $("#sample-table").on("click", ".js-update-sample", loadForm);
