@@ -10,65 +10,68 @@
 </div>
 
 <div class='panel panel-default' id="main_panel">
-    <div class="row">
-        <div class="col-sm-2">
-                <a  href="{% url 'samples_manager:experiments_list' %}" type="button"
-                        class="btn back"
-                        title='Back'>
-                                <span class="glyphicon glyphicon-chevron-left"></span>Back
-                </a>
-        </div>
-        <div class="col-sm-6">
-            <h3><span style="font-size: 150%;">{{experiment.title}} </span>samples </h3>
-        </div>
-        <div class="col-sm-2">
-             <button  type="button"
-                    id = "assign_dosimeters"
-                    class="btn btn-warning js-assign-dosimeter"
-                    data-url="{% url 'samples_manager:assign_dosimeters' %}"
-                    style="display:none">
-                    <span class="glyphicon glyphicon-plus"></span> Assign Dosimeter
-            </button>
-        </div>
-        <div class="col-sm-2">
-            <button type="button"
-                    id = "new_sample"
-                    class="btn btn-primary js-create-sample"
-                    data-url="{% url 'samples_manager:sample_new' experiment.id %}">
-                    <span class="glyphicon glyphicon-plus"></span>New Sample
-            </button> 
-             <button  type="button"
-                    id = "print_samples"
-                    class="btn js-print-labels"
-                    data-url="{% url 'samples_manager:sample_new' experiment.id %}"
-                    style="color:white;display:none">
-                    <span class="glyphicon glyphicon-barcode"></span> Print labels
-            </button>    
-        </div>  
-    
-        
-    </div>
-    <div class="panel-body">
+    <form action= "{% url 'samples_manager:assign_dosimeters'%}" method="post">
+        {% csrf_token %}
         <div class="row">
-            <div class="col-12">
-                <table class="table table-responsive sortable" id="sample-table">
-                    <thead>
-                        <tr>
-                        <th class="sorttable_nosort"><input name="select_all" value="1" id="samples-select-all" type="checkbox"/></th>
-                        <th>Last update</th>
-                        <th>Sample ID</th>    
-                        <th>Sample Name</th>
-                        <th>Category</th>
-                        <th>Requested fluence</th>
-                        <th class="sorttable_nosort">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% include 'samples_manager/partial_samples_list.html' %}
-                    </tbody>
-                </table>
+            <div class="col-sm-2">
+                    <a  href="{% url 'samples_manager:experiments_list' %}" type="button"
+                            class="btn back"
+                            title='Back'>
+                                    <span class="glyphicon glyphicon-chevron-left"></span>Back
+                    </a>
             </div>
+            <div class="col-sm-6">
+                <h3><span style="font-size: 150%;">{{experiment.title}} </span>samples </h3>
+            </div>
+            <div class="col-sm-2">
+                <button  type="submit"
+                        id = "assign_dosimeters"
+                        class="btn btn-warning js-assign-dosimeter"
+                        data-url="{% url 'samples_manager:assign_dosimeters' %}"
+                        style="display:none">
+                        <span class="glyphicon glyphicon-plus"></span> Assign Dosimeter
+                </button>
+            </div>
+            <div class="col-sm-2">
+                <button type="button"
+                        id = "new_sample"
+                        class="btn btn-primary js-create-sample"
+                        data-url="{% url 'samples_manager:sample_new' experiment.id %}">
+                        <span class="glyphicon glyphicon-plus"></span>New Sample
+                </button> 
+                <button  type="button"
+                        id = "print_samples"
+                        class="btn js-print-labels"
+                        data-url="{% url 'samples_manager:sample_new' experiment.id %}"
+                        style="color:white;display:none">
+                        <span class="glyphicon glyphicon-barcode"></span> Print labels
+                </button>    
+            </div>  
+        
+            
         </div>
-     </div>   
+        <div class="panel-body">
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-responsive sortable" id="sample-table">
+                            <thead>
+                                <tr>
+                                <th class="sorttable_nosort"><input name="select_all" value="1" id="samples-select-all" type="checkbox"/></th>
+                                <th>Last update</th>
+                                <th>Sample ID</th>    
+                                <th>Sample Name</th>
+                                <th>Category</th>
+                                <th>Requested fluence</th>
+                                <th class="sorttable_nosort">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% include 'samples_manager/partial_samples_list.html' %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        </div>   
+     </form>
 </div>
 {% endblock %}

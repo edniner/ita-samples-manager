@@ -42,7 +42,7 @@ def get_logged_user(request):
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
-    #email =  "ina.gotse@gmail.com"
+     #email =  "ina.gotse@gmail.com"
     email =  "Blerina.Gkotse@cern.ch"
 
     email =  email.lower()
@@ -109,10 +109,15 @@ def get_registered_samples_number(experiments):
     return {"experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples}
 
 def authorised_experiments(logged_user):
+     print("authorised users")
      if logged_user.role == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')
      else:
-         experiments = Experiments.objects.all().filter(Q(users=logged_user) | Q(responsible = logged_user)).order_by('-updated_at')
+         experiment_values = Experiments.objects.filter(Q(users=logged_user)|Q(responsible=logged_user)).values('title').distinct()
+         experiments = []
+         for value in experiment_values:
+             experiment = Experiments.objects.get(title = value['title'])
+             experiments.append(experiment)
      return experiments
 
 def experiments_list(request):
@@ -258,7 +263,6 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
     print("in save")
     if request.method == 'POST':
         print("post")
-        print(layers_formset)
         if form1.is_valid() and form2.is_valid() and layers_formset.is_valid():
             if status == 'new':
                 if form1.checking_unique_sample() == True:
@@ -275,12 +279,10 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                     sample.save()
                     print ("sample saved")
                     if layers_formset.is_valid():
-                        print(layers_formset.cleaned_data)
                         if  not layers_formset.cleaned_data:
                             data['state'] = 'layers missing'
                             data['form_is_valid'] = False
                         else: 
-                            print(layers_formset.cleaned_data)
                             for form in layers_formset.forms:
                                 layer = form.save()
                                 layer.sample = sample
@@ -306,7 +308,6 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 print("before layers")
                 if layers_formset.is_valid():
                     layers_formset.save()
-                print(layers_formset)
                 data['state'] = "Updated"
                 data['form_is_valid'] = True
                 samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
@@ -374,7 +375,6 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
             logging.warning('Sample data invalid')
     context = {'form1': form1,'form2': form2,'layers_formset': layers_formset,'experiment':experiment}
     data['html_form'] = render_to_string(template_name, context, request=request)
-    print(layers_formset)
     return JsonResponse(data)
 
 def save_dosimeter_form(request,form1, form2, status, template_name):
@@ -1002,18 +1002,48 @@ def experiment_delete(request, pk):
 def assign_dosimeters(request):
     data = dict()
     print("assign_dosimeters")
-    if request.method == 'POST':
-        form = IrradiationForm(request.POST)
-    else:
-        form = IrradiationForm()
+    print(request)
+    checked_boxes = request.POST.getlist('checks[]')
+    for i in range(0, len(checked_boxes)):
+        if checked_boxes[i][:3]== "SET":
+            print(checked_boxes[i][:10])
+        else:
+            print("not id")
+    form = IrradiationForm()
     context = {'form': form}
     data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html',
+        context,
+        request=request,
+    )
+    print("data")
+    return JsonResponse(data)
+
+'''def assign_dosimeters(request):
+    data = dict()
+    print("assign_dosimeters")
+    checked_boxes = request.POST.getlist('checks[]')
+    print(checked_boxes)
+    if request.method == 'POST':
+        print("in post")
+        #form = IrradiationForm(request.POST)
+        print("assign post")
+        context = {}
+    else:
+        form = IrradiationForm()
+        context = {'form': form}
+        data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html',
             context,
             request=request,
         )
-    print(data)
-    return JsonResponse(data)
+    return JsonResponse(data)'''
 
+def save_samples_dosimeters(request,experiment_id,sample_id,dosimeter_id):
+    data = dict()
+    print('save_samples_dosimeters')
+    print("request "+str(request))
+    print(sample_id)
+    print(dosimeter_id)
+    return JsonResponse(data)
 
 def save_user_form(request, form, experiment, template_name):
     data = dict()
@@ -1162,6 +1192,7 @@ def sample_update(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=0)
+    print("update request: "+str(request))
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)

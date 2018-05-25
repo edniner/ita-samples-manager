@@ -241,23 +241,25 @@ var dymoPrintSamples = function(){
   };
 
 
-  var get_sample_id = function(){
-            $('.chkbox:checked').each(function(i){
-                set_id = $(this).val().split("<");
-                link = 'sample/'+set_id+'/assign/dosimeter/';
-                console.log(set_id[0]);
-                alert(set_id[0]);
-            });
-            
+  var assign_dosimeters = function(){
+            var form = $(this);
+            console.log(form.serialize());
+            var dosimeter = document.getElementById("id_dosimeter");
+            alert("js assign dosimeter");
+            var dosimeter_id = dosimeter.options[dosimeter.selectedIndex].value;
+            alert("before checkboxes");
+          alert("end!")  
   }
+
 
 
   // Create sample
   $(".js-create-sample").click(loadForm);
+  //$(".js-assign-dosimeter").click(loadForm);
   $(".js-assign-dosimeter").click(loadForm);
-  //$(".js-assign-dosimeter").click(get_sample_id);
+ // $("#modal-sample").on("submit", ".js-assign-dosimeters-form",assign_dosimeters);
+
   $("#modal-sample").on("submit", ".js-sample-create-form",saveForm);
-  $("#modal-sample").on("submit", ".js-assign-dosimeters-form",get_sample_id);
 
    // Update sample
   $("#sample-table").on("click", ".js-update-sample", loadForm);

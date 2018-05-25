@@ -14,7 +14,7 @@
               data-url="{% url 'samples_manager:experiment_update' experiment.id %}">
              <span class="glyphicon glyphicon-pencil"></span>
       </button>
-      {% if experiment.status == "Validated"%}
+      {% if experiment.status != "Registered" %}
       <a href="{% url 'samples_manager:experiment_users_list' experiment.id  %}">
           <button type="button"
                 class="btn btn-info "
@@ -39,9 +39,9 @@
                 <span class="glyphicon glyphicon-menu-hamburger"></span>
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li><button type="button" class="btn js-clone-experiment" data-url="{% url 'samples_manager:experiment_clone' experiment.id %}">Clone</button></li>
-            <li><div><a  href="{% url 'samples_manager:print_experiment_view' experiment.id  %}"><button type="button" class="btn">Print</button></a></div></li>
-            <li><button class="btn js-delete-experiment" title='Delete' data-url="{% url 'samples_manager:experiment_delete' experiment.id %}">Delete</button></li>
+            <li><button type="button" class="btn-default js-clone-experiment" data-url="{% url 'samples_manager:experiment_clone' experiment.id %}">Clone</button></li>
+            <li><div><a  href="{% url 'samples_manager:print_experiment_view' experiment.id  %}"><button type="button" class="btn-default">Print</button></a></div></li>
+            <li><button class="btn-default js-delete-experiment" title='Delete' data-url="{% url 'samples_manager:experiment_delete' experiment.id %}">Delete</button></li>
           </ul>
         </div>
     </td>
