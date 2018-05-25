@@ -10,8 +10,6 @@
 </div>
 
 <div class='panel panel-default' id="main_panel">
-    <form action= "{% url 'samples_manager:assign_dosimeters'%}" method="post">
-        {% csrf_token %}
         <div class="row">
             <div class="col-sm-2">
                     <a  href="{% url 'samples_manager:experiments_list' %}" type="button"
@@ -22,15 +20,6 @@
             </div>
             <div class="col-sm-6">
                 <h3><span style="font-size: 150%;">{{experiment.title}} </span>samples </h3>
-            </div>
-            <div class="col-sm-2">
-                <button  type="submit"
-                        id = "assign_dosimeters"
-                        class="btn btn-warning js-assign-dosimeter"
-                        data-url="{% url 'samples_manager:assign_dosimeters' %}"
-                        style="display:none">
-                        <span class="glyphicon glyphicon-plus"></span> Assign Dosimeter
-                </button>
             </div>
             <div class="col-sm-2">
                 <button type="button"
@@ -48,7 +37,6 @@
                 </button>    
             </div>  
         
-            
         </div>
         <div class="panel-body">
                 <div class="row">
@@ -72,6 +60,5 @@
                     </div>
                 </div>
         </div>   
-     </form>
 </div>
 {% endblock %}

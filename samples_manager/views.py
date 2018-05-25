@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements, Layers, Dosimeters, Irradation
+from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements, Layers, Dosimeters,Irradation
 from django.template import loader
 from django.core.urlresolvers import reverse
 import datetime
@@ -22,6 +22,7 @@ from reportlab.lib.pagesizes import letter, inch
 from django.utils.safestring import mark_safe
 import logging 
 from django.db.models import Q
+from django.shortcuts import redirect
 
 
 
@@ -119,6 +120,14 @@ def authorised_experiments(logged_user):
              experiment = Experiments.objects.get(title = value['title'])
              experiments.append(experiment)
      return experiments
+
+def irradiations(request):
+     print("authorised users")
+     logged_user = get_logged_user(request)
+     irradiations = []
+     if logged_user.role == 'Admin':
+        irradiations = Irradation.objects.all()
+     return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
 
 def experiments_list(request):
     logged_user = get_logged_user(request)
@@ -998,44 +1007,39 @@ def experiment_delete(request, pk):
     return JsonResponse(data)
 
 
-
-def assign_dosimeters(request):
+def assign_dosimeters(request, experiment_id):
     data = dict()
-    print("assign_dosimeters")
-    print(request)
-    checked_boxes = request.POST.getlist('checks[]')
-    for i in range(0, len(checked_boxes)):
-        if checked_boxes[i][:3]== "SET":
-            print(checked_boxes[i][:10])
-        else:
-            print("not id")
-    form = IrradiationForm()
-    context = {'form': form}
-    data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html',
-        context,
-        request=request,
-    )
-    print("data")
-    return JsonResponse(data)
-
-'''def assign_dosimeters(request):
-    data = dict()
-    print("assign_dosimeters")
-    checked_boxes = request.POST.getlist('checks[]')
-    print(checked_boxes)
+    print("assign dosimeters")
+    logged_user = get_logged_user(request)
+    samples = Samples.objects.filter(experiment = experiment_id)
+    print(samples)
+    irradiations = []
     if request.method == 'POST':
         print("in post")
-        #form = IrradiationForm(request.POST)
-        print("assign post")
-        context = {}
+        form = IrradiationForm(request.POST)
+        checked_boxes = request.POST.getlist('checks[]')
+        if form.is_valid():
+            if form.cleaned_data is not None:
+                print(form.cleaned_data)
+                dosimeter = form.cleaned_data['dosimeter']
+                for sample in samples: 
+                        irradiation = Irradation()
+                        irradiation.sample = sample
+                        irradiation.dosimeter = dosimeter
+                        irradiation.save()
+                        irradiations.append(irradiation)
+            print(irradiations)
+            if logged_user.role == 'Admin':
+                irradiations = Irradation.objects.all()
+            return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
     else:
         form = IrradiationForm()
-        context = {'form': form}
+        context = {'form': form, 'experiment_id':  experiment_id, 'samples': samples}
         data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html',
-            context,
-            request=request,
-        )
-    return JsonResponse(data)'''
+                context,
+                request=request,
+            )
+    return JsonResponse(data)
 
 def save_samples_dosimeters(request,experiment_id,sample_id,dosimeter_id):
     data = dict()

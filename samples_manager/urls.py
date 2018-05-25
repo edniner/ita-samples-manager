@@ -36,10 +36,10 @@ urlpatterns = [
     url(r'^dosimeter/(?P<pk>\d+)/clone/$', views.dosimeter_clone, name='dosimeter_clone'),
     url(r'^dosimeter/(?P<pk>\d+)/delete/$', views.dosimeter_delete, name='dosimeter_delete'),
     url(r'^dosimeter/(?P<pk>\d+)/print/label/$', views.print_dosimeter_label_view, name='print_dosimeter_label_view'),
-    url(r'^dosimeter/assign/$', views.assign_dosimeters, name='assign_dosimeters'),
-    url(r'^experiment/(?P<experiment_id>\d+)/samples/sample/(?P<sample_id>\d+)/dosimeter/(?P<dosimeter_id>\d+)/assign/$', views.save_samples_dosimeters, name='save_samples_dosimeters'),
+    url(r'^experiment/(?P<experiment_id>\d+)/dosimeter/assign/$', views.assign_dosimeters, name='assign_dosimeters'),
     url(r'^dosimeters/generate/ids/$', views.generate_dos_ids, name='generate_dos_ids'),
     url(r'^user/(?P<pk>\d+)/update/$', views.admin_user_update, name='admin_user_update'),
+    url(r'^irradiations/$', views.irradiations, name='irradiations'),
 
     ]
 

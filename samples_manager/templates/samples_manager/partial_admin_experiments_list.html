@@ -38,6 +38,7 @@
                 <span class="glyphicon glyphicon-menu-hamburger"></span>
           </button>
           <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><button type="button" class="btn-default js-assign-dosimeters" data-url="{% url 'samples_manager:assign_dosimeters' experiment.experiment.id %}">Assign dosimeters</button></li>
             <li><button type="button" class="btn-default js-update-experiment" title='Edit experiment' data-url="{% url 'samples_manager:experiment_update' experiment.experiment.id %}">Edit</button></li>
             <li><button type="button" class="btn-default js-clone-experiment" data-url="{% url 'samples_manager:experiment_clone' experiment.experiment.id %}">Clone</button></li>
             <li><div><a  href="{% url 'samples_manager:print_experiment_view' experiment.experiment.id  %}"><button type="button" class="btn-default">Print</button></a></div></li>

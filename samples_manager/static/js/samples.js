@@ -241,22 +241,8 @@ var dymoPrintSamples = function(){
   };
 
 
-  var assign_dosimeters = function(){
-            var form = $(this);
-            console.log(form.serialize());
-            var dosimeter = document.getElementById("id_dosimeter");
-            alert("js assign dosimeter");
-            var dosimeter_id = dosimeter.options[dosimeter.selectedIndex].value;
-            alert("before checkboxes");
-          alert("end!")  
-  }
-
-
-
   // Create sample
   $(".js-create-sample").click(loadForm);
-  //$(".js-assign-dosimeter").click(loadForm);
-  $(".js-assign-dosimeter").click(loadForm);
  // $("#modal-sample").on("submit", ".js-assign-dosimeters-form",assign_dosimeters);
 
   $("#modal-sample").on("submit", ".js-sample-create-form",saveForm);

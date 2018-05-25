@@ -3,7 +3,7 @@
 {% load widget_tweaks %}
 
 
-<form method="post" class="js-assign-dosimeters-form">
+<form method="post"  action="{% url 'samples_manager:assign_dosimeters'  experiment_id %}" class="js-assign-dosimeters-form">
   {% csrf_token %}
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -12,6 +12,11 @@
     <h4 class="modal-title"> Assign dosimeter </h4>
   </div>
   <div class="modal-body">
+  {% for sample in samples %}
+    {% if sample.set_id %}
+    <p>{{sample.set_id}} <input type="checkbox" class="chkbox" id="{{sample.id}}" name="checks[]" value="{{sample.id}}"></p>
+    {% endif %}
+  {% endfor %}
   {% for field in form %}
     <div class="form-group{% if field.errors %} has-error{% endif %}">
       <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -21,6 +26,7 @@
   {% endfor %}
     </div>
   {% endfor %}
+
   </div>
   <div class="modal-footer">
     <button class="btn btn-lg pull-left back"  data-dismiss="modal"  type="button"><span class="glyphicon glyphicon-remove"></span>Cancel</button>

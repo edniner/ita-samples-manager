@@ -304,15 +304,16 @@ class Irradation(models.Model):
     dosimeter = models.ForeignKey(Dosimeters, null = True)
     date_in = models.DateTimeField(blank=True, null=True)
     date_out = models.DateTimeField(blank=True, null=True)
-    position = models.CharField(max_length=50)
-    accumulated_fluence =  models.DecimalField(max_digits=30,decimal_places=6)
-    created_at = models.DateTimeField(editable=False)
-    updated_at = models.DateTimeField()
+    position = models.CharField(max_length=50, null=True)
+    accumulated_fluence =  models.DecimalField(max_digits=30,decimal_places=6, null=True)
+    created_at = models.DateTimeField(editable=False,null=True)
+    updated_at = models.DateTimeField(null=True)
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
+    status = models.CharField(max_length=50, choices=STATUS)
 
     def __str__(self):             # __str__ on Python 2
-        return (self.irradiation_id)
+        return str(self.id)
     
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
@@ -320,12 +321,6 @@ class Irradation(models.Model):
             self.created_at= timezone.now()
         self.updated_at = timezone.now()
         return super(Irradation, self).save(*args, **kwargs)
-
-
-
-
-
-    
 
 
 

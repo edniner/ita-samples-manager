@@ -69,6 +69,7 @@ var loadForm = function () {
   };
 */
 
+  $(".js-assign-dosimeters").click(loadForm);
   // Create experiment
   $(".js-create-experiment").click(loadForm);
   $("#modal-experiment").on("submit", ".js-experiment-create-form",saveForm);
