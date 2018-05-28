@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements, Layers, Dosimeters,Irradation
 from django.template import loader
@@ -22,7 +22,7 @@ from reportlab.lib.pagesizes import letter, inch
 from django.utils.safestring import mark_safe
 import logging 
 from django.db.models import Q
-from django.shortcuts import redirect
+import re
 
 
 
@@ -1529,3 +1529,72 @@ def print_dosimeter_label_view(request, pk):
             request=request,
         )
     return JsonResponse(data)
+
+'''def search_samples(request):
+    if request.method == 'GET':
+        irradiations = []
+        search_text =  request.GET.get('search_box')
+        try:
+            sample = Samples.objects.get(set_id = search_text)
+            if sample: 
+                irradiations = Irradation.objects.filter(sample = sample)
+                if irradiations: 
+                    print(irradiations)
+                else:
+                    pass
+        except Exception:
+            print(Exception.message)
+        try:
+            if dosimeter:
+                print("dosimeter")
+                dosimeter = Dosimeters.objects.get(dos_id = search_text)
+                print(dosimeter) 
+                irradiations = Irradation.objects.filter(dosimeter = dosimeter)
+                if irradiations: 
+                    print('dosimeters')
+                    print(irradiations)
+        except Exception:
+            print(Exception.message)        
+        return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations})
+    else:
+        return render(request,"samples_manager/irradiations_list.html",{})'''
+
+def normalize_query(query_string,
+                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
+                    normspace=re.compile(r'\s{2,}').sub):
+    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
+
+def get_query(query_string, search_fields):
+    ''' Returns a query, that is a combination of Q objects. That combination
+        aims to search keywords within a model by testing the given search fields.
+    '''
+    query = None # Query to search for every search term        
+    terms = normalize_query(query_string)
+    for term in terms:
+        or_query = None # Query to search for a given term in each field
+        for field_name in search_fields:
+            q = Q(**{"%s__contains" % field_name: term})
+            if or_query is None:
+                or_query = q
+            else:
+                or_query = or_query | q
+        if query is None:
+            query = or_query
+        else:
+            query = query & or_query
+    return query
+
+def search_samples(request):
+        query_string = ''
+        found_entries = None
+        irradiations =[]
+        if ('search_box' in request.GET) and request.GET['search_box'].strip():
+            query_string = request.GET['search_box']
+            print(query_string)
+            entry_query = get_query(query_string, ['status'])
+            print(entry_query)
+            irradiations = Irradation.objects.filter(entry_query)
+        print(irradiations)
+        return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations})
+
+

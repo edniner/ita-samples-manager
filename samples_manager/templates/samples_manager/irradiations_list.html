@@ -16,18 +16,21 @@
   
 <div class='panel panel-default' id="main_panel">
     <div class="row">
-                <div class="col-sm-2">
-        </div>
-        <div class="col-sm-8">
-            <h3>IRRADIATIONS</h3>
-        </div>
-        <div class="col-sm-2">
-                <button type="button"
-                        class="btn btn-primary "
-                        title="New irradiations">
-                        <span class="glyphicon glyphicon-plus"></span>Irradiation
-                </button> 
-        </div>
+                    <form  class="col-sm-3" name="search_form" method="GET" action="{% url 'samples_manager:search_samples' %}"> 
+                        <input   id="search_box" type="text" name="search_box"  placeholder="Search..." >
+                        <button  class="btn-sm btn-info" id="search_submit" type="submit"><span class="glyphicon glyphicon-search line_height"></span></button>
+                    </form>
+                <div class="col-sm-6">
+                    <h3>IRRADIATIONS</h3>
+                </div>
+                <div class="col-sm-3" style="text-align: right">
+                        <button type="button"
+                                class="btn btn-primary "
+                                title="New irradiations">
+                                <span class="glyphicon glyphicon-plus"></span>Irradiation
+                        </button> 
+                </div>
+
         <!--<div class="col-sm-2">
                     <button type="button"
                         class="btn btn-primary soap">

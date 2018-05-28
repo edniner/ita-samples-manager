@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^dosimeters/generate/ids/$', views.generate_dos_ids, name='generate_dos_ids'),
     url(r'^user/(?P<pk>\d+)/update/$', views.admin_user_update, name='admin_user_update'),
     url(r'^irradiations/$', views.irradiations, name='irradiations'),
+    url(r'^search_samples/$', views.search_samples, name='search_samples'),
 
     ]
 

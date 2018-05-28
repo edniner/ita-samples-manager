@@ -328,3 +328,8 @@ div.col-sm-4{
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+span.glyphicon.glyphicon-search.line_height {
+    line-height: 1.5;
+    font-size: 120%;
+}
