@@ -113,6 +113,7 @@ class Experiments(models.Model):
     category=  models.CharField(max_length=100,choices=CATEGORIES, blank=False)
     regulations_flag = models.BooleanField()
     irradiation_type =  models.CharField(max_length=100)
+    emergency_phone =  models.CharField(max_length=200)
     # these fields should be autofilled
     status=models.CharField(max_length=50, choices=EXPERIMENT_STATUS)
     responsible=models.ForeignKey(Users, related_name='%(class)s_responsible')

@@ -187,8 +187,7 @@ var dymoPrintSamples = function(){
                 var i;
                 var textMarkup = '';
                 for (i = 0; i <checked_samples.length; i++) { 
-                    textMarkup = '<b><font family="Arial" size="48">'+checked_samples[i]+'<br/>';
-                    textMarkup += 'IRRAD';
+                    textMarkup = '<b><font family="Arial" size="48">'+checked_samples[i];
                     console.log(textMarkup);
                     var record = labelSetBuilder.addRecord();
                     record.setTextMarkup('Text', textMarkup);
@@ -197,7 +196,8 @@ var dymoPrintSamples = function(){
                 // select printer to print on
                 // for simplicity sake just use the first LabelWriter printer
                 var printers = dymo.label.framework.getPrinters();
-                 if (printers.length == 0)
+                console.log(printers);
+                if (printers.length == 0)
                     alert("No DYMO printers are installed. Install DYMO printers.");
                 else{
                       var printerName = "DYMO LabelWriter 450 Turbo";

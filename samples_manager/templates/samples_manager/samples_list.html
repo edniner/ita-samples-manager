@@ -10,18 +10,27 @@
 </div>
 
 <div class='panel panel-default' id="main_panel">
+        <div class="row" style="margin-bottom: 20px ">
+            <div class="col-sm-12">
+                <h3><span style="font-size: 150%; text-decoration: underline">{{experiment.title}} samples </span></h3>
+            </div>
+        </div>
         <div class="row">
-            <div class="col-sm-2">
-                    <a  href="{% url 'samples_manager:experiments_list' %}" type="button"
-                            class="btn back"
-                            title='Back'>
-                                    <span class="glyphicon glyphicon-chevron-left"></span>Back
-                    </a>
+            <div class="col-sm-4" style="text-align: left">
+             {%if request.path|slice:":23" == '/samples_manager/search' %}
+                <a  href="{%  url 'samples_manager:experiment_samples_list' experiment.id  %}" type="button" class="btn back" title='Back'>
+            {%else %}
+                <a  href="{% url 'samples_manager:experiments_list' %}" type="button" class="btn back" title='Back'>
+            {%endif%}
+                <span class="glyphicon glyphicon-chevron-left"></span>Back
+            </a>
             </div>
-            <div class="col-sm-6">
-                <h3><span style="font-size: 150%;">{{experiment.title}} </span>samples </h3>
-            </div>
-            <div class="col-sm-2">
+
+            <form style="text-align: center"  class="col-sm-4" name="search_form" method="GET" action="{% url 'samples_manager:search_samples' experiment.id %}"> 
+                <input title="Search by sample ID, name or category" id="search_box" type="text" name="search_box"  placeholder="Search..." >
+                <button title="Search by sample ID, name or category" class="btn-sm btn-warning" id="search_submit" type="submit"><span class="glyphicon glyphicon-search line_height"></span></button>
+            </form>
+            <div class="col-sm-4" style="text-align: right">
                 <button type="button"
                         id = "new_sample"
                         class="btn btn-primary js-create-sample"
@@ -35,8 +44,7 @@
                         style="color:white;display:none">
                         <span class="glyphicon glyphicon-barcode"></span> Print labels
                 </button>    
-            </div>  
-        
+            </div>
         </div>
         <div class="panel-body">
                 <div class="row">
@@ -50,6 +58,7 @@
                                 <th>Sample Name</th>
                                 <th>Category</th>
                                 <th>Requested fluence</th>
+                                <th>Last updated by</th>
                                 <th class="sorttable_nosort">Actions</th>
                                 </tr>
                             </thead>

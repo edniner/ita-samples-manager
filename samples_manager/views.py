@@ -33,18 +33,18 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"] '''
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"] 
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
-     #email =  "ina.gotse@gmail.com"
-    email =  "Blerina.Gkotse@cern.ch"
+    #email =  "ina.gotse@gmail.com"
+    email =  "Blerina.Gkotse@cern.ch"'''
 
     email =  email.lower()
     users = Users.objects.all()
@@ -110,7 +110,6 @@ def get_registered_samples_number(experiments):
     return {"experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples}
 
 def authorised_experiments(logged_user):
-     print("authorised users")
      if logged_user.role == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')
      else:
@@ -120,6 +119,17 @@ def authorised_experiments(logged_user):
              experiment = Experiments.objects.get(title = value['title'])
              experiments.append(experiment)
      return experiments
+
+def filtered_authorised_experiments(logged_user, experiments):
+    if logged_user.role != 'Admin':
+         experiment_values = experiments.filter(Q(users=logged_user)|Q(responsible=logged_user)).values('title').distinct()
+         authorised_experiments = []
+         for value in experiment_values:
+             experiment = experiments.get(title = value['title'])
+             authorised_experiments.append(experiment)
+         return authorised_experiments
+    else:
+        return experiments 
 
 def irradiations(request):
      print("authorised users")
@@ -160,12 +170,12 @@ def experiment_users_list(request, experiment_id):
 def experiment_samples_list(request, experiment_id):
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
-    samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+    samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
     return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'experiment': experiment,'logged_user': logged_user })
 
 def dosimeters_list(request):
     logged_user = get_logged_user(request)
-    dosimeters = Dosimeters.objects.all().order_by('-updated_at')
+    dosimeters = Dosimeters.objects.order_by('dos_id')
     return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user})
 
 def experiment_details(request, experiment_id):
@@ -299,7 +309,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                                 print("layer saved")
                             data['state'] = "Created"
                             data['form_is_valid'] = True
-                            samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+                            samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
                             data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                                 'samples':samples,
                                 'experiment': experiment
@@ -319,7 +329,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                     layers_formset.save()
                 data['state'] = "Updated"
                 data['form_is_valid'] = True
-                samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+                samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
                 data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                         'samples':samples,
                         'experiment': experiment
@@ -373,7 +383,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                     layers_formset.save()
                 data['state'] = "Updated"
                 data['form_is_valid'] = True
-                samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+                samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
                 data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                     'samples':samples,
                     'experiment': experiment
@@ -416,7 +426,7 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
             else:
                 pass
             data['form_is_valid'] = True
-            dosimeters = Dosimeters.objects.all().order_by('-updated_at')
+            dosimeters = Dosimeters.objects.order_by('dos_id')
             data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
                 'dosimeters':dosimeters
             })
@@ -1157,7 +1167,7 @@ def generate_dos_ids(request):
             dosimeter.dos_id = generate_dos_id(dosimeter)
             dosimeter.save()
         data['form_is_valid'] = True
-        dosimeters = Dosimeters.objects.all().order_by('-updated_at')
+        dosimeters = Dosimeters.objects.order_by('dos_id')
         data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
                 'dosimeters':dosimeters
             })
@@ -1231,7 +1241,7 @@ def sample_delete(request,experiment_id, pk):
     if request.method == 'POST':
         sample.delete()
         data['form_is_valid'] = True  # This is just to play along with the existing code
-        samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+        samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
             'samples': samples,
             'experiment': experiment
@@ -1285,7 +1295,7 @@ def dosimeter_delete(request, pk):
     if request.method == 'POST':
         dosimeter.delete()
         data['form_is_valid'] = True  # This is just to play along with the existing code
-        dosimeters = Dosimeters.objects.all().order_by('-updated_at')
+        dosimeters = Dosimeters.objects.order_by('dos_id')
         data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
             'dosimeters': dosimeters
         })
@@ -1497,7 +1507,7 @@ def print_sample_label_view(request, experiment_id, pk):
         print('responsible')
         data['responsible'] = experiment.responsible.email
         print(data['responsible'])
-        samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
+        samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                 'samples': samples,
                 'experiment': experiment
@@ -1518,7 +1528,7 @@ def print_dosimeter_label_view(request, pk):
     if request.method == 'POST':
         data['dos_id'] = dosimeter.dos_id
         data['dos_type'] = dosimeter.dos_type
-        dosimeters = Dosimeters.objects.all().order_by('-updated_at')
+        dosimeters = Dosimeters.objects.all().order_by('dos_id')
         data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
                 'dosimeters': dosimeters,
             })
@@ -1584,7 +1594,7 @@ def get_query(query_string, search_fields):
             query = query & or_query
     return query
 
-def search_samples(request):
+def search_irradiations(request):
         query_string = ''
         found_entries = None
         irradiations =[]
@@ -1594,7 +1604,80 @@ def search_samples(request):
             entry_query = get_query(query_string, ['status'])
             print(entry_query)
             irradiations = Irradation.objects.filter(entry_query)
-        print(irradiations)
         return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations})
+
+def search_samples(request, experiment_id):
+        query_string = ''
+        found_entries = None
+        samples = []
+        logged_user = get_logged_user(request)
+        experiment = Experiments.objects.get(pk = experiment_id)
+        if ('search_box' in request.GET) and request.GET['search_box'].strip():
+            query_string = request.GET['search_box']
+            entry_query = get_query(query_string, ['set_id', 'name', 'category'])
+            experiment_samples = Samples.objects.filter(experiment = experiment)
+            samples = experiment_samples.filter(entry_query)
+        return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'logged_user':logged_user, 'experiment': experiment})
+
+
+def search_experiments_user(request):
+        query_string = ''
+        found_entries = None
+        samples = []
+        logged_user = get_logged_user(request)
+        if ('search_box' in request.GET) and request.GET['search_box'].strip():
+            query_string = request.GET['search_box']
+            entry_query = get_query(query_string, ['title', 'status', 'number_samples'])
+            experiments = Experiments.objects.filter(entry_query)
+            authorised_experiments = filtered_authorised_experiments(logged_user, experiments)
+        return render(request, 'samples_manager/experiments_list.html', {'experiments': authorised_experiments, 'logged_user':logged_user})
+
+
+def search_experiments_admin(request):
+        query_string = ''
+        found_entries = None
+        samples = []
+        logged_user = get_logged_user(request)
+        if ('search_box' in request.GET) and request.GET['search_box'].strip():
+            query_string = request.GET['search_box']
+            entry_query = get_query(query_string, ['title', 'status'])
+            experiments = Experiments.objects.filter(entry_query)
+            experiment_data = get_registered_samples_number(experiments)
+        return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data["experiments"],"total_registered_samples": experiment_data["total_registered_samples"], "total_declared_samples": experiment_data["total_declared_samples"], 'logged_user': logged_user})
+
+def search_experiment_users(request, experiment_id):
+        query_string = ''
+        found_entries = None
+        samples = []
+        logged_user = get_logged_user(request)
+        experiment = Experiments.objects.get(pk = experiment_id)
+        if ('search_box' in request.GET) and request.GET['search_box'].strip():
+            query_string = request.GET['search_box']
+            entry_query = get_query(query_string, ['email', 'name', 'surname', 'telephone', 'role'])
+            experiment_users = experiment.users.values()
+            users = experiment_users.filter(entry_query)
+        return render(request, 'samples_manager/users_list.html', {'users': users, 'logged_user':logged_user, 'experiment': experiment})
+
+def search_users_admin(request):
+        query_string = ''
+        found_entries = None
+        samples = []
+        logged_user = get_logged_user(request)
+        if ('search_box' in request.GET) and request.GET['search_box'].strip():
+            query_string = request.GET['search_box']
+            entry_query = get_query(query_string, ['email', 'name', 'surname', 'telephone', 'role'])
+            users = Users.objects.filter(entry_query)
+        return render(request, 'samples_manager/admin_users_list.html', {'users': users, 'logged_user':logged_user})
+
+def search_dosimeters(request):
+        query_string = ''
+        found_entries = None
+        dosimeters = []
+        logged_user = get_logged_user(request)
+        if ('search_box' in request.GET) and request.GET['search_box'].strip():
+            query_string = request.GET['search_box']
+            entry_query = get_query(query_string, ['dos_id', 'height', 'width', 'status'])
+            dosimeters = Dosimeters.objects.filter(entry_query)
+        return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user':logged_user})
 
 

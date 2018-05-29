@@ -15,13 +15,27 @@
   </div>
   
 <div class='panel panel-default' id="main_panel">
+    <div class="row"  style="margin-bottom: 20px "> 
+        <div class="col-sm-12">
+            <h3><span style="font-size: 150%; text-decoration: underline">Irradiation Experiments </span></h3>
+        </div>
+    </div>
     <div class="row">
-                <div class="col-sm-2">
+        <div class="row">
+        <div class="col-sm-4" style="text-align: left">
+             {%if request.path|slice:":23" == '/samples_manager/search' %}
+                <a  href="{% url 'samples_manager:experiments_list'  %}" type="button" class="btn back" title='Back'>
+            {%else %}
+                <a  href="{% url 'samples_manager:index' %}" type="button" class="btn back" title='Back'>
+            {%endif%}
+                <span class="glyphicon glyphicon-chevron-left"></span>Back
+            </a>
         </div>
-        <div class="col-sm-8">
-            <h3>IRRADIATION EXPERIMENTS</h3>
-        </div>
-        <div class="col-sm-2">
+        <form style="text-align: center"  class="col-sm-4" name="search_form" method="GET" action="{% url 'samples_manager:search_experiments_admin'%}"> 
+                <input title="Search irradiation title or status"   id="search_box" type="text" name="search_box"  placeholder="Search..." >
+                <button title="Search irradiation title or status" class="btn-sm btn-warning" id="search_submit" type="submit"><span class="glyphicon glyphicon-search line_height"></span></button>
+        </form>
+        <div class="col-sm-4" style="text-align: right">
                 <button type="button"
                         class="btn btn-primary js-create-experiment"
                         title='Register new irradiation experiment'

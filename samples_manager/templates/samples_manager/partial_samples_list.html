@@ -1,6 +1,6 @@
 {% for sample in samples %}
   <tr>
-    <td><input type="checkbox" class="chkbox" id="{{sample.id}}" name="checks[]" value="{{sample.set_id}}</font></b><br/>{{sample.category}}<br/>{{sample.req_fluence}}<br/>{{experiment.responsible}}"></td>
+    <td><input type="checkbox" class="chkbox" id="{{sample.id}}" name="checks[]" value="{{sample.set_id}}</font></b><br/>{{sample.category}}<br/>{{sample.req_fluence}}<br/>{{experiment.responsible}}<br/>{{sample.name}}"></td>
     <td>{{ sample.updated_at|date:"d.m.Y"}} {{ sample.updated_at|time:"H:i"}}</td>
     {%if sample.set_id %}
     <td>{{sample.set_id}}</td>
@@ -10,6 +10,7 @@
     <td>{{ sample.name }}</td>
     <td>{{ sample.category}}</td>
     <td>{{ sample.req_fluence}}</td>
+    <td>{{ sample.updated_by}}</td>
      <td>
         <button type="button"
                 class="btn btn-warning js-update-sample"

@@ -42,6 +42,8 @@ class ExperimentsForm1(forms.ModelForm):
         self.fields['cern_experiment'].widget = ListTextWidget(data_list=_cern_experiment_list, name='cern_experiment_-list')
         self.fields['cern_experiment'].label='CERN experiment/Projects *'
         self.fields['responsible'].label='Responsible person *'
+        self.fields['emergency_phone'].label = 'Emergency telephone number*'
+        self.fields['emergency_phone'].required = True
         self.fields['constraints'].required = False
         self.fields['availability'] = forms.DateField(('%d/%m/%Y',),widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When your samples will be available for irradiation'} ) )
         self.fields['availability'].label= 'Availability *'
@@ -49,11 +51,12 @@ class ExperimentsForm1(forms.ModelForm):
     class Meta:
         model = Experiments
         exclude = ('category','number_samples','comments','regulations_flag','irradiation_type')
-        fields = ['title','description','cern_experiment','responsible','availability','constraints']
+        fields = ['title','description','cern_experiment','responsible','emergency_phone','availability','constraints']
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Please, provide a unique title for your irradiation experiment'}),
             'description': forms.Textarea(attrs={'placeholder': 'Please, provide a short description of your experiment', 'rows':2}),
-            'constraints': forms.TextInput(attrs={'placeholder': 'Provide any time constraints, e.g. test beam'}),
+            'constraints': forms.TextInput(attrs={'placeholder': 'Please,provide any time constraints, e.g. test beam'}),
+            'emergency_phone': forms.TextInput(attrs={'placeholder': 'Please, provide a telephone number in case of emergency'}),
         }
     def checking_unique(self):
         cleaned_data = self.cleaned_data
@@ -66,9 +69,6 @@ class ExperimentsForm1(forms.ModelForm):
             print("title exists")
             return False
         return True
-
-        
-
 
 def validate_negative(value):
     if value < 0:

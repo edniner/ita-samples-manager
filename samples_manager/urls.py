@@ -40,7 +40,13 @@ urlpatterns = [
     url(r'^dosimeters/generate/ids/$', views.generate_dos_ids, name='generate_dos_ids'),
     url(r'^user/(?P<pk>\d+)/update/$', views.admin_user_update, name='admin_user_update'),
     url(r'^irradiations/$', views.irradiations, name='irradiations'),
-    url(r'^search_samples/$', views.search_samples, name='search_samples'),
+    url(r'^search_irradiations/$', views.search_irradiations, name='search_irradiations'),
+    url(r'^search/experiment/(?P<experiment_id>\d+)$', views.search_samples, name='search_samples'),
+    url(r'^search/experiments/user$', views.search_experiments_user, name='search_experiments_user'),
+    url(r'^search/admin/experiments/$', views.search_experiments_admin, name='search_experiments_admin'),
+    url(r'^search/experiment/(?P<experiment_id>\d+)/users/$', views.search_experiment_users, name='search_experiment_users'),
+    url(r'^search/admin/users/$', views.search_users_admin, name='search_users_admin'),
+    url(r'^search/dosimeters/$', views.search_dosimeters, name='search_dosimeters'),
 
     ]
 
