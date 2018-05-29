@@ -200,7 +200,7 @@ var dymoPrintSamples = function(){
                 if (printers.length == 0)
                     alert("No DYMO printers are installed. Install DYMO printers.");
                 else{
-                      var printerName = "DYMO LabelWriter 450 Turbo";
+                      var printerName = "IRRAD SM Label Printer";
                       if (printerName == "")
                           throw "No LabelWriter printers found. Install LabelWriter printer";
                       
