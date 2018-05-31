@@ -21,7 +21,6 @@
         </div>
     </div>
     <div class="row">
-        <div class="row">
         <div class="col-sm-4" style="text-align: left">
              {%if request.path|slice:":23" == '/samples_manager/search' %}
                 <a  href="{% url 'samples_manager:experiments_list'  %}" type="button" class="btn back" title='Back'>
@@ -52,10 +51,10 @@
     </div>
     <div class="panel-body">
         <div class="row">
-            <div class="col-12">
-            <table class="table table-responsive sortable" id="experiment-table">
+            <table class="col-sm-12 table-responsive  sortable" id="experiment-table">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Row</th>
                         <th>Last update</th>
                         <th>Irradiation title</th>
@@ -63,6 +62,7 @@
                         <th>No. registered samples/<br>declared samples</th>
                         <th>No. users</th>
                         <th>Responsible person</th>
+                        <th>Last updated by</th>
                         <th>Status</th>
                         <th class="sorttable_nosort">Actions</th>
                     </tr>
@@ -74,8 +74,6 @@
                     {% include 'samples_manager/partial_admin_experiments_list.html' %}
                 </tbody>
             </table>
-            </div>
         </div>
     </div>
-</div>
 {% endblock %}

@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^(?P<experiment_id>[0-9]+)/experiment/$', views.experiment_details, name='experiment_details'),
     url(r'^logged_user/$', views.view_user, name='view_user'),
     url(r'^experiments/$', views.experiments_list, name='experiments_list'),
+    url(r'^user/(?P<pk>\d+)/experiments/$', views.admin_experiments_user_view, name='admin_experiments_user_view'),
     url(r'^admin/experiments/$', views.admin_experiments_list, name='admin_experiments_list'),
     url(r'^experiment/new/$', views.experiment_new, name='experiment_new'),
     url(r'^experiments/(?P<pk>\d+)/update/$', views.experiment_update, name='experiment_update'),

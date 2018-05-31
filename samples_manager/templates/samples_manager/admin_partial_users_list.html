@@ -1,14 +1,15 @@
-{% for user in users %}
+{% for user_data in users_data %}
   <tr>
-    <td>{{ user.name }}</td>
-    <td>{{ user.surname }}</td>
-    <td>{{ user.email }}</td>
-    <td>{{ user.telephone }}</td>
-    <td>{{ user.role }}</td>
+    <td>{{ user_data.user.name }}</td>
+    <td>{{ user_data.user.surname }}</td>
+    <td>{{ user_data.user.email }}</td>
+    <td>{{ user_data.user.telephone }}</td>
+    <td>{{ user_data.user.role }}</td>
+    <td><a style="text-decoration: underline" href="{% url 'samples_manager:admin_experiments_user_view' user_data.user.id  %}">{{ user_data.experiments_number }}</a></td>
     <td>
       <button type="button"
               class="btn btn-warning btn-sm js-update-user"
-              data-url="{% url 'samples_manager:admin_user_update' user.id %}">
+              data-url="{% url 'samples_manager:admin_user_update' user_data.user.id %}">
         <span class="glyphicon glyphicon-pencil"></span>
       </button>
     </td>

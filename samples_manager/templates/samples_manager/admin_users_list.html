@@ -37,15 +37,15 @@
     </div>
     <div class="panel-body">
         <div class="row">
-            <div class="col-12">
-                <table class="table table-responsive sortable" id="user-table">
-                    <thead class="hover">
+                <table class="col-sm-12 table-responsive sortable" id="user-table">
+                    <thead>
                         <tr>
                         <th>Name</th>
                         <th>Surname</th>
                         <th>E-mail</th>
                         <th>Telephone</th>
                         <th>Role</th>
+                        <th>Experiments</th>
                         <th>Actions</th>
                         </tr>
                     </thead>
@@ -53,7 +53,6 @@
                         {% include 'samples_manager/admin_partial_users_list.html' %}
                     </tbody>
                 </table>
-            </div>
         </div>
     </div>
 </div>

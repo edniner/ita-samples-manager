@@ -37,15 +37,35 @@ def get_logged_user(request):
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
-    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"] 
+    email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
+    mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
+    department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"]
+    group = request.META["HTTP_X_REMOTE_USER_GROUP"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    federation = request.META["HTTP_X_REMOTE_USER_FEDERATION"]
+    authlevel = request.META["HTTP_X_REMOTE_USER_AUTHLEVEL"]
+    
+    print("user data: ")
+    print(mobile)
+    print(department)
+    print(group)
+    print(home_institute)
+    print(federation)
+    print(authlevel)
 
     '''username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
     #email =  "ina.gotse@gmail.com"
-    email =  "Blerina.Gkotse@cern.ch"'''
-
+    email =  "Blerina.Gkotse@cern.ch"
+    mobile = "12345"
+    department = "EP"
+    group = "DT"
+    home_institute = "MINES ParisTech"
+    federation = "CERN"
+    authlevel = "CERN"
+    '''
     email =  email.lower()
     users = Users.objects.all()
     emails =[]
@@ -54,10 +74,12 @@ def get_logged_user(request):
     if not email in emails:
         new_user = Users()
         if firstname is not None:
-            new_user.name= firstname
+            new_user.name = firstname
         if lastname is not None:
             new_user.surname = lastname
-        if telephone is not None:
+        if mobile:
+            new_user.telephone = mobile
+        else:
             new_user.telephone = telephone
         if email is not None:
             new_user.email = email
@@ -110,6 +132,7 @@ def get_registered_samples_number(experiments):
     return {"experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples}
 
 def authorised_experiments(logged_user):
+     print(logged_user.role)
      if logged_user.role == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')
      else:
@@ -149,6 +172,15 @@ def experiments_list(request):
         experiments = authorised_experiments(logged_user)
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
 
+def admin_experiments_user_view(request, pk):
+        print(pk)
+        logged_user = get_logged_user(request)
+        user = Users.objects.get(id = pk)
+        print(user)
+        experiments = authorised_experiments(user)
+        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
+
+
 def admin_experiments_list(request):
     experiments = Experiments.objects.order_by('-updated_at')
     experiment_data = get_registered_samples_number(experiments)
@@ -157,8 +189,23 @@ def admin_experiments_list(request):
     
 def users_list(request):
     users = Users.objects.all()
+    print(users)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/admin_users_list.html', {'users': users,'logged_user': logged_user})
+    users_data = []
+    for user in users: 
+        experiment_values = Experiments.objects.filter(Q(users=user)|Q(responsible=user)).values('title').distinct()
+        experiment_number = 0
+        if experiment_values:
+            print(experiment_values)
+            experiments_number = experiment_values.count()
+        else:
+            experiments_number = 0
+        print(experiments_number)
+        users_data.append({
+            "user":user,
+            "experiments_number":experiments_number
+        })
+    return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user})
 
 def experiment_users_list(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
@@ -293,6 +340,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                     sample = Samples.objects.get(pk = sample_temp.pk)
                     sample.status = "Registered"
                     sample.created_by = logged_user
+                    sample.updated_by = logged_user
                     sample.experiment = experiment
                     '''sample.set_id = generate_set_id()'''
                     sample.save()
@@ -577,6 +625,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     experiment_temp = Experiments.objects.create(**experiment_data)
                     experiment = Experiments.objects.get(pk = experiment_temp.pk)
                     experiment.created_by =  logged_user 
+                    experiment.updated_by =  logged_user
                     experiment.status = "Registered"
                     experiment.save()
                     if experiment.category == "Passive Standard":
@@ -654,7 +703,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     pass
                 else:
                     experiment.status ='Updated'
-                experiment.update_by = logged_user
+                experiment.updated_by = logged_user
                 experiment.save()
                 if experiment.category == "Passive Standard":
                     if passive_standard_categories_form.is_valid(): 
@@ -707,7 +756,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 form3.save()
                 experiment = Experiments.objects.get(pk =  experiment_updated.pk)
                 experiment.status = "Validated"
-                experiment.update_by = logged_user
+                experiment.updated_by = logged_user
                 experiment.save()
                 if experiment.category == "Passive Standard":
                     if passive_standard_categories_form.is_valid(): 

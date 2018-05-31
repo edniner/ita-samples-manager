@@ -196,7 +196,6 @@ var dymoPrintSamples = function(){
                 // select printer to print on
                 // for simplicity sake just use the first LabelWriter printer
                 var printers = dymo.label.framework.getPrinters();
-                console.log(printers);
                 if (printers.length == 0)
                     alert("No DYMO printers are installed. Install DYMO printers.");
                 else{

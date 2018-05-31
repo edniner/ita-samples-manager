@@ -55,8 +55,7 @@
     </div>
     <div class="panel-body">
         <div class="loader" id="load" style="display:none"></div>    
-        <div class="row">
-            <table class="table table-responsive sortable" id="dosimeter-table">
+            <table class="col-sm-12 table-responsive sortable" id="dosimeter-table">
                 <thead>
                     <tr>
                     <th class="sorttable_nosort"><input name="select_all" value="1" id="dosimeters-select-all" type="checkbox" /></th>
@@ -72,6 +71,5 @@
                     {% include 'samples_manager/partial_dosimeters_list.html' %}
                 </tbody>
             </table>
-        </div>
     </div>
 {% endblock %}
