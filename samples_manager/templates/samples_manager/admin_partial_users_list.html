@@ -12,6 +12,11 @@
               data-url="{% url 'samples_manager:admin_user_update' user_data.user.id %}">
         <span class="glyphicon glyphicon-pencil"></span>
       </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-user"
+              data-url="{% url 'samples_manager:admin_user_delete' user_data.user.id %}">
+        <span class="glyphicon glyphicon-trash"></span>
+      </button>
     </td>
   </tr>
 {% empty %}

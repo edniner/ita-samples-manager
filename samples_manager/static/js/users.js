@@ -35,6 +35,8 @@ var loadForm = function () {
             alert("The user data were successfully saved! The user should still subscribe in irrad-ps-users e-group if he/she is not a member!")
           else if (data['state']=='Deleted')
             alert("The user was deleted. He/she will not have access to the related experiments and samples anymore!")
+          else if(data['state']=='Updated')
+            alert("The user information were updated!")
           $("#user-table tbody").html(data.html_user_list);  // <-- Replace the table body
           $("#modal-user").modal("hide");  // <-- Close the modal
         }

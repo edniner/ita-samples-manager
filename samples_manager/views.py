@@ -33,7 +33,7 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
@@ -45,13 +45,13 @@ def get_logged_user(request):
     federation = request.META["HTTP_X_REMOTE_USER_FEDERATION"]
     authlevel = request.META["HTTP_X_REMOTE_USER_AUTHLEVEL"]
     
-    '''print("user data: ")
+    print("user data: ")
     print(mobile)
     print(department)
     print(group)
     print(home_institute)
     print(federation)
-    print(authlevel)
+    print(authlevel)'''
 
     username =  "bgkotse"
     firstname =  "Blerina"
@@ -64,7 +64,7 @@ def get_logged_user(request):
     group = "DT"
     home_institute = "MINES ParisTech"
     federation = "CERN"
-    authlevel = "CERN"'''
+    authlevel = "CERN"
     
     email =  email.lower()
     users = Users.objects.all()
@@ -93,7 +93,6 @@ def get_logged_user(request):
 def index(request):
     template = loader.get_template('samples_manager/index.html')
     logged_user = get_logged_user(request)
-    print(logged_user)
     context = {'logged_user': logged_user}
     return render(request, 'samples_manager/index.html', context)
 
@@ -132,7 +131,6 @@ def get_registered_samples_number(experiments):
     return {"experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples}
 
 def authorised_experiments(logged_user):
-     print(logged_user.role)
      if logged_user.role == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')
      else:
@@ -176,7 +174,6 @@ def admin_experiments_user_view(request, pk):
         print(pk)
         logged_user = get_logged_user(request)
         user = Users.objects.get(id = pk)
-        print(user)
         experiments = authorised_experiments(user)
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
 
@@ -186,25 +183,28 @@ def admin_experiments_list(request):
     experiment_data = get_registered_samples_number(experiments)
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data["experiments"],"total_registered_samples": experiment_data["total_registered_samples"], "total_declared_samples": experiment_data["total_declared_samples"],'logged_user': logged_user})
-    
-def users_list(request):
+
+def get_users_data():
     users = Users.objects.all()
-    print(users)
-    logged_user = get_logged_user(request)
     users_data = []
     for user in users: 
         experiment_values = Experiments.objects.filter(Q(users=user)|Q(responsible=user)).values('title').distinct()
         experiment_number = 0
         if experiment_values:
-            print(experiment_values)
             experiments_number = experiment_values.count()
         else:
             experiments_number = 0
-        print(experiments_number)
         users_data.append({
             "user":user,
             "experiments_number":experiments_number
         })
+    return users_data
+
+
+
+def users_list(request):
+    logged_user = get_logged_user(request)
+    users_data = get_users_data()
     return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user})
 
 def experiment_users_list(request, experiment_id):
@@ -369,7 +369,6 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 print("update")
                 sample_temp = form1.save()
                 form2.save()
-                print(Samples.objects.get(pk = sample_temp.pk))
                 sample_updated = Samples.objects.get(pk = sample_temp.pk)
                 sample_updated.status = "Updated"
                 sample_updated.updated_by = logged_user
@@ -401,12 +400,9 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                     sample.save()
                     print ("sample saved")
                     if layers_formset.is_valid():
-                        print(layers_formset)
                         if layers_formset.cleaned_data is not None:
-                            print(layers_formset.cleaned_data)
                             for layer in layers_formset.cleaned_data:
                                 if  layer.get('name', False):
-                                    print(layer ['name'])
                                     new_layer = Layers()
                                     new_layer.name = layer ['name']
                                     new_layer.length = layer ['length']
@@ -460,11 +456,9 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
                 dosimeter = Dosimeters.objects.get(pk = dosimeter_temp.pk)
                 dosimeter.status = "Registered"
                 dosimeter.created_by = logged_user
-                print(dosimeter.dos_id)
                 if dosimeter.dos_id =='':
                     print("generating")
                 dosimeter.dos_id = generate_dos_id(dosimeter)
-                print(dosimeter.dos_id)
                 dosimeter.save()
             elif status == 'update':
                 print("update")
@@ -1074,7 +1068,6 @@ def assign_dosimeters(request, experiment_id):
     print("assign dosimeters")
     logged_user = get_logged_user(request)
     samples = Samples.objects.filter(experiment = experiment_id)
-    print(samples)
     irradiations = []
     if request.method == 'POST':
         print("in post")
@@ -1090,7 +1083,6 @@ def assign_dosimeters(request, experiment_id):
                         irradiation.dosimeter = dosimeter
                         irradiation.save()
                         irradiations.append(irradiation)
-            print(irradiations)
             if logged_user.role == 'Admin':
                 irradiations = Irradation.objects.all()
             return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
@@ -1101,14 +1093,6 @@ def assign_dosimeters(request, experiment_id):
                 context,
                 request=request,
             )
-    return JsonResponse(data)
-
-def save_samples_dosimeters(request,experiment_id,sample_id,dosimeter_id):
-    data = dict()
-    print('save_samples_dosimeters')
-    print("request "+str(request))
-    print(sample_id)
-    print(dosimeter_id)
     return JsonResponse(data)
 
 def save_user_form(request, form, experiment, template_name):
@@ -1159,9 +1143,9 @@ def save_admin_user_form(request, form, template_name):
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
-            users = Users.objects.all()
+            users_data = get_users_data()
             data['html_user_list'] = render_to_string('samples_manager/admin_partial_users_list.html', {
-                'users': users
+                'users_data': users_data,
             })
         else:
             data['form_is_valid'] = False
@@ -1179,6 +1163,13 @@ def user_new(request,experiment_id):
         form = UsersForm()
     return save_user_form(request, form,experiment, 'samples_manager/partial_user_create.html')
 
+def admin_user_new(request):
+    if request.method == 'POST':
+        form = UsersForm(request.POST)
+    else:
+        form = UsersForm()
+    return save_admin_user_form(request, form, 'samples_manager/admin_partial_user_create.html')
+
 def user_update(request,experiment_id,pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     user = get_object_or_404(Users, pk=pk)
@@ -1188,13 +1179,14 @@ def user_update(request,experiment_id,pk):
         form = UsersForm(instance=user)
     return save_user_form(request, form, experiment,'samples_manager/partial_user_update.html')
 
-def user_delete(request,experiment_id,pk):
+def user_delete_from_experiment(request,experiment_id,pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     user = get_object_or_404(Users, pk=pk)
     data = dict()
     if request.method == 'POST':
-        user.delete()
-        data['form_is_valid'] = True  # This is just to play along with the existing code
+        #user.delete()
+        experiment.users.remove(user)
+        data['form_is_valid'] = True  
         users = experiment.users.all()
         data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
             'users': users,
@@ -1204,6 +1196,26 @@ def user_delete(request,experiment_id,pk):
     else:
         context = {'user': user, 'experiment':experiment,}
         data['html_form'] = render_to_string('samples_manager/partial_user_delete.html',
+            context,
+            request=request,
+        )
+    return JsonResponse(data)
+
+def admin_user_delete(request ,pk):
+    user = get_object_or_404(Users, pk=pk)
+    data = dict()
+    if request.method == 'POST':
+        user.delete()
+        data['form_is_valid'] = True  # This is just to play along with the existing code
+        users = Users.objects.all()
+        users_data = get_users_data()
+        data['html_user_list'] = render_to_string('samples_manager/admin_partial_users_list.html', {
+            'users_data': users_data,
+        })
+        data['state'] = "Deleted"
+    else:
+        context = {'user': user,}
+        data['html_form'] = render_to_string('samples_manager/admin_partial_user_delete.html',
             context,
             request=request,
         )
@@ -1231,11 +1243,11 @@ def generate_dos_ids(request):
     return JsonResponse(data)
 
 def admin_user_update(request,pk):
-    user = get_object_or_404(Users, pk=pk)
+    user = get_object_or_404(Users, pk = pk)
     if request.method == 'POST':
-        form = UsersForm(request.POST, instance=user)
+        form = UsersForm(request.POST, instance = user)
     else:
-        form = UsersForm(instance=user)
+        form = UsersForm(instance = user)
     return save_admin_user_form(request, form,'samples_manager/admin_partial_user_update.html')
 
     
@@ -1258,7 +1270,6 @@ def sample_update(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
     LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=0)
-    print("update request: "+str(request))
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
@@ -1545,17 +1556,14 @@ def print_sample_label_view(request, experiment_id, pk):
     if request.method == 'POST':
         sample.set_id = generate_set_id(sample)
         sample.save()
-        print(sample.set_id)
         data['set_id'] = sample.set_id
         data['req_fluence'] = sample.req_fluence.req_fluence
         category = sample.category
-        print(category)
         print("data category")
         if experiment.category == 'Passive Standard':
             data['category'] = sample.category
         else:
             data['category'] = category.split(":",1)[1]
-        print(data['category'])
         print('responsible')
         data['responsible'] = experiment.responsible.email
         print(data['responsible'])
@@ -1592,35 +1600,6 @@ def print_dosimeter_label_view(request, pk):
         )
     return JsonResponse(data)
 
-'''def search_samples(request):
-    if request.method == 'GET':
-        irradiations = []
-        search_text =  request.GET.get('search_box')
-        try:
-            sample = Samples.objects.get(set_id = search_text)
-            if sample: 
-                irradiations = Irradation.objects.filter(sample = sample)
-                if irradiations: 
-                    print(irradiations)
-                else:
-                    pass
-        except Exception:
-            print(Exception.message)
-        try:
-            if dosimeter:
-                print("dosimeter")
-                dosimeter = Dosimeters.objects.get(dos_id = search_text)
-                print(dosimeter) 
-                irradiations = Irradation.objects.filter(dosimeter = dosimeter)
-                if irradiations: 
-                    print('dosimeters')
-                    print(irradiations)
-        except Exception:
-            print(Exception.message)        
-        return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations})
-    else:
-        return render(request,"samples_manager/irradiations_list.html",{})'''
-
 def normalize_query(query_string,
                     findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
                     normspace=re.compile(r'\s{2,}').sub):
@@ -1652,9 +1631,7 @@ def search_irradiations(request):
         irradiations =[]
         if ('search_box' in request.GET) and request.GET['search_box'].strip():
             query_string = request.GET['search_box']
-            print(query_string)
             entry_query = get_query(query_string, ['status'])
-            print(entry_query)
             irradiations = Irradation.objects.filter(entry_query)
         return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations})
 
