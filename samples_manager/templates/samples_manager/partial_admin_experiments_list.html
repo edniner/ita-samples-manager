@@ -3,15 +3,15 @@
 
     {%if experiment.experiment.irradiation_type == 'Protons'%}
     <td>
-      <div class="circle red"><i>p</i></div>
+      <div title="Protons" class="circle red"><i>p</i></div>
     </td>
     {%elif experiment.experiment.irradiation_type == 'Heavy ions'%}
     <td>
-      <div class="circle blue"><i>HI</i></div>
+      <div title="Heavy Ions" class="circle blue"><i>HI</i></div>
     </td>
     {%else%}
     <td>
-      <div class="circle green"><i>Pi</i></div>
+      <div title="Pions" class="circle green"><i>Pi</i></div>
     </td>
     {%endif%}
     <td>{{experiment.row}}</td>

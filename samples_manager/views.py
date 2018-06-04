@@ -45,7 +45,7 @@ def get_logged_user(request):
     federation = request.META["HTTP_X_REMOTE_USER_FEDERATION"]
     authlevel = request.META["HTTP_X_REMOTE_USER_AUTHLEVEL"]
     
-    print("user data: ")
+    '''print("user data: ")
     print(mobile)
     print(department)
     print(group)
@@ -53,7 +53,7 @@ def get_logged_user(request):
     print(federation)
     print(authlevel)
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -64,8 +64,8 @@ def get_logged_user(request):
     group = "DT"
     home_institute = "MINES ParisTech"
     federation = "CERN"
-    authlevel = "CERN"
-    '''
+    authlevel = "CERN"'''
+    
     email =  email.lower()
     users = Users.objects.all()
     emails =[]
@@ -367,10 +367,13 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                     data['state'] = "not unique"     
             elif status == 'update': 
                 print("update")
-                sample_updated = form1.save()
+                sample_temp = form1.save()
                 form2.save()
+                print(Samples.objects.get(pk = sample_temp.pk))
+                sample_updated = Samples.objects.get(pk = sample_temp.pk)
                 sample_updated.status = "Updated"
-                sample_updated.update_by = logged_user
+                sample_updated.updated_by = logged_user
+                sample_updated.experiment = experiment
                 sample_updated.save()
                 print("before layers")
                 if layers_formset.is_valid():
@@ -468,7 +471,7 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
                 dosimeter_updated = form1.save()
                 form2.save()
                 dosimeter_updated.status = "Updated"
-                dosimeter_updated.update_by = logged_user
+                dosimeter_updated.updated_by = logged_user
                 dosimeter_updated.save()
                 print("sample updated")
             else:

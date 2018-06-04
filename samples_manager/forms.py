@@ -103,6 +103,15 @@ class ExperimentsForm3(forms.ModelForm):
            'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':4}),
         }
 
+class ExperimentStatus(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ExperimentStatus, self).__init__(*args, **kwargs)
+        self.fields['status'].label = "Choose status:"
+    class Meta:
+        model = Experiments
+        fields = ['status']
+
+
 
 def get_fluences(experiment_id):
     fluences = ReqFluences.objects.filter( experiment = experiment_id)    
@@ -337,26 +346,6 @@ class DosimetersForm2(ModelForm):
             'comments': forms.Textarea(attrs={'rows':3}),
         }
 
-
-
-class LayersForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(LayersForm, self).__init__(*args, **kwargs)
-        self.fields['name'].label= 'Name *'
-        self.fields['length'].label= 'Length (mm) *'
-        self.fields['element_type'].label= 'Element name *'
-        self.fields['density'].label= 'Density (g/cm³)*'
-        self.fields['percentage'].label= mark_safe('Weight <br>fraction (%) *')
-
-    
-    class Meta:
-        model = Layers
-        fields = ['id','name', 'length','element_type', 'percentage','density']
-        exclude = ('sample',)
-        widgets = {
-                'name':  forms.TextInput(attrs={'placeholder': 'e.g. L1'}),
-                'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
-            }
 
 class IrradiationForm(ModelForm):
     def __init__(self, *args, **kwargs):
