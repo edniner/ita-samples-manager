@@ -33,7 +33,7 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
@@ -51,9 +51,9 @@ def get_logged_user(request):
     print(group)
     print(home_institute)
     print(federation)
-    print(authlevel)'''
+    print(authlevel)
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -64,7 +64,7 @@ def get_logged_user(request):
     group = "DT"
     home_institute = "MINES ParisTech"
     federation = "CERN"
-    authlevel = "CERN"
+    authlevel = "CERN"'''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -1369,11 +1369,6 @@ def dosimeter_delete(request, pk):
             request=request,
         )
     return JsonResponse(data)
-
-
-
-
-
 
 def print_experiment_view(request, pk):
     experiment = get_object_or_404(Experiments, pk=pk)
