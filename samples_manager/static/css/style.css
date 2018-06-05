@@ -8,7 +8,7 @@ a {
 a hover {
     color: darkorange;
 }
-h1,h2,h3,h4,li,p,table th, table td {
+h1,h2,h3,h4,li,p,table th, table tr {
     color: #FFFFFF;
 }
 table th,table td{

@@ -16,9 +16,9 @@
     <div class="row">
         <div class="col-sm-4" style="text-align: left">
              {%if request.path|slice:":23" == '/samples_manager/search' %}
-                <a  href="{% url 'samples_manager:experiments_list'  %}" type="button" class="btn back" title='Back'>
+                <a  href="{% url 'samples_manager:experiment_users_list' experiment.id %}" type="button" class="btn back" title='Back'>
             {%else %}
-                <a  href="{% url 'samples_manager:index' %}" type="button" class="btn back" title='Back'>
+                <a  href="{% url 'samples_manager:experiments_list' %}" type="button" class="btn back" title='Back'>
             {%endif%}
                 <span class="glyphicon glyphicon-chevron-left"></span>Back
             </a>
