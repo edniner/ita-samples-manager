@@ -33,20 +33,20 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
-    mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]'''
+    mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
     #email =  "Blerina.Gkotse@telecom-bretagne.eu"
     email =  "Blerina.Gkotse@cern.ch"
-    mobile = "12345"
+    mobile = "12345"'''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -169,14 +169,14 @@ def admin_experiments_list(request):
 def get_users_data(request):
     users = Users.objects.all()
     users_data = []
-    '''mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
+    mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] # needed
     group = request.META["HTTP_X_REMOTE_USER_GROUP"] # to chec if he is in the ps-irrad-users
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"] #needed'''
-    mobile = "12345"
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"] #needed
+    '''mobile = "12345"
     department = "EP/DT"
     group = "NICE External Users;All Exchange People;CERN External Users;irrad-ps-events;irrad-ps-users"
-    home_institute = "MINES ParisTech"
+    home_institute = "MINES ParisTech"'''
 
     groups = group.split(";")
     print(groups) 
