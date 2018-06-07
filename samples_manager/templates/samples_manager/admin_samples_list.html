@@ -50,7 +50,25 @@
         </div>
         <div class="panel-body">
                 <div class="row">
+                    <form method="post" id='assign_samples_dosimeter' class="col-sm-12"  action="{% url 'samples_manager:experiment_samples_list' experiment.id%}">
                     {% csrf_token %}
+                      <div class = "row">
+                          <div  class="col-sm-2"></div>
+                            {% for field in form %}
+                                <div style="text-align: right" class="col-sm-2 form-group{% if field.errors %} has-error{% endif %}">
+                                {% render_field field class="form-control" %}
+                            {% for error in field.errors %}
+                                <p class="help-block">{{ error }}</p>
+                            {% endfor %}
+                                </div>
+                            {% endfor %}
+                            <button type="submit"
+                                        id = "assign_dosimeters"
+                                        class="col-sm-1 btn btn-success"
+                                        style="color:white;display:none">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                            </button>
+                      </div>
                         <table class="col-sm-12 table-responsive sortable" id="sample-table">
                             <thead>
                                 <tr>
@@ -70,5 +88,6 @@
                         </table>
                 </div>
         </div>   
+    </form>
 </div>
 {% endblock %}

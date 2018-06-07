@@ -10,6 +10,10 @@ $(function () {
         $('#new_sample').hide();
         $('#print_samples').show();
         $('#assign_dosimeters').show();
+        $('#dos_selectbox').show();
+        $("#assign_samples_dosimeter").css("display", "inline-block");
+        $("select#id_irrad_table.form-control").css("display", "inline-block");
+        $("select#id_table_position.form-control").css("display", "inline-block");
       } 
     else{
       checked_sample_values = checked_sample_values - 1;
@@ -17,6 +21,9 @@ $(function () {
         $('#new_sample').show();
         $('#print_samples').hide();
         $('#assign_dosimeters').hide();
+        $("select#id_dosimeter.form-control").css("display", "none");
+        $("select#id_irrad_table.form-control").css("display", "none");
+        $("select#id_table_position.form-control").css("display", "none");
       }
     }
   });
@@ -31,6 +38,11 @@ var load_values = function() {
         $('#new_sample').hide();
         $('#print_samples').show();
         $('#assign_dosimeters').show();
+        $('#dos_selectbox').show();
+        $("#assign_samples_dosimeter").css("display", "inline-block");
+        $("select#id_dosimeter.form-control").css("display", "inline-block");
+        $("select#id_irrad_table.form-control").css("display", "inline-block");
+        $("select#id_table_position.form-control").css("display", "inline-block");
       } 
     else{
       checked_sample_values = checked_sample_values - 1;
@@ -38,6 +50,10 @@ var load_values = function() {
         $('#new_sample').show();
         $('#print_samples').hide();
         $('#assign_dosimeters').hide();
+        $('#dos_selectbox').hide();
+        $("select#id_dosimeter.form-control").css("display", "none");
+        $("select#id_irrad_table.form-control").css("display", "none");
+        $("select#id_table_position.form-control").css("display", "none");
       }
     }
   });  
@@ -49,6 +65,11 @@ $("#samples-select-all").click(function(){
         $('#new_sample').hide();
         $('#print_samples').show();
         $('#assign_dosimeters').show();
+        $('#dos_selectbox').show();
+        $("#assign_samples_dosimeter").css("display", "inline-block");
+        $("select#id_dosimeter.form-control").css("display", "inline-block");
+        $("select#id_irrad_table.form-control").css("display", "inline-block");
+        $("select#id_table_position.form-control").css("display", "inline-block");
       } 
     else{
       checked_sample_values = checked_sample_values - 1;
@@ -56,6 +77,10 @@ $("#samples-select-all").click(function(){
         $('#new_sample').show();
         $('#print_samples').hide();
         $('#assign_dosimeters').hide();
+        $('#dos_selectbox').hide();
+        $("select#id_dosimeter.form-control").css("display", "none");
+        $("select#id_irrad_table.form-control").css("display", "none");
+        $("select#id_table_position.form-control").css("display", "none");
       }
     }
   });
@@ -242,7 +267,7 @@ var dymoPrintSamples = function(){
 
   // Create sample
   $(".js-create-sample").click(loadForm);
- // $("#modal-sample").on("submit", ".js-assign-dosimeters-form",assign_dosimeters);
+  //$("#assign_dosimeters").on("submit", ".js-assign-dosimeters-form",assign_dosimeters);
 
   $("#modal-sample").on("submit", ".js-sample-create-form",saveForm);
 

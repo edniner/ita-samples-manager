@@ -364,3 +364,7 @@ div.circle {
 .green{
     background: #008000;
 }
+
+select#id_dosimeter.form-control,select#id_irrad_table.form-control, select#id_table_position.form-control {
+    display: none;
+}

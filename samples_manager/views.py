@@ -33,20 +33,20 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
-    mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
+    mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Blerina"
     lastname = "Gkotse"
     telephone = "11111"
-    #email =  "ina.gotse@gmail.com"
+    #email =  "Blerina.Gkotse@telecom-bretagne.eu"
     email =  "Blerina.Gkotse@cern.ch"
-    mobile = "12345"'''
+    mobile = "12345"
     
     email =  email.lower()
     users = Users.objects.all()
@@ -169,14 +169,14 @@ def admin_experiments_list(request):
 def get_users_data(request):
     users = Users.objects.all()
     users_data = []
-    mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
+    '''mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] # needed
     group = request.META["HTTP_X_REMOTE_USER_GROUP"] # to chec if he is in the ps-irrad-users
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"] #needed
-    '''mobile = "12345"
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"] #needed'''
+    mobile = "12345"
     department = "EP/DT"
     group = "NICE External Users;All Exchange People;CERN External Users;irrad-ps-events;irrad-ps-users"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
 
     groups = group.split(";")
     print(groups) 
@@ -217,7 +217,38 @@ def experiment_samples_list(request, experiment_id):
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
-    return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'experiment': experiment,'logged_user': logged_user })
+    irradiations = []
+    if request.method == 'POST':
+        print("in post")
+        form = IrradiationForm(request.POST)
+        checked_samples = request.POST.getlist('checks[]')
+        if form.is_valid():
+            if form.cleaned_data is not None:
+                dosimeter = form.cleaned_data['dosimeter']
+                irrad_table = form.cleaned_data['irrad_table']
+                table_position = form.cleaned_data['table_position']
+                for sample in checked_samples:
+                    sample_splitted = sample.split("<")
+                    sample_object = Samples.objects.get(set_id = sample_splitted[0])
+                    print(sample_object )
+                    irradiation = Irradation()
+                    irradiation.sample = sample_object
+                    irradiation.dosimeter = dosimeter
+                    irradiation.irrad_table = irrad_table
+                    if table_position:
+                        irradiation.table_position = table_position
+                    irradiation.save()
+                    irradiations.append(irradiation)
+                    print(irradiations)
+            if logged_user.role == 'Admin':
+                irradiations = Irradation.objects.all()
+            return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
+    else:
+        form = IrradiationForm()
+    if  logged_user.role == 'Admin': 
+        return render(request, 'samples_manager/admin_samples_list.html', {'form': form, 'samples': samples, 'experiment': experiment,'logged_user': logged_user})
+    else:
+        return render(request, 'samples_manager/samples_list.html', {'form': form, 'samples': samples, 'experiment': experiment,'logged_user': logged_user})
 
 def dosimeters_list(request):
     logged_user = get_logged_user(request)
@@ -695,10 +726,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 form2.save()
                 form3.save()
                 experiment = Experiments.objects.get(pk =  experiment_updated.pk)
-                if experiment.status=='Validated':
-                    pass
-                else:
-                    experiment.status ='Updated'
                 experiment.updated_by = logged_user
                 experiment.save()
                 if experiment.category == "Passive Standard":
@@ -1092,6 +1119,11 @@ def assign_dosimeters(request, experiment_id):
                 context,
                 request=request,
             )
+    return JsonResponse(data)
+
+def assign_samples_dosimeters(request):
+    print("here")
+    data = dict()
     return JsonResponse(data)
 
 def save_user_form(request, form, experiment, template_name):

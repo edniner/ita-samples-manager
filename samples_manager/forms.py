@@ -28,6 +28,26 @@ PARTICLES = (
             ("Pions", "Pions"),
             )
 
+IRRAD_TABLES = (
+                ("", "Select IRRAD table"),
+                ("Shuttle", "Shuttle"),
+                ("IRRAD3", "IRRAD3"),
+                ("IRRAD5", "IRRAD5"),
+                ("IRRAD7", "IRRAD7"),
+                ("IRRAD9", "IRRAD9"),
+                ("IRRAD11", "IRRAD11"),
+                ("IRRAD13", "IRRAD13"),
+                ("IRRAD15", "IRRAD15"),
+                ("IRRAD17", "IRRAD17"),
+                ("IRRAD19", "IRRAD19"),
+                )
+    
+TABLE_POSITIONS = (
+                    ("", "Select position"),
+                    ("Center", "Center"),
+                    ("Left", "Left"),
+                    ("Right", "Right"),
+                )
 
 
 
@@ -351,10 +371,15 @@ class IrradiationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(IrradiationForm, self).__init__(*args, **kwargs)
         self.fields['dosimeter'].required = True
-        
+        self.fields['dosimeter'].empty_label = 'Select dosimeter'
+        self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES)
+        self.fields['irrad_table'].required = True
+        self.fields['table_position'] = forms.ChoiceField(choices = TABLE_POSITIONS)
+        self.fields['table_position'].required = True
+
     class Meta:
         model = Irradation
-        fields = ['dosimeter']
+        fields = ['dosimeter','irrad_table', 'table_position']
         exclude = ('sample','date_in', 'date_out', 'position', 'accumulated_fluence')
 
 
