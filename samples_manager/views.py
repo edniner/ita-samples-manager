@@ -22,6 +22,7 @@ from reportlab.lib.pagesizes import letter, inch
 from django.utils.safestring import mark_safe
 import logging 
 from django.db.models import Q
+from django.utils import timezone
 import re
 
 
@@ -39,6 +40,9 @@ def get_logged_user(request):
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
+    department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"] 
+    
 
     '''username =  "bgkotse"
     firstname =  "Blerina"
@@ -46,7 +50,9 @@ def get_logged_user(request):
     telephone = "11111"
     #email =  "Blerina.Gkotse@telecom-bretagne.eu"
     email =  "Blerina.Gkotse@cern.ch"
-    mobile = "12345"'''
+    mobile = "12345"
+    department = "EP/DT"
+    home_institute = "MINES ParisTech"'''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -61,14 +67,32 @@ def get_logged_user(request):
             new_user.surname = lastname
         if mobile:
             new_user.telephone = mobile
+            new_user.db_telephone = mobile
         else:
             new_user.telephone = telephone
+            new_user.db_telephone = telephone
         if email is not None:
             new_user.email = email
         new_user.save()
         logged_user =  new_user
+        
     else:
         logged_user = Users.objects.get( email = email)
+
+    if mobile:
+        logged_user.db_telephone = mobile
+    else:
+        logged_user.db_telephone = telephone
+    
+    if department:
+         logged_user.department =  department
+
+    if home_institute:
+        logged_user.home_institute = home_institute
+
+    logged_user.last_login = timezone.now()
+    logged_user.save()
+    
     return logged_user
     
 
@@ -166,44 +190,23 @@ def admin_experiments_list(request):
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data["experiments"],"total_registered_samples": experiment_data["total_registered_samples"], "total_declared_samples": experiment_data["total_declared_samples"],'logged_user': logged_user})
 
-def get_users_data(request):
+def users_list(request):
+    logged_user = get_logged_user(request)
     users = Users.objects.all()
     users_data = []
-    mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
-    department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] # needed
-    group = request.META["HTTP_X_REMOTE_USER_GROUP"] # to chec if he is in the ps-irrad-users
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"] #needed
-    '''mobile = "12345"
-    department = "EP/DT"
-    group = "NICE External Users;All Exchange People;CERN External Users;irrad-ps-events;irrad-ps-users"
-    home_institute = "MINES ParisTech"'''
-
-    groups = group.split(";")
-    print(groups) 
-    irrad_ps_user = 0
-    if 'irrad-ps-users' in groups:
-        irrad_ps_user = 1 
-    print(irrad_ps_user)
     for user in users: 
         experiment_values = Experiments.objects.filter(Q(users=user)|Q(responsible=user)).values('title').distinct()
         experiment_number = 0
         if experiment_values:
+            print(experiment_values)
             experiments_number = experiment_values.count()
         else:
             experiments_number = 0
+        print(experiments_number)
         users_data.append({
             "user":user,
-            "experiments_number" : experiments_number,
-            "mobile" :  mobile,
-            "department": department, 
-            "home_institute": home_institute,
-            "irrad_ps_user": irrad_ps_user, 
+            "experiments_number":experiments_number
         })
-    return users_data
-
-def users_list(request):
-    logged_user = get_logged_user(request)
-    users_data = get_users_data(request)
     return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user})
 
 def experiment_users_list(request, experiment_id):
@@ -1174,9 +1177,9 @@ def save_admin_user_form(request, form, template_name):
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
-            users_data = get_users_data(request)
+            users_data = users = Users.objects.all()
             data['html_user_list'] = render_to_string('samples_manager/admin_partial_users_list.html', {
-                'users_data': users_data,
+                'users': users,
             })
         else:
             data['form_is_valid'] = False
@@ -1239,9 +1242,8 @@ def admin_user_delete(request ,pk):
         user.delete()
         data['form_is_valid'] = True  # This is just to play along with the existing code
         users = Users.objects.all()
-        users_data = get_users_data(request)
         data['html_user_list'] = render_to_string('samples_manager/admin_partial_users_list.html', {
-            'users_data': users_data,
+            'users': users,
         })
         data['state'] = "Deleted"
     else:

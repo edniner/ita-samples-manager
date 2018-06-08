@@ -1,16 +1,11 @@
 {% for user_data in users_data %}
-    
-    {%if user_data.irrad_ps_user == 1 %}
-       <tr>
-    {%else %}
-      <tr style="color: red">
-    {%endif%}
+    <td>{{ user_data.user.last_login|date:"d.m.Y"}} {{ user_data.user.last_login|time:"H:i"}}</td>
     <td>{{ user_data.user.name }}</td>
     <td>{{ user_data.user.surname }}</td>
     <td>{{ user_data.user.email }}</td>
-    <td>{{ user_data.user.telephone }}/{{ user_data.mobile }}</td>
-    <td>{{ user_data.department }}</td>
-    <td>{{ user_data.home_institute }}</td>
+    <td>{{ user_data.user.telephone }}/{{ user_data.user.mobile }}</td>
+    <td>{{ user_data.user.department }}</td>
+    <td>{{ user_data.user.home_institute }}</td>
     <td>{{ user_data.user.role }}</td>
     <td><a style="text-decoration: underline" href="{% url 'samples_manager:admin_experiments_user_view' user_data.user.id  %}">{{ user_data.experiments_number }}</a></td>
     <td>

@@ -86,11 +86,16 @@ ROLE=(('Owner','Owner'),('Operator','Operator'),('Coordinator','Coordinator'),('
 
 
 class Users(models.Model):
-    email= models.EmailField(max_length=200)
-    name= models.CharField(max_length=200,  null=True)
+    email = models.EmailField(max_length=200)
+    name = models.CharField(max_length=200,  null=True)
     surname = models.CharField(max_length=200, null=True)
     telephone = models.CharField(max_length=200, null=True)
-    role=models.CharField(max_length=100, choices= ROLE, default='User', null=True)
+    db_telephone = models.CharField(max_length=200, null=True)
+    department = models.CharField(max_length=200, null=True)
+    home_institute = models.CharField(max_length=200, null=True)
+    role = models.CharField(max_length=100, choices= ROLE, default='User', null=True)
+    last_login = models.DateTimeField()
+
 
     def __str__(self):              # __str__ on Python 2
         return self.email

@@ -20,8 +20,16 @@
     <td>{{ experiment.experiment.availability|date:"d.m.Y"}}</td>
     <td>{{ experiment.number_samples}}/{{ experiment.experiment.number_samples }}</td>
     <td>{{ experiment.experiment.users.count }}</td>
-    <td>{{ experiment.experiment.responsible.name}} {{experiment.experiment.responsible.surname}}</td>
-    <td>{{ experiment.experiment.updated_by }}</td>
+    {%if experiment.experiment.responsible.surname %}
+      <td>{{experiment.experiment.responsible.name}} {{experiment.experiment.responsible.surname}}</td>
+    {%else%}
+      <td>{{experiment.experiment.responsible}} </td>
+    {%endif%}
+    {%if experiment.experiment.updated_by.surname%}
+      <td>{{experiment.experiment.updated_by.name}} {{experiment.experiment.updated_by.surname}}</td>
+    {%else%}
+      <td>{{experiment.experiment.updated_by}}</td>
+    {%endif%}
     <td>{{ experiment.experiment.status }}</td>
     <td>
       <button type="button"
