@@ -172,8 +172,17 @@ class UsersForm(ModelForm):
     class Meta:
         model = Users
         fields = ['name', 'surname', 'email','telephone', 'role']
-        widgets = { 
-        }
+        exclude = ('db_telephone', 'department', 'home_institute', 'last_login', )
+
+class ReqFluencesFormSet(forms.BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super(ReqFluencesFormSet, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            form.empty_permitted = False
+
+    def clean(self):
+        if self.has_changed() == False:
+            raise forms.ValidationError('Please add at least one item to fluences.')
 
 class ReqFluencesForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -188,6 +197,15 @@ class ReqFluencesForm(ModelForm):
         }
         exclude = ('experiment',)
 
+class MaterialsFormSet(forms.BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super(MaterialsFormSet, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            form.empty_permitted = False
+
+    def clean(self):
+        if self.has_changed() == False:
+            raise forms.ValidationError('Please add at least one item to samples type.')
 
 class MaterialsForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -306,6 +324,16 @@ class SamplesForm2(ModelForm):
                 'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments  e.g some emergency phone', 'rows':2}),
             }
 
+class LayersFormSet(forms.BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super(LayersFormSet, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            form.empty_permitted = False
+
+    def clean(self):
+        if self.has_changed() == False:
+            raise forms.ValidationError('Please add at least one layer.')
+
 class LayersForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(LayersForm, self).__init__(*args, **kwargs)
@@ -375,13 +403,11 @@ class IrradiationForm(ModelForm):
         self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES)
         self.fields['irrad_table'].required = True
         self.fields['table_position'] = forms.ChoiceField(choices = TABLE_POSITIONS)
-        self.fields['table_position'].required = True
 
     class Meta:
         model = Irradation
         fields = ['dosimeter','irrad_table', 'table_position']
         exclude = ('sample','date_in', 'date_out', 'position', 'accumulated_fluence')
-
 
 
 

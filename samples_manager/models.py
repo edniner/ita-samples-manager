@@ -96,6 +96,11 @@ class Users(models.Model):
     role = models.CharField(max_length=100, choices= ROLE, default='User', null=True)
     last_login = models.DateTimeField()
 
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        self.last_login = timezone.now()
+        return super(Users, self).save(*args, **kwargs)
+
 
     def __str__(self):              # __str__ on Python 2
         return self.email

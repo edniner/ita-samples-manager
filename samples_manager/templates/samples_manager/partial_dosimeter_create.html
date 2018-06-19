@@ -1,7 +1,7 @@
 <meta charset="UTF-8"> 
 {% load staticfiles %}
 {% load widget_tweaks %}
-<form method="post" action="{% url 'samples_manager:dosimeter_new' %}" class="js-dosimeter-create-form">
+<form method="post" action="{% url 'samples_manager:dosimeter_new' %}" class="js-dosimeter-create-form" novalidate>
   {% csrf_token %}
   {% csrf_token %}
   <div class="modal-header">

@@ -41,11 +41,10 @@ def get_logged_user(request):
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"] 
-    
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
     '''username =  "bgkotse"
-    firstname =  "Blerina"
+    firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
     #email =  "Blerina.Gkotse@telecom-bretagne.eu"
@@ -73,9 +72,7 @@ def get_logged_user(request):
             new_user.db_telephone = telephone
         if email is not None:
             new_user.email = email
-        new_user.save()
         logged_user =  new_user
-        
     else:
         logged_user = Users.objects.get( email = email)
 
@@ -83,16 +80,13 @@ def get_logged_user(request):
         logged_user.db_telephone = mobile
     else:
         logged_user.db_telephone = telephone
-    
     if department:
          logged_user.department =  department
 
     if home_institute:
         logged_user.home_institute = home_institute
-
     logged_user.last_login = timezone.now()
     logged_user.save()
-    
     return logged_user
     
 
@@ -177,7 +171,6 @@ def experiments_list(request):
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
 
 def admin_experiments_user_view(request, pk):
-        print(pk)
         logged_user = get_logged_user(request)
         user = Users.objects.get(id = pk)
         experiments = authorised_experiments(user)
@@ -198,11 +191,9 @@ def users_list(request):
         experiment_values = Experiments.objects.filter(Q(users=user)|Q(responsible=user)).values('title').distinct()
         experiment_number = 0
         if experiment_values:
-            print(experiment_values)
             experiments_number = experiment_values.count()
         else:
             experiments_number = 0
-        print(experiments_number)
         users_data.append({
             "user":user,
             "experiments_number":experiments_number
@@ -233,7 +224,6 @@ def experiment_samples_list(request, experiment_id):
                 for sample in checked_samples:
                     sample_splitted = sample.split("<")
                     sample_object = Samples.objects.get(set_id = sample_splitted[0])
-                    print(sample_object )
                     irradiation = Irradation()
                     irradiation.sample = sample_object
                     irradiation.dosimeter = dosimeter
@@ -242,7 +232,6 @@ def experiment_samples_list(request, experiment_id):
                         irradiation.table_position = table_position
                     irradiation.save()
                     irradiations.append(irradiation)
-                    print(irradiations)
             if logged_user.role == 'Admin':
                 irradiations = Irradation.objects.all()
             return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
@@ -645,7 +634,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
     data = dict()
     logged_user = get_logged_user(request)
     if request.method == 'POST':
-        if form1.is_valid() and form2.is_valid() and form3.is_valid():
+        if form1.is_valid() and form2.is_valid() and form3.is_valid() and fluence_formset.is_valid() and material_formset.is_valid():
             if status == 'new' or  status == 'clone': # status experiment
                 if form1.checking_unique() == True:
                     experiment_data = {}
@@ -678,13 +667,21 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                                 active_category.save()
                     else: 
                         print("no category")
-                    
+                    print()
                     if fluence_formset.is_valid():
                         if fluence_formset.cleaned_data is not None:
                             for form in fluence_formset.forms:
+                                print(form)
                                 fluence = form.save()
                                 fluence.experiment = experiment
                                 fluence.save()
+                                print(fluence_formset.cleaned_data)
+                                print("in fluence form")
+                        else:
+                            print(fluence_formset.cleaned_data)
+                            print("data none")
+                    else:
+                        print("fluence not valid")
                     if material_formset.is_valid():
                         if material_formset.cleaned_data is not None:
                             for form in material_formset.forms:
@@ -710,7 +707,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     data['state'] = "Created"
                     message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
                     send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
-                    message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
+                    message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
                     send_mail_notification('IRRAD Data Manager: New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
                 else:
                     data['form_is_valid'] = False
@@ -773,7 +770,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['state'] = "Updated"
                 text = updated_experiment_data(old_experiment,old_fluences,old_materials,old_category,experiment)
                 message2irrad=mark_safe("The user with e-mail: "+logged_user.email+" updated the experiment with title '"+experiment.title+"'.\n"
-                +"The updated fields are: \n"+text+"\nPlease, find all the experiments in this link: http://cern.ch/irrad.data.manager/samples_manager/experiments/all/")
+                +"The updated fields are: \n"+text+"\nPlease, find all the experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
                 send_mail_notification('IRRAD Data Manager: Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
             elif  status == 'validate':  # validation
                 print("validation")
@@ -834,8 +831,8 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
 
 def experiment_new(request):
     logged_user = get_logged_user(request)
-    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm, extra=1)
-    MaterialReqFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=1)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=0, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     cern_experiments = Experiments.objects.order_by().values('cern_experiment').distinct()
     cern_experiments_list = []
     for item in cern_experiments:
@@ -845,8 +842,8 @@ def experiment_new(request):
         form1 = ExperimentsForm1(request.POST,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST)
         form3 = ExperimentsForm3(request.POST)
-        fluence_formset = FluenceReqFormSet(request.POST)
-        material_formset = MaterialReqFormSet(request.POST)
+        fluence_formset = FluenceFormSet(request.POST)
+        material_formset = MaterialFormSet(request.POST)
         passive_standard_categories_form =  PassiveStandardCategoriesForm(request.POST)
         passive_custom_categories_form =  PassiveCustomCategoriesForm(request.POST)
         active_categories_form = ActiveCategoriesForm(request.POST)
@@ -854,8 +851,8 @@ def experiment_new(request):
         form1 = ExperimentsForm1(data_list=cern_experiments_list,initial={'responsible': logged_user})
         form2 = ExperimentsForm2()
         form3 = ExperimentsForm3()
-        fluence_formset = FluenceReqFormSet()
-        material_formset = MaterialReqFormSet()
+        fluence_formset = FluenceFormSet()
+        material_formset = MaterialFormSet()
         passive_standard_categories_form =  PassiveStandardCategoriesForm()
         passive_custom_categories_form =  PassiveCustomCategoriesForm()
         active_categories_form = ActiveCategoriesForm()
@@ -894,13 +891,13 @@ def experiment_update(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm, extra=0)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
         form3 = ExperimentsForm3(request.POST, instance=experiment)
-        fluence_formset = FluenceReqFormSet(request.POST, instance=experiment)
+        fluence_formset = FluenceFormSet(request.POST, instance=experiment)
         material_formset = MaterialFormSet(request.POST, instance=experiment)
         passive_standard_categories_form = PassiveStandardCategoriesForm(request.POST)
         passive_custom_categories_form = PassiveCustomCategoriesForm(request.POST)
@@ -929,7 +926,7 @@ def experiment_update(request, pk):
         form1 = ExperimentsForm1(instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(instance=experiment)
         form3 = ExperimentsForm3(instance=experiment)
-        fluence_formset = FluenceReqFormSet(instance=experiment)
+        fluence_formset = FluenceFormSet(instance=experiment)
         material_formset = MaterialFormSet(instance=experiment)
         passive_standard_categories_form = PassiveStandardCategoriesForm()
         passive_custom_categories_form = PassiveCustomCategoriesForm()
@@ -966,13 +963,13 @@ def experiment_validate(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm, extra=0)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
         form3 = ExperimentsForm3(request.POST, instance=experiment)
-        fluence_formset = FluenceReqFormSet(request.POST, instance=experiment)
+        fluence_formset = FluenceFormSet(request.POST, instance=experiment)
         material_formset = MaterialFormSet(request.POST, instance=experiment)
         passive_standard_categories_form = PassiveStandardCategoriesForm(request.POST)
         passive_custom_categories_form = PassiveCustomCategoriesForm(request.POST)
@@ -1001,7 +998,7 @@ def experiment_validate(request, pk):
         form1 = ExperimentsForm1(instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(instance=experiment)
         form3 = ExperimentsForm3(instance=experiment)
-        fluence_formset = FluenceReqFormSet(instance=experiment)
+        fluence_formset = FluenceFormSet(instance=experiment)
         material_formset = MaterialFormSet(instance=experiment)
         passive_standard_categories_form = PassiveStandardCategoriesForm()
         passive_custom_categories_form = PassiveCustomCategoriesForm()
@@ -1037,13 +1034,13 @@ def experiment_clone(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceReqFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm,extra=0)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=0, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
         form3 = ExperimentsForm3(request.POST, instance=experiment)
-        fluence_formset = FluenceReqFormSet(request.POST)
+        fluence_formset = FluenceFormSet(request.POST)
         material_formset = MaterialFormSet(request.POST)
         passive_standard_categories_form = PassiveStandardCategoriesForm(request.POST)
         passive_custom_categories_form = PassiveCustomCategoriesForm(request.POST)
@@ -1052,7 +1049,7 @@ def experiment_clone(request, pk):
         form1 = ExperimentsForm1(instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(instance=experiment)
         form3 = ExperimentsForm3(instance=experiment)
-        fluence_formset = FluenceReqFormSet()
+        fluence_formset = FluenceFormSet()
         material_formset = MaterialFormSet()
         passive_standard_categories_form = PassiveStandardCategoriesForm()
         passive_custom_categories_form = PassiveCustomCategoriesForm()
@@ -1104,7 +1101,6 @@ def assign_dosimeters(request, experiment_id):
         checked_boxes = request.POST.getlist('checks[]')
         if form.is_valid():
             if form.cleaned_data is not None:
-                print(form.cleaned_data)
                 dosimeter = form.cleaned_data['dosimeter']
                 for sample in samples: 
                         irradiation = Irradation()
@@ -1177,15 +1173,29 @@ def save_admin_user_form(request, form, template_name):
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
-            users_data = users = Users.objects.all()
+            users = Users.objects.all()
+            users_data = []
+            for user in users: 
+                experiment_values = Experiments.objects.filter(Q(users=user)|Q(responsible=user)).values('title').distinct()
+                experiment_number = 0
+                if experiment_values:
+                    experiments_number = experiment_values.count()
+                else:
+                    experiments_number = 0
+                users_data.append({
+                    "user":user,
+                    "experiments_number":experiments_number
+                })
             data['html_user_list'] = render_to_string('samples_manager/admin_partial_users_list.html', {
-                'users': users,
+                'users_data': users_data,
             })
+            print(data['html_user_list'])
         else:
             data['form_is_valid'] = False
     context = {'form': form}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
+
 
 
 
@@ -1286,14 +1296,14 @@ def admin_user_update(request,pk):
     
 def sample_new(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
-    LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=1)
+    LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=0, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
-        layers_formset = LayersFormset(request.POST)
+        layers_formset = LayerFormset(request.POST)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id)
-        layers_formset = LayersFormset()
+        layers_formset = LayerFormset()
         form2 = SamplesForm2(experiment_id = experiment.id)
     status = 'new'
     return save_sample_form(request,form1, layers_formset, form2,status,experiment,'samples_manager/partial_sample_create.html')
@@ -1594,13 +1604,11 @@ def print_sample_label_view(request, experiment_id, pk):
             data['category'] = category.split(":",1)[1]
         print('responsible')
         data['responsible'] = experiment.responsible.email
-        print(data['responsible'])
         samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                 'samples': samples,
                 'experiment': experiment
             })
-        print(data['html_sample_list'])
     else:
         context = {'sample': sample, 'experiment': experiment }
         data['html_form'] = render_to_string('samples_manager/partial_sample_print_label.html',

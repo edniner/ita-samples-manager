@@ -1,7 +1,7 @@
 <meta charset="UTF-8"> 
 {% load staticfiles %}
 {% load widget_tweaks %}
-<form method="post" action="{% url 'samples_manager:sample_update' experiment.id form1.instance.pk %}" class="js-sample-update-form">
+<form method="post" action="{% url 'samples_manager:sample_update' experiment.id form1.instance.pk %}" class="js-sample-update-form" novalidate>
   {% csrf_token %}
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -83,8 +83,10 @@
                                                 {{ hidden }}
                                             {% endfor %}
                                         {% endif %}
-                                        {{ field.errors.as_ul }}
                                         {{ field }}
+                                        {% for error in field.errors %}
+                                            <span style="font-size: 70%" class="help-block">{{error}}</span>
+                                        {% endfor %}
                                     </td>
                                 {% endfor %}
                             </tr>
