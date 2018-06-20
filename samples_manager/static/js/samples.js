@@ -269,6 +269,8 @@ var dymoPrintSamples = function(){
   $(".js-create-sample").click(loadForm);
   //$("#assign_dosimeters").on("submit", ".js-assign-dosimeters-form",assign_dosimeters);
 
+  $('#assign_dosimeters').click( function() { alert('A Sample-ID will be generated for the samples that they do not have one.');});
+
   $("#modal-sample").on("submit", ".js-sample-create-form",saveForm);
 
    // Update sample

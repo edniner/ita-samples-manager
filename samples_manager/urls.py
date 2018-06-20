@@ -52,4 +52,3 @@ urlpatterns = [
     url(r'^search/dosimeters/$', views.search_dosimeters, name='search_dosimeters'),
 
     ]
-
