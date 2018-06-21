@@ -34,16 +34,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -51,7 +51,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"
+    home_institute = "MINES ParisTech"'''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -187,7 +187,9 @@ def users_list(request):
     logged_user = get_logged_user(request)
     users = Users.objects.all()
     users_data = []
+    row = 0
     for user in users: 
+        row = row + 1 
         experiment_values = Experiments.objects.filter(Q(users=user)|Q(responsible=user)).values('title').distinct()
         experiment_number = 0
         if experiment_values:
@@ -196,7 +198,8 @@ def users_list(request):
             experiments_number = 0
         users_data.append({
             "user":user,
-            "experiments_number":experiments_number
+            "experiments_number":experiments_number,
+            "row": row
         })
     return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user})
 
@@ -954,6 +957,13 @@ def experiment_status_update(request, pk):
         form =  ExperimentStatus(request.POST,instance=experiment)
         if form.is_valid():
             form.save()
+            updated_experiment = Experiments.objects.get(id = experiment.id)
+            if  updated_experiment.status == 'Completed':
+                message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was completed.\nTwo weeks time is still needed for the cool down. Please, contact us after that period.\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
+                send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
+                exp_users= updated_experiment.users.values()
+                for user in exp_users:
+                        send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
             data['form_is_valid'] = True
             experiments = Experiments.objects.all().order_by('-updated_at')
             experiments_data = get_registered_samples_number(experiments)
@@ -1226,7 +1236,9 @@ def save_admin_user_form(request, form, template_name):
             data['form_is_valid'] = True
             users = Users.objects.all()
             users_data = []
+            row = 0 
             for user in users: 
+                row = row + 1 
                 experiment_values = Experiments.objects.filter(Q(users=user)|Q(responsible=user)).values('title').distinct()
                 experiment_number = 0
                 if experiment_values:
@@ -1235,7 +1247,8 @@ def save_admin_user_form(request, form, template_name):
                     experiments_number = 0
                 users_data.append({
                     "user":user,
-                    "experiments_number":experiments_number
+                    "experiments_number":experiments_number,
+                    "row": row,
                 })
             data['html_user_list'] = render_to_string('samples_manager/admin_partial_users_list.html', {
                 'users_data': users_data,
