@@ -1,4 +1,5 @@
 {% for user_data in users_data %}
+  <tr>
     <td>{{ user_data.row }}</td>
     <td>{{ user_data.user.last_login|date:"d.m.Y"}} {{ user_data.user.last_login|time:"H:i"}}</td>
     <td>{{ user_data.user.name }}</td>

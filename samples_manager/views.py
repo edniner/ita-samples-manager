@@ -130,6 +130,25 @@ def get_registered_samples_number(experiments):
             })
     return {"experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples}
 
+
+def get_layers(experiment):
+    samples = Samples.objects.filter(experiment = experiment)
+    for sample in samples:
+        layers = Layers.objects.filter(sample = sample)
+        for layer in layers:
+            layer_length = layer.length
+            element_type = str(layer.element_type)
+            print(element_type)
+            element = element_type.split("(")[0]
+            x = 0 
+            if layer.percentage < 100:
+                pass    #compound
+            else:
+                x = layer.length 
+            x_layer = x / layer.density
+            x_layer_trunc = '%.6f'%(x_layer)
+            print(x_layer_trunc)
+
 def authorised_experiments(logged_user):
      if logged_user.role == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')
@@ -254,33 +273,25 @@ def experiment_samples_list(request, experiment_id):
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+    get_layers(experiment_id)
     irradiations = []
     if request.method == 'POST':
-        print("in post heeeeere!")
         form = IrradiationForm(request.POST)
         checked_samples = request.POST.getlist('checks[]')
-        print(checked_samples)
         if form.is_valid():
-            print(form.is_valid())
             if form.cleaned_data is not None:
                 dosimeter = form.cleaned_data['dosimeter']
                 irrad_table = form.cleaned_data['irrad_table']
                 table_position = form.cleaned_data['table_position']
-                print(form.cleaned_data)
                 for sample in checked_samples:
                     sample_splitted = sample.split("<")
                     if sample_splitted[0] == "":
-                        print("sample splitted 6: ",sample_splitted[6])
                         sample_name = sample_splitted[6].split(">")[1]
-                        print(sample_name)
                         sample_object = Samples.objects.get(name = sample_name)
-                        print(sample_object)
                         sample_object.set_id = generate_set_id(sample_object)
-                        print(sample_object.set_id)
                         sample_object.save()
                     else:
                         sample_object = Samples.objects.get(set_id = sample_splitted[0])
-                    print(sample_object)
                     irradiation = Irradation()
                     irradiation.sample = sample_object
                     irradiation.dosimeter = dosimeter
@@ -289,13 +300,11 @@ def experiment_samples_list(request, experiment_id):
                         irradiation.table_position = table_position
                     irradiation.save()
                     irradiations.append(irradiation)
-                print(irradiations)
             if logged_user.role == 'Admin':
                 irradiations = Irradation.objects.all()
             return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
     else:
         form = IrradiationForm()
-        print(form)
         if  logged_user.role == 'Admin': 
             return render(request, 'samples_manager/admin_samples_list.html', {'form': form, 'samples': samples, 'experiment': experiment,'logged_user': logged_user})
         else:
@@ -726,18 +735,14 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                                 active_category.save()
                     else: 
                         print("no category")
-                    print()
                     if fluence_formset.is_valid():
                         if fluence_formset.cleaned_data is not None:
                             for form in fluence_formset.forms:
-                                print(form)
                                 fluence = form.save()
                                 fluence.experiment = experiment
                                 fluence.save()
-                                print(fluence_formset.cleaned_data)
                                 print("in fluence form")
                         else:
-                            print(fluence_formset.cleaned_data)
                             print("data none")
                     else:
                         print("fluence not valid")
@@ -1192,7 +1197,7 @@ def save_user_form(request, form, experiment, template_name):
     if request.method == 'POST':
         if form.is_valid():
             users = Users.objects.all()
-            emails =[]
+            emails = []
             for item in users:
                 emails.append(item.email)
             if form.cleaned_data is not None:
@@ -1212,15 +1217,19 @@ def save_user_form(request, form, experiment, template_name):
                     user.save()
                     if submited_user["email"] !=  experiment.responsible.email:
                         experiment.users.add(user)
+                print("here")
                 message=mark_safe('Dear user,\nyou were assigned as a user for the experiment '+experiment.title+' by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
                 send_mail_notification('IRRAD Data Manager: Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
             data['form_is_valid'] = True
             users = experiment.users.all()
+            print("users")
+            print(users)
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
                 'users': users,
                 'experiment':experiment
             })
             data['state'] = "Created"
+            print(data)
         else:
             data['form_is_valid'] = False
     context = {'form': form, 'experiment': experiment}
@@ -1235,6 +1244,7 @@ def save_admin_user_form(request, form, template_name):
             form.save()
             data['form_is_valid'] = True
             users = Users.objects.all()
+            print(users)
             users_data = []
             row = 0 
             for user in users: 
@@ -1253,15 +1263,12 @@ def save_admin_user_form(request, form, template_name):
             data['html_user_list'] = render_to_string('samples_manager/admin_partial_users_list.html', {
                 'users_data': users_data,
             })
-            print(data['html_user_list'])
         else:
             data['form_is_valid'] = False
     context = {'form': form}
     data['html_form'] = render_to_string(template_name, context, request=request)
+    print(data)
     return JsonResponse(data)
-
-
-
 
 def user_new(request,experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
@@ -1316,9 +1323,28 @@ def admin_user_delete(request ,pk):
         user.delete()
         data['form_is_valid'] = True  # This is just to play along with the existing code
         users = Users.objects.all()
+        row = 0 
+        for user in users:
+            row = row + 1 
+            experiment_values = Experiments.objects.filter(Q(users=user)|Q(responsible=user)).values('title').distinct()
+            experiment_number = 0
+            if experiment_values:
+                experiments_number = experiment_values.count()
+            else:
+                experiments_number = 0
+            print(user)
+            print(experiments_number)
+            print(row)
+            users_data.append({
+                "user":user,
+                "experiments_number":experiments_number,
+                "row": row,
+            })
         data['html_user_list'] = render_to_string('samples_manager/admin_partial_users_list.html', {
-            'users': users,
+            'users_data': users_data,
+            'logged_user': logged_user
         })
+        print(data['html_user_list'])
         data['state'] = "Deleted"
     else:
         context = {'user': user,}

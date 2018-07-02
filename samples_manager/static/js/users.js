@@ -31,6 +31,7 @@ var loadForm = function () {
         console.log("Success");
         console.log(data);
         if (data.form_is_valid) {
+          console.log(data.html_user_list)
           if(data['state']=='Created')
             alert("The user data were successfully saved! The user should still subscribe in irrad-ps-users e-group if he/she is not a member!")
           else if (data['state']=='Deleted')
