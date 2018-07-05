@@ -1,6 +1,14 @@
 <meta charset="UTF-8"> 
+<!-- THE MODAL WE WILL BE USING -->
+<div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-compound">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+</div>
 {% load staticfiles %}
 {% load widget_tweaks %}
+<script src="{% static 'js/compounds.js' %}"></script>
 <form method="post" action="{% url 'samples_manager:sample_new' experiment.id%}" name="sample_form" class="js-sample-create-form" novalidate>
   {% csrf_token %}
   <div class="modal-header">
@@ -60,8 +68,14 @@
                     <p><i><a target='_blank' style ="color: #333; text-decoration: underline; font-size: 80%" href="http://pdg.lbl.gov/2017/AtomicNuclearProperties/index.html">See  Atomic and Nuclear Properties of Materials</a></i></p>
                 </div>
               </div>
-            <div class="row">
-                <div class="col-md-12">
+            <div class="row"> 
+              <div class="col-md-12">
+                <button type="button"
+                        id = "new_sample"
+                        class="btn btn-primary js-create-compound"
+                        data-url="{% url 'samples_manager:compound_new'%}">
+                        <span class="glyphicon glyphicon-plus"></span>
+                </button>
               <table  class="table formset_table">
                         {{ layers_formset.management_form }}
                         {% for form in layers_formset.forms %}

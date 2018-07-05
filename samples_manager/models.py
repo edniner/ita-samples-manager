@@ -128,7 +128,7 @@ class Experiments(models.Model):
     status=models.CharField(max_length=50, choices=EXPERIMENT_STATUS)
     responsible=models.ForeignKey(Users, related_name='%(class)s_responsible')
     users = models.ManyToManyField(Users)
-    created_at=models.DateTimeField(editable=False)
+    created_at = models.DateTimeField(editable=False)
     updated_at = models.DateTimeField()
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
@@ -295,6 +295,7 @@ class MaterialElements(models.Model):
 class SamplesLayers(models.Model):
     name = models.CharField(max_length=20)
     length = models.DecimalField(max_digits=20,decimal_places=6)
+    density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
     sample = models.ForeignKey(Samples, null = True)
 
 class SamplesElements(models.Model):

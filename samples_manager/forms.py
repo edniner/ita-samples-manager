@@ -410,5 +410,51 @@ class IrradiationForm(ModelForm):
         exclude = ('sample','date_in', 'date_out', 'position', 'accumulated_fluence')
 
 
+class SamplesElementsFormSet(forms.BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super(SamplesElementsFormSet, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            form.empty_permitted = False
+
+    def clean(self):
+        if self.has_changed() == False:
+            raise forms.ValidationError('Please add at least one item.')
+
+
+class SamplesElementsForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SamplesElementsForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = SamplesElements
+        fields = ['id','element_type','percentage',]
+        widgets = {}
+        exclude = ('layer',)
+
+
+class SamplesLayersFormSet(forms.BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super(SamplesLayersFormSet, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            form.empty_permitted = False
+
+    def clean(self):
+        if self.has_changed() == False:
+            raise forms.ValidationError('Please add at least one item.')
+
+
+class SamplesLayersForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SamplesLayersForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = SamplesLayers
+        fields = ['id','name','length','density']
+        widgets = {}
+        exclude = ('sample',)
+
+
+
+
 
 

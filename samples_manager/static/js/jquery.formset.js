@@ -80,12 +80,12 @@
                         if (options.prefix=='materials_set')
                             formset_length = $('.material_formset_row').length;
                         else if (options.prefix=='sampleselements_set'){
-                            formset_length = $('.elements_formset_row').length;
-                            console.log("elements");
-                            console.log(formset_length);
+                            formset_length = $('.elem_formset_row').length;
                             }
-                        else 
+                        else{
+                            console.log("in the formset row");
                             formset_length = $('.formset_row').length;
+                            }
                         console.log("formset_length")
                         console.log(formset_length)
                     var row = $(this).parents('.' + options.formCssClass),
@@ -139,9 +139,11 @@
             if (options.prefix=='materials_set')
                 formset_length = $('.material_formset_row').length;
             else if (options.prefix=='sampleselements_set')
-                formset_length = $('.elements_formset_row').length;
-            else 
+                formset_length = $('.elem_formset_row').length;
+            else{
                 formset_length = $('.formset_row').length;
+                console.log("formset row");
+                }
             console.log(formset_length)
             $('#id_' + options.prefix + '-TOTAL_FORMS').val(formset_length);
             if (del.length) {
@@ -220,6 +222,13 @@
                     row = options.formTemplate.clone(true).removeClass('formset-custom-template'),
                     buttonRow = $($(this).parents('tr.' + options.formCssClass + '-add').get(0) || this)
                     delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.');
+                console.log("form count:");
+                console.log(formCount);
+                console.log("options");
+                console.log(options)
+                console.log(row);
+                console.log(buttonRow);
+                console.log(delCssSelector);
                 applyExtraClasses(row, formCount);
                 row.insertBefore(buttonRow).show();
                 row.find(childElementSelector).each(function() {

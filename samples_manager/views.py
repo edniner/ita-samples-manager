@@ -34,16 +34,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -51,7 +51,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
     
     email =  email.lower()
     users = Users.objects.all()
@@ -1284,6 +1284,36 @@ def admin_user_new(request):
     else:
         form = UsersForm()
     return save_admin_user_form(request, form, 'samples_manager/admin_partial_user_create.html')
+
+def save_compound_form(request, form, elem_formset, template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid() and elem_formset.is_valid():
+            form.save()
+            if elem_formset.is_valid():
+                if elem_formset.cleaned_data is not None:
+                        for form in elem_formset.forms:
+                            element = form.save()
+                            print("in element form")
+                else:
+                            print("data none")
+            data['form_is_valid'] = True
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form, 'elem_formset': elem_formset,}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+def compound_new(request):
+    logged_user = get_logged_user(request)
+    ElemFormSet = inlineformset_factory(SamplesLayers, SamplesElements, form=SamplesElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=SamplesElementsFormSet)
+    if request.method == 'POST':
+        form = SamplesLayersForm(request.POST)
+        elem_formset = ElemFormSet(request.POST)
+    else:
+        form = SamplesLayersForm()
+        elem_formset = ElemFormSet()
+    return save_compound_form(request, form, elem_formset, 'samples_manager/partial_compound_create.html' )
 
 def user_update(request,experiment_id,pk):
     experiment = Experiments.objects.get(pk = experiment_id)
