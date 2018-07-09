@@ -1,3 +1,4 @@
+console.log("in the compound");
 $(function () {
 console.log("inside");
 var loadForm = function () {
@@ -14,7 +15,6 @@ var loadForm = function () {
       success: function (data) {
         console.log("success");
         $("#modal-compound .modal-content").html(data.html_form);
-        console.log(data.html_form);
       }
     });
   };
@@ -28,8 +28,6 @@ var loadForm = function () {
       type: form.attr("method"),
       dataType: 'json',
       success: function (data) {
-        console.log("Success");
-        console.log(data);
         if (data.form_is_valid) {
           $("#compound-table tbody").html(data.html_compound_list);  // <-- Replace the table body
           $("#modal-compound").modal("hide");  // <-- Close the modal
@@ -48,6 +46,11 @@ var loadForm = function () {
   // Create compound
   $(".js-create-compound").click(loadForm);
   $("#modal-compound").on("submit", ".js-compound-create-form",saveForm);
+
+   $("#dismiss-compound").click(function(){ 
+     console.log("dismissing");
+     $("#modal-compound").modal("hide");  // <-- Close the modal
+    });
 
    // Update compound
   $("#compound-table").on("click", ".js-update-compound", loadForm);

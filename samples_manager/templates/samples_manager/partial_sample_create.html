@@ -68,29 +68,33 @@
                     <p><i><a target='_blank' style ="color: #333; text-decoration: underline; font-size: 80%" href="http://pdg.lbl.gov/2017/AtomicNuclearProperties/index.html">See  Atomic and Nuclear Properties of Materials</a></i></p>
                 </div>
               </div>
-            <div class="row"> 
-              <div class="col-md-12">
+            <div class="row" style="text-align: center">                    
                 <button type="button"
-                        id = "new_sample"
+                        id = "new_compound"
                         class="btn btn-primary js-create-compound"
                         data-url="{% url 'samples_manager:compound_new'%}">
-                        <span class="glyphicon glyphicon-plus"></span>
+                        <span class="glyphicon glyphicon-plus"></span>New Compound
                 </button>
+            </div>
+            <div class="row"> 
+              <div class="col-md-12">
               <table  class="table formset_table">
                         {{ layers_formset.management_form }}
                         {% for form in layers_formset.forms %}
                             {% if forloop.first %}
                                 <thead class="row">
                                 <tr class="row">
-                                    {% for field in form.visible_fields %}
-                                        <th class="col-md-2">{{ field.label|capfirst }}</th>
-                                    {% endfor %}
+                                    <th class="col-md-2">Name *</th>
+                                    <th class="col-md-2">Length (mm) *</th>
+                                    <th class="col-md-2">Element OR</th>
+                                    <th class="col-md-3">Compound</th>
+                                    <th class="col-md-2">Del</th>
                                 </tr>
                                 </thead>
                             {% endif %}
                             <tr class="{% cycle row1 row2 %} formset_row row">
                                 {% for field in form.visible_fields %}
-                                    <td class="col-md-2">
+                                    <td class="col-md-3">
                                         {# Include the hidden fields in the form #}
                                         {% if forloop.first %}
                                             {% for hidden in form.hidden_fields %}

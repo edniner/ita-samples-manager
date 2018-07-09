@@ -1,11 +1,11 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,SamplesLayers,SamplesElements, Layers, Dosimeters,Irradation
+from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,Compound,CompoundElements, Layers, Dosimeters,Irradation
 from django.template import loader
 from django.core.urlresolvers import reverse
 import datetime
 from .forms import *
-#from .forms import SamplesLayersFormset, ExperimentsForm1,ExperimentsForm2,ExperimentsForm3, UsersForm, ReqFluencesForm, MaterialsForm, PassiveStandardCategoriesForm, PassiveCustomCategoriesForm,ActiveCategoriesForm, SamplesForm1, SamplesForm2,SamplesElementsForm
+#from .forms import CompoundFormset, ExperimentsForm1,ExperimentsForm2,ExperimentsForm3, UsersForm, ReqFluencesForm, MaterialsForm, PassiveStandardCategoriesForm, PassiveCustomCategoriesForm,ActiveCategoriesForm, SamplesForm1, SamplesForm2,CompoundElementsForm
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.core.files.storage import FileSystemStorage
@@ -273,7 +273,7 @@ def experiment_samples_list(request, experiment_id):
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
-    get_layers(experiment_id)
+    #get_layers(experiment_id)
     irradiations = []
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
@@ -1298,20 +1298,31 @@ def save_compound_form(request, form, elem_formset, template_name):
                 else:
                             print("data none")
             data['form_is_valid'] = True
+            '''compounds = Compound.objects.all()
+            print(compounds)
+            LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=0, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
+            print('layerformset')
+            layers_formset = LayerFormset()
+            print('layerformsetssss')
+            data['html_form'] = render_to_string('samples_manager/partial_sample_create.html',{'layers_formset': layers_formset}, request=request)
+            print(data['html_form'])'''
         else:
             data['form_is_valid'] = False
+            print("here")
     context = {'form': form, 'elem_formset': elem_formset,}
+    print("context")
     data['html_form'] = render_to_string(template_name, context, request=request)
+    print("end")
     return JsonResponse(data)
 
 def compound_new(request):
     logged_user = get_logged_user(request)
-    ElemFormSet = inlineformset_factory(SamplesLayers, SamplesElements, form=SamplesElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=SamplesElementsFormSet)
+    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
     if request.method == 'POST':
-        form = SamplesLayersForm(request.POST)
+        form = CompoundForm(request.POST)
         elem_formset = ElemFormSet(request.POST)
     else:
-        form = SamplesLayersForm()
+        form = CompoundForm()
         elem_formset = ElemFormSet()
     return save_compound_form(request, form, elem_formset, 'samples_manager/partial_compound_create.html' )
 
@@ -1362,9 +1373,6 @@ def admin_user_delete(request ,pk):
                 experiments_number = experiment_values.count()
             else:
                 experiments_number = 0
-            print(user)
-            print(experiments_number)
-            print(row)
             users_data.append({
                 "user":user,
                 "experiments_number":experiments_number,
@@ -1374,7 +1382,6 @@ def admin_user_delete(request ,pk):
             'users_data': users_data,
             'logged_user': logged_user
         })
-        print(data['html_user_list'])
         data['state'] = "Deleted"
     else:
         context = {'user': user,}

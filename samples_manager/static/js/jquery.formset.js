@@ -83,11 +83,8 @@
                             formset_length = $('.elem_formset_row').length;
                             }
                         else{
-                            console.log("in the formset row");
                             formset_length = $('.formset_row').length;
                             }
-                        console.log("formset_length")
-                        console.log(formset_length)
                     var row = $(this).parents('.' + options.formCssClass),
                         del = row.find('input:hidden[id $= "-DELETE"]'),
                         buttonRow = row.siblings("a." + addCssSelector + ', .' + options.formCssClass + '-add'),
@@ -131,20 +128,16 @@
                     return false;
                 });
             };
-
         $$.each(function(i) {
             var row = $(this),
                 del = row.find('input:checkbox[id $= "-DELETE"]');
-        
             if (options.prefix=='materials_set')
                 formset_length = $('.material_formset_row').length;
             else if (options.prefix=='sampleselements_set')
                 formset_length = $('.elem_formset_row').length;
             else{
                 formset_length = $('.formset_row').length;
-                console.log("formset row");
                 }
-            console.log(formset_length)
             $('#id_' + options.prefix + '-TOTAL_FORMS').val(formset_length);
             if (del.length) {
                 // If you specify "can_delete = True" when creating an inline formset,
@@ -162,12 +155,10 @@
                 $('label[for="' + del.attr('id') + '"]').hide();
                 del.remove();
             }
-            
             if (hasChildElements(row)) {
                 row.addClass(options.formCssClass);
                 insertDeleteLink(row);
                 applyExtraClasses(row, i);
-                
             }
         });
 
@@ -185,7 +176,12 @@
             } else {
                 // Otherwise, use the last form in the formset; this works much better if you've got
                 // extra (>= 1) forms (thnaks to justhamade for pointing this out):
-                template = $('.' + options.formCssClass + ':last').clone(true).removeAttr('id');
+                if (options.prefix=='sampleselements_set'){
+                    template = $('.elem_formset_row.dynamic-form').clone(true).removeAttr('id');
+                }
+                else{
+                    template = $('.' + options.formCssClass + ':last').clone(true).removeAttr('id');
+                }
                 template.find('input:hidden[id $= "-DELETE"]').remove();
                 // Clear all cloned fields, except those the user wants to keep (thanks to brunogola for the suggestion):
                 template.find(childElementSelector).not(options.keepFieldValues).each(function() {
@@ -199,7 +195,7 @@
                     }
                 });
             }
-            // FIXME: Perhaps using $.data would be a better idea?
+            // FIXME: Perhaps using  would be a better idea?
             options.formTemplate = template;
 
             if ($$.is('TR')) {
@@ -222,13 +218,6 @@
                     row = options.formTemplate.clone(true).removeClass('formset-custom-template'),
                     buttonRow = $($(this).parents('tr.' + options.formCssClass + '-add').get(0) || this)
                     delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.');
-                console.log("form count:");
-                console.log(formCount);
-                console.log("options");
-                console.log(options)
-                console.log(row);
-                console.log(buttonRow);
-                console.log(delCssSelector);
                 applyExtraClasses(row, formCount);
                 row.insertBefore(buttonRow).show();
                 row.find(childElementSelector).each(function() {

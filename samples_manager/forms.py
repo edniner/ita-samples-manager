@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.admin import widgets   
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,DateTimeInput,Textarea
-from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,SamplesLayers,SamplesElements, Layers,Dosimeters, Irradation
+from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,Compound,CompoundElements, Layers,Dosimeters, Irradation
 from django.forms.models import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
@@ -339,15 +339,13 @@ class LayersForm(ModelForm):
         super(LayersForm, self).__init__(*args, **kwargs)
         self.fields['name'].label= 'Name *'
         self.fields['length'].label= 'Length (mm) *'
-        self.fields['element_type'].label= 'Element name *'
-        self.fields['density'].label= 'Density (g/cm³)*'
-        self.fields['percentage'].label= mark_safe('Weight <br>fraction (%) *')
-
-    
+        self.fields['element_type'].label= 'Element name '
+        self.fields['compound_type'].label= 'Or Compound name '
+        
     class Meta:
         model = Layers
-        fields = ['id','name', 'length','element_type', 'percentage','density']
-        exclude = ('sample',)
+        fields = ['id','name', 'length','element_type','compound_type']
+        exclude = ('sample','percentage','density')
         widgets = {
                 'name':  forms.TextInput(attrs={'placeholder': 'e.g. L1'}),
                 'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),
@@ -410,9 +408,9 @@ class IrradiationForm(ModelForm):
         exclude = ('sample','date_in', 'date_out', 'position', 'accumulated_fluence')
 
 
-class SamplesElementsFormSet(forms.BaseInlineFormSet):
+class CompoundElementsFormSet(forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
-        super(SamplesElementsFormSet, self).__init__(*args, **kwargs)
+        super(CompoundElementsFormSet, self).__init__(*args, **kwargs)
         for form in self.forms:
             form.empty_permitted = False
 
@@ -421,20 +419,20 @@ class SamplesElementsFormSet(forms.BaseInlineFormSet):
             raise forms.ValidationError('Please add at least one item.')
 
 
-class SamplesElementsForm(ModelForm):
+class CompoundElementsForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SamplesElementsForm, self).__init__(*args, **kwargs)
+        super(CompoundElementsForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = SamplesElements
+        model = CompoundElements
         fields = ['id','element_type','percentage',]
         widgets = {}
-        exclude = ('layer',)
+        exclude = ('compound',)
 
 
-class SamplesLayersFormSet(forms.BaseInlineFormSet):
+class CompoundFormSet(forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
-        super(SamplesLayersFormSet, self).__init__(*args, **kwargs)
+        super(CompoundFormSet, self).__init__(*args, **kwargs)
         for form in self.forms:
             form.empty_permitted = False
 
@@ -443,15 +441,15 @@ class SamplesLayersFormSet(forms.BaseInlineFormSet):
             raise forms.ValidationError('Please add at least one item.')
 
 
-class SamplesLayersForm(ModelForm):
+class CompoundForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(SamplesLayersForm, self).__init__(*args, **kwargs)
+        super(CompoundForm, self).__init__(*args, **kwargs)
 
     class Meta:
-        model = SamplesLayers
-        fields = ['id','name','length','density']
+        model = Compound
+        fields = ['id','name','density']
         widgets = {}
-        exclude = ('sample',)
+        exclude = ('compound',)
 
 
 

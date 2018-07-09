@@ -292,21 +292,23 @@ class MaterialElements(models.Model):
     def __str__(self):              # __str__ on Python 2
         return  str(self.atomic_symbol)+ "("+ str(self.atomic_number) +")"
 
-class SamplesLayers(models.Model):
+class Compound(models.Model):
     name = models.CharField(max_length=20)
-    length = models.DecimalField(max_digits=20,decimal_places=6)
     density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
-    sample = models.ForeignKey(Samples, null = True)
 
-class SamplesElements(models.Model):
+    def __str__(self):              # __str__ on Python 2
+        return self.name
+
+class CompoundElements(models.Model):
     element_type = models.ForeignKey(MaterialElements)
     percentage = models.PositiveIntegerField(default=0,validators=[MinValueValidator(0)])
-    layer = models.ForeignKey(SamplesLayers, null = True)
+    compound = models.ForeignKey(Compound, null = True)
 
 class Layers(models.Model):
     name = models.CharField(max_length=20)
     length = models.DecimalField(max_digits=26,decimal_places=6)
-    element_type = models.ForeignKey(MaterialElements)
+    element_type = models.ForeignKey(MaterialElements,null = True)
+    compound_type = models.ForeignKey(Compound,null = True)
     density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
     percentage = models.DecimalField(max_digits=8,decimal_places=4)
     sample = models.ForeignKey(Samples, null = True)
