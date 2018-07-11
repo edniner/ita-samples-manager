@@ -30,9 +30,11 @@
             updateElementIndex = function(elem, prefix, ndx) {
                 var idRegex = new RegExp(prefix + '-(\\d+|__prefix__)-'),
                     replacement = prefix + '-' + ndx + '-';
+                    class_name = prefix;
                 if (elem.attr("for")) elem.attr("for", elem.attr("for").replace(idRegex, replacement));
                 if (elem.attr('id')) elem.attr('id', elem.attr('id').replace(idRegex, replacement));
                 if (elem.attr('name')) elem.attr('name', elem.attr('name').replace(idRegex, replacement));
+                if (elem.attr('class')) elem.attr('class', elem.attr('class').replace(idRegex, class_name));
             },
 
             hasChildElements = function(row) {

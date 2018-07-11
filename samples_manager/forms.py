@@ -339,13 +339,12 @@ class LayersForm(ModelForm):
         super(LayersForm, self).__init__(*args, **kwargs)
         self.fields['name'].label= 'Name *'
         self.fields['length'].label= 'Length (mm) *'
-        self.fields['element_type'].label= 'Element name '
-        self.fields['compound_type'].label= 'Or Compound name '
+        self.fields['compound_type'].label= 'Element or Compound'
         
     class Meta:
         model = Layers
-        fields = ['id','name', 'length','element_type','compound_type']
-        exclude = ('sample','percentage','density')
+        fields = ['id','name', 'length','compound_type']
+        exclude = ('sample','percentage','element_type','density')
         widgets = {
                 'name':  forms.TextInput(attrs={'placeholder': 'e.g. L1'}),
                 'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':2}),

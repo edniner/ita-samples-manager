@@ -1,7 +1,7 @@
 console.log("in the compound");
 $(function () {
 console.log("inside");
-var loadForm = function () {
+var loadFormCompound = function () {
   console.log("loading form");
     var btn = $(this);
     $.ajax({
@@ -19,7 +19,7 @@ var loadForm = function () {
     });
   };
 
-  var saveForm = function () {
+  var saveFormCompound = function () {
     var form = $(this);
     console.log("Inside save form");
     $.ajax({
@@ -31,6 +31,13 @@ var loadForm = function () {
         if (data.form_is_valid) {
           $("#compound-table tbody").html(data.html_compound_list);  // <-- Replace the table body
           $("#modal-compound").modal("hide");  // <-- Close the modal
+          //$("#modal-sample .modal-content").html(data.layers_formset);
+          console.log( $('select')[3].id);
+          console.log("log");
+          $('select').append($('<option>', {
+              value: data['compound_id'],
+              text: data['compound_name']
+          }));
         }
         else {
           //alert("Something went wrong! Please check your data"); 
@@ -44,24 +51,19 @@ var loadForm = function () {
 
 
   // Create compound
-  $(".js-create-compound").click(loadForm);
-  $("#modal-compound").on("submit", ".js-compound-create-form",saveForm);
-
-   $("#dismiss-compound").click(function(){ 
-     console.log("dismissing");
-     $("#modal-compound").modal("hide");  // <-- Close the modal
-    });
+  $(".js-create-compound").click(loadFormCompound);
+  $("#modal-compound").on("submit", ".js-compound-create-form",saveFormCompound);
 
    // Update compound
-  $("#compound-table").on("click", ".js-update-compound", loadForm);
-  $("#modal-compound").on("submit", ".js-compound-update-form", saveForm);
+  $("#compound-table").on("click", ".js-update-compound", loadFormCompound);
+  $("#modal-compound").on("submit", ".js-compound-update-form", saveFormCompound);
 
     //Clone compound
-  $("#compound-table").on("click", ".js-clone-compound", loadForm);
+  $("#compound-table").on("click", ".js-clone-compound", loadFormCompound);
 
   // Delete book
-  $("#compound-table").on("click", ".js-delete-compound", loadForm);
-  $("#modal-compound").on("submit", ".js-compound-delete-form", saveForm);
+  $("#compound-table").on("click", ".js-delete-compound", loadFormCompound);
+  $("#modal-compound").on("submit", ".js-compound-delete-form", saveFormCompound);
 
 
 

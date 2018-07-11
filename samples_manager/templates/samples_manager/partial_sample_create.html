@@ -1,11 +1,5 @@
+
 <meta charset="UTF-8"> 
-<!-- THE MODAL WE WILL BE USING -->
-<div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-compound">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div>
-    </div>
-</div>
 {% load staticfiles %}
 {% load widget_tweaks %}
 <script src="{% static 'js/compounds.js' %}"></script>
@@ -72,7 +66,7 @@
                 <button type="button"
                         id = "new_compound"
                         class="btn btn-primary js-create-compound"
-                        data-url="{% url 'samples_manager:compound_new'%}">
+                        data-url="{% url 'samples_manager:compound_new' experiment.id%}">
                         <span class="glyphicon glyphicon-plus"></span>New Compound
                 </button>
             </div>
@@ -86,8 +80,7 @@
                                 <tr class="row">
                                     <th class="col-md-2">Name *</th>
                                     <th class="col-md-2">Length (mm) *</th>
-                                    <th class="col-md-2">Element OR</th>
-                                    <th class="col-md-3">Compound</th>
+                                    <th class="col-md-3">Element/<br>Compound</th>
                                     <th class="col-md-2">Del</th>
                                 </tr>
                                 </thead>
@@ -138,6 +131,7 @@
     </div>
 </div> 
 </form>
+
 <script src="{% static 'js/widget.js' %}"></script>
 <script type="text/javascript">
         $('.formset_row').formset({
@@ -150,3 +144,4 @@
         });
         
 </script>
+

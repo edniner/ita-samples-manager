@@ -293,8 +293,8 @@ class MaterialElements(models.Model):
         return  str(self.atomic_symbol)+ "("+ str(self.atomic_number) +")"
 
 class Compound(models.Model):
-    name = models.CharField(max_length=20)
-    density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
+    name = models.CharField(max_length=30, unique = True)
+    density = models.DecimalField(max_digits=16,decimal_places=7,null = True)
 
     def __str__(self):              # __str__ on Python 2
         return self.name
@@ -310,7 +310,7 @@ class Layers(models.Model):
     element_type = models.ForeignKey(MaterialElements,null = True)
     compound_type = models.ForeignKey(Compound,null = True)
     density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
-    percentage = models.DecimalField(max_digits=8,decimal_places=4)
+    percentage = models.DecimalField(max_digits=8,decimal_places=4, null = True)
     sample = models.ForeignKey(Samples, null = True)
 
 class Irradation(models.Model):

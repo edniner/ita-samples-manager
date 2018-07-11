@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    console.log("in the widget");
     var navListItems = $('div.setup-panel div a'),
             allWells = $('.setup-content'),
             allNextBtn = $('.nextBtn');

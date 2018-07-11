@@ -435,14 +435,22 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                     '''sample.set_id = generate_set_id()'''
                     sample.save()
                     print ("sample saved")
+                    print(layers_formset.is_valid())
                     if layers_formset.is_valid():
+                        print("layers valid")
                         if  not layers_formset.cleaned_data:
+                            print("layers missing")
                             data['state'] = 'layers missing'
                             data['form_is_valid'] = False
                         else: 
+                            print("saving layers_formset")
                             for form in layers_formset.forms:
+                                print("saving forms")
+                                print(form)
                                 layer = form.save()
+                                print("layer")
                                 layer.sample = sample
+                                print("layer sample save")
                                 layer.save()   
                                 print("layer saved")
                             data['state'] = "Created"
@@ -453,6 +461,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                                 'experiment': experiment
                             })
                 else:
+                    print(layers_formset)
                     data['form_is_valid'] = False
                     data['state'] = "not unique"     
             elif status == 'update': 
@@ -1285,38 +1294,43 @@ def admin_user_new(request):
         form = UsersForm()
     return save_admin_user_form(request, form, 'samples_manager/admin_partial_user_create.html')
 
-def save_compound_form(request, form, elem_formset, template_name):
+def save_compound_form(request, form, elem_formset, experiment, template_name):
     data = dict()
     if request.method == 'POST':
         if form.is_valid() and elem_formset.is_valid():
-            form.save()
+            compound = form.save()
             if elem_formset.is_valid():
                 if elem_formset.cleaned_data is not None:
                         for form in elem_formset.forms:
                             element = form.save()
+                            element.compound = compound
+                            element.save()
                             print("in element form")
                 else:
                             print("data none")
             data['form_is_valid'] = True
-            '''compounds = Compound.objects.all()
-            print(compounds)
             LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=0, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
             print('layerformset')
             layers_formset = LayerFormset()
-            print('layerformsetssss')
-            data['html_form'] = render_to_string('samples_manager/partial_sample_create.html',{'layers_formset': layers_formset}, request=request)
-            print(data['html_form'])'''
+            print("I'm here!!!")
+            context = {'layers_formset': layers_formset}
+            data['compound_id'] = compound.id
+            data['compound_name'] = compound.name
+            print("----layers_formset----")
         else:
             data['form_is_valid'] = False
             print("here")
-    context = {'form': form, 'elem_formset': elem_formset,}
-    print("context")
-    data['html_form'] = render_to_string(template_name, context, request=request)
-    print("end")
+    else:
+        context = {'form': form, 'elem_formset': elem_formset,'experiment': experiment}
+        print("context")
+        data['html_form'] = render_to_string(template_name, context, request=request)
+        print("end")
     return JsonResponse(data)
 
-def compound_new(request):
+def compound_new(request, experiment_id):
+    print("compound new")
     logged_user = get_logged_user(request)
+    experiment = Experiments.objects.get(pk = experiment_id)
     ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
     if request.method == 'POST':
         form = CompoundForm(request.POST)
@@ -1324,7 +1338,7 @@ def compound_new(request):
     else:
         form = CompoundForm()
         elem_formset = ElemFormSet()
-    return save_compound_form(request, form, elem_formset, 'samples_manager/partial_compound_create.html' )
+    return save_compound_form(request, form, elem_formset, experiment, 'samples_manager/partial_compound_create.html' )
 
 def user_update(request,experiment_id,pk):
     experiment = Experiments.objects.get(pk = experiment_id)
