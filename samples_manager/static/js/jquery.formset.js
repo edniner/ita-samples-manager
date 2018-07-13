@@ -24,6 +24,8 @@
                 if (options.extraClasses) {
                     row.removeClass(flatExtraClasses);
                     row.addClass(options.extraClasses[ndx % options.extraClasses.length]);
+                    console.log("applying extra classes");
+                    console.log(row);
                 }
             },
 
@@ -183,6 +185,8 @@
                 }
                 else{
                     template = $('.' + options.formCssClass + ':last').clone(true).removeAttr('id');
+                    console.log("****template*******");
+                    console.log(template);
                 }
                 template.find('input:hidden[id $= "-DELETE"]').remove();
                 // Clear all cloned fields, except those the user wants to keep (thanks to brunogola for the suggestion):
@@ -216,10 +220,19 @@
                 if (hideAddButton) addButton.hide();
             }
             addButton.click(function() {
-                var formCount = parseInt(totalForms.val()),
-                    row = options.formTemplate.clone(true).removeClass('formset-custom-template'),
-                    buttonRow = $($(this).parents('tr.' + options.formCssClass + '-add').get(0) || this)
-                    delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.');
+                console.log('add button *******************');
+                var formCount = parseInt(totalForms.val());
+                console.log(formCount);
+                if (options.prefix=='layers_set'){
+                   var row = $('#layers_table').find('tr:eq(1)').clone(true).find('input').val('').end().removeClass('formset-custom-template');
+                   console.log($('#layers_table'));
+                   console.log("adding layers!!");
+                }
+                else{
+                   var row = options.formTemplate.clone(true).removeClass('formset-custom-template');
+                }
+                var buttonRow = $($(this).parents('tr.' + options.formCssClass + '-add').get(0) || this);
+                var delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.');
                 applyExtraClasses(row, formCount);
                 row.insertBefore(buttonRow).show();
                 row.find(childElementSelector).each(function() {

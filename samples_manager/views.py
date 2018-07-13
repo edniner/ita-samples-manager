@@ -34,16 +34,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -51,7 +51,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"
+    home_institute = "MINES ParisTech"'''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -413,29 +413,27 @@ def generate_dos_id(dosimeter):
         return dosimeter.dos_id
 
     
-def save_sample_form(request,form1, layers_formset, form2, status, experiment, template_name):
+def save_sample_form(request,form1,form2,layers_formset, form3, status, experiment, template_name):
     data = dict()
     logged_user = get_logged_user(request)
     print("in save")
     if request.method == 'POST':
         print("post")
-        if form1.is_valid() and form2.is_valid() and layers_formset.is_valid():
+        if form1.is_valid() and form2.is_valid() and form3.is_valid() and layers_formset.is_valid():
             if status == 'new':
                 if form1.checking_unique_sample() == True:
-                    print("check true")
                     sample_data = {}
                     sample_data.update(form1.cleaned_data)
                     sample_data.update(form2.cleaned_data)
+                    sample_data.update(form3.cleaned_data)
                     sample_temp = Samples.objects.create(**sample_data)
                     sample = Samples.objects.get(pk = sample_temp.pk)
                     sample.status = "Registered"
                     sample.created_by = logged_user
                     sample.updated_by = logged_user
                     sample.experiment = experiment
-                    '''sample.set_id = generate_set_id()'''
                     sample.save()
                     print ("sample saved")
-                    print(layers_formset.is_valid())
                     if layers_formset.is_valid():
                         print("layers valid")
                         if  not layers_formset.cleaned_data:
@@ -445,14 +443,10 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                         else: 
                             print("saving layers_formset")
                             for form in layers_formset.forms:
-                                print("saving forms")
-                                print(form)
                                 layer = form.save()
-                                print("layer")
                                 layer.sample = sample
                                 print("layer sample save")
                                 layer.save()   
-                                print("layer saved")
                             data['state'] = "Created"
                             data['form_is_valid'] = True
                             samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
@@ -468,6 +462,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                 print("update")
                 sample_temp = form1.save()
                 form2.save()
+                form3.save()
                 sample_updated = Samples.objects.get(pk = sample_temp.pk)
                 sample_updated.status = "Updated"
                 sample_updated.updated_by = logged_user
@@ -489,6 +484,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                     sample_data = {}
                     sample_data.update(form1.cleaned_data)
                     sample_data.update(form2.cleaned_data)
+                    sample_data.update(form3.cleaned_data)
                     sample_temp = Samples.objects.create(**sample_data)
                     sample = Samples.objects.get(pk = sample_temp.pk)
                     sample.status = "Registered"
@@ -499,31 +495,32 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
                     sample.save()
                     print ("sample saved")
                     if layers_formset.is_valid():
-                        if layers_formset.cleaned_data is not None:
-                            for layer in layers_formset.cleaned_data:
-                                if  layer.get('name', False):
-                                    new_layer = Layers()
-                                    new_layer.name = layer ['name']
-                                    new_layer.length = layer ['length']
-                                    new_layer.element_type = layer ['element_type']
-                                    new_layer.density = layer ['density']
-                                    new_layer.percentage = layer ['percentage']
-                                    new_layer.sample = sample
-                                    new_layer.save()
-                                    print("layer saved")
-                    data['state'] = "Created"
-                    data['form_is_valid'] = True
-                    samples = Samples.objects.filter(experiment = experiment).order_by('-updated_at')
-                    data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
-                        'samples':samples,
-                        'experiment': experiment
-                    })
+                        print("layers valid")
+                        if  not layers_formset.cleaned_data:
+                            print("layers missing")
+                            data['state'] = 'layers missing'
+                            data['form_is_valid'] = False
+                        else: 
+                            print("saving layers_formset")
+                            for form in layers_formset.forms:
+                                layer = form.save()
+                                layer.sample = sample
+                                print("layer sample save")
+                                layer.save()   
+                            data['state'] = "Created"
+                            data['form_is_valid'] = True
+                            samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+                            data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+                                'samples':samples,
+                                'experiment': experiment
+                            })
                 else:
                     data['form_is_valid'] = False
                     data['state'] = "not unique"   
             else:
                 sample_updated = form1.save()
                 form2.save()
+                form3.save()
                 sample_updated.save()
                 if layers_formset.is_valid():
                     layers_formset.save()
@@ -538,7 +535,7 @@ def save_sample_form(request,form1, layers_formset, form2, status, experiment, t
             data['form_is_valid'] = False
             data['state'] = "missing fields"   
             logging.warning('Sample data invalid')
-    context = {'form1': form1,'form2': form2,'layers_formset': layers_formset,'experiment':experiment}
+    context = {'form1': form1,'form2': form2,'form3': form3,'layers_formset': layers_formset,'experiment':experiment}
     data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
@@ -1440,14 +1437,16 @@ def sample_new(request, experiment_id):
     LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=0, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
-        layers_formset = LayerFormset(request.POST)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
+        layers_formset = LayerFormset(request.POST)
+        form3 = SamplesForm3(request.POST, experiment_id = experiment.id)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id)
-        layers_formset = LayerFormset()
         form2 = SamplesForm2(experiment_id = experiment.id)
+        layers_formset = LayerFormset()
+        form3 = SamplesForm3(experiment_id = experiment.id)
     status = 'new'
-    return save_sample_form(request,form1, layers_formset, form2,status,experiment,'samples_manager/partial_sample_create.html')
+    return save_sample_form(request,form1,form2,layers_formset,form3,status,experiment,'samples_manager/partial_sample_create.html')
 
 
 def sample_update(request, experiment_id, pk):
@@ -1457,13 +1456,15 @@ def sample_update(request, experiment_id, pk):
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
+        form3 = SamplesForm3(request.POST, instance=sample, experiment_id = experiment.id)
         layers_formset = LayersFormset(request.POST, instance=sample)
     else:
         form1 = SamplesForm1(instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(instance=sample, experiment_id = experiment.id)
+        form3 = SamplesForm3(instance=sample, experiment_id = experiment.id)
         layers_formset = LayersFormset(instance=sample)
     status = 'update'
-    return save_sample_form(request, form1, layers_formset, form2, status,experiment, 'samples_manager/partial_sample_update.html')
+    return save_sample_form(request, form1,form2,layers_formset, form3, status,experiment, 'samples_manager/partial_sample_update.html')
 
 
 def sample_clone(request, experiment_id, pk):
@@ -1473,13 +1474,15 @@ def sample_clone(request, experiment_id, pk):
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id, instance=sample)
+        form3 = SamplesForm3(request.POST, experiment_id = experiment.id, instance=sample)
         layers_formset = LayersFormset(request.POST,instance=sample)
     else:
         form1 = SamplesForm1(experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(experiment_id = experiment.id, instance=sample)
+        form3 = SamplesForm3(experiment_id = experiment.id, instance=sample)
         layers_formset = LayersFormset(instance=sample)
     status = 'clone'
-    return save_sample_form(request, form1,layers_formset, form2, status, experiment, 'samples_manager/partial_sample_clone.html')
+    return save_sample_form(request, form1,form2,layers_formset, form3, status, experiment, 'samples_manager/partial_sample_clone.html')
 
 def sample_delete(request,experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)

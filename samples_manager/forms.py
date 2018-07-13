@@ -274,8 +274,6 @@ class SamplesForm1(ModelForm):
         self.fields['set_id'].label= mark_safe('SET ID <span style="color: #F00; text-align:justify">Only if your sample has already an assigned SET ID (e.g. from previous irradiation)</span>')
         self.fields['set_id'].required = False
         self.fields['name'].label= 'Sample Name *'
-        self.fields['height'].label= 'Height (mm) *'
-        self.fields['width'].label= 'Width (mm) *'
         self.fields['weight'].label= 'Weight (kg) '
         self.fields['weight'].required = False
         self.fields['material'] = forms.ModelChoiceField(queryset=get_materials(self.experiment_id))
@@ -283,8 +281,8 @@ class SamplesForm1(ModelForm):
 
     class Meta:
             model = Samples
-            exclude = ('comments','req_fluence','category','current_location','storage')
-            fields = ['material','name','set_id', 'height','width', 'weight']
+            exclude = ('comments','req_fluence','category','current_location', 'storage', 'height','width')
+            fields = ['material','name','set_id', 'weight']
             widgets = {
                 'description': forms.TextInput(attrs={'placeholder': 'Provide a name or description for your sample. E.g. silicon detector 1'}),
                 'weight': forms.NumberInput(attrs={'placeholder': 'Please, provide the weight if this is above 1 Kg'}),
@@ -306,8 +304,20 @@ class SamplesForm1(ModelForm):
 
 class SamplesForm2(ModelForm):
     def __init__(self, *args, **kwargs):
+        self.experiment_id = kwargs.pop('experiment_id')
+        super(SamplesForm2, self).__init__(*args, **kwargs)
+        self.fields['height'].label= 'Height (mm) *'
+        self.fields['width'].label= 'Width (mm) *'
+
+    class Meta:
+            model = Samples
+            exclude = ('comments','req_fluence','category','current_location','storage','material','name','set_id','weight')
+            fields = ['height','width']
+
+class SamplesForm3(ModelForm):
+    def __init__(self, *args, **kwargs):
             self.experiment_id = kwargs.pop('experiment_id')
-            super(SamplesForm2, self).__init__(*args, **kwargs)
+            super(SamplesForm3, self).__init__(*args, **kwargs)
             self.fields['req_fluence'] = forms.ModelChoiceField(queryset=get_fluences(self.experiment_id))
             self.fields['req_fluence'].label= 'Requested fluence *'
             self.fields['category'].label= 'Category *'
@@ -340,6 +350,7 @@ class LayersForm(ModelForm):
         self.fields['name'].label= 'Name *'
         self.fields['length'].label= 'Length (mm) *'
         self.fields['compound_type'].label= 'Element or Compound'
+        self.fields['compound_type'].widget.attrs = {'class': 'select_element'}
         
     class Meta:
         model = Layers

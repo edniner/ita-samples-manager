@@ -34,7 +34,7 @@ var loadFormCompound = function () {
           //$("#modal-sample .modal-content").html(data.layers_formset);
           console.log( $('select')[3].id);
           console.log("log");
-          $('select').append($('<option>', {
+          $('.select_element').append($('<option>', {
               value: data['compound_id'],
               text: data['compound_name']
           }));
