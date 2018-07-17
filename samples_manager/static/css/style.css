@@ -38,14 +38,14 @@ button.btn.btn-primary.btn-circle.info{
 }
 
 
-#experiment-table thead,#user-table thead,#sample-table thead, #dosimeter-table thead{
+#experiment-table thead,#compound-table thead,#user-table thead,#sample-table thead, #dosimeter-table thead{
       background-color: #333;
       color: #cccccc;
       font-weight: bold;
       cursor: default;
       border-bottom: 1px solid #cccccc;
      }
-#experiment-table td, #user-table td, #sample-table td, #dosimeter-table td{
+#experiment-table td,#compound-table td, #user-table td, #sample-table td, #dosimeter-table td{
     padding-bottom: 10px;
     text-align: center;
 }
@@ -61,6 +61,9 @@ button.btn.btn-primary.btn-circle.info{
      } 
 
 #dosimeter-table th:hover{
+     background-color: rgb(44, 44, 44);
+     } 
+#compound-table th:hover{
      background-color: rgb(44, 44, 44);
      } 
 
@@ -90,7 +93,7 @@ button.btn.btn-primary.btn-circle.info{
 button.btn.js-print-sample-label{
     background: #AAA;
 }
-#modal-sample h1,#modal-sample h2,#modal-sample h3,#modal-sample h4,#modal-sample p {
+#modal-sample h1,#modal-sample h2,#modal-sample h3,#modal-sample h4,#modal-compound h4,#modal-sample p {
     color: #333333;
 }
 

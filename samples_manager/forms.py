@@ -432,6 +432,7 @@ class CompoundElementsFormSet(forms.BaseInlineFormSet):
 class CompoundElementsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(CompoundElementsForm, self).__init__(*args, **kwargs)
+        self.fields['percentage'].label= 'Density (g/cm³)*'
 
     class Meta:
         model = CompoundElements
@@ -454,6 +455,7 @@ class CompoundFormSet(forms.BaseInlineFormSet):
 class CompoundForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(CompoundForm, self).__init__(*args, **kwargs)
+        self.fields['density'].label= 'Density (g/cm³)*'
 
     class Meta:
         model = Compound

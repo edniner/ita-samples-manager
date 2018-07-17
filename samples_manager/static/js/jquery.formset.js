@@ -83,9 +83,12 @@
 
                         if (options.prefix=='materials_set')
                             formset_length = $('.material_formset_row').length;
-                        else if (options.prefix=='sampleselements_set'){
+                        /*else if (options.prefix=='sampleselements_set'){
                             formset_length = $('.elem_formset_row').length;
-                            }
+                        }*/
+                        else if (options.prefix=='compoundelements_set'){
+                            formset_length = $('.elem_formset_row').length;
+                        }
                         else{
                             formset_length = $('.formset_row').length;
                             }
@@ -137,7 +140,7 @@
                 del = row.find('input:checkbox[id $= "-DELETE"]');
             if (options.prefix=='materials_set')
                 formset_length = $('.material_formset_row').length;
-            else if (options.prefix=='sampleselements_set')
+            else if (options.prefix=='compoundelements_set')
                 formset_length = $('.elem_formset_row').length;
             else{
                 formset_length = $('.formset_row').length;
@@ -180,7 +183,7 @@
             } else {
                 // Otherwise, use the last form in the formset; this works much better if you've got
                 // extra (>= 1) forms (thnaks to justhamade for pointing this out):
-                if (options.prefix=='sampleselements_set'){
+                if (options.prefix=='compoundelements_set'){
                     template = $('.elem_formset_row.dynamic-form').clone(true).removeAttr('id');
                 }
                 else{

@@ -1,0 +1,22 @@
+{% for compound in compounds %}
+  <tr>
+    <td>{{ compound.name }}</td>
+    <td>{{ compound.density }}</td>
+    <td>
+      <button type="button"
+              class="btn btn-warning btn-sm js-update-user"
+              data-url="">
+        <span class="glyphicon glyphicon-pencil"></span>
+      </button>
+      <button type="button"
+              class="btn btn-danger btn-sm js-delete-user"
+              data-url="">
+        <span class="glyphicon glyphicon-trash"></span>
+      </button>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center">There are no users</td>
+  </tr>
+{% endfor %}

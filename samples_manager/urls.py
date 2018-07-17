@@ -50,5 +50,7 @@ urlpatterns = [
     url(r'^search/experiment/(?P<experiment_id>\d+)/users/$', views.search_experiment_users, name='search_experiment_users'),
     url(r'^search/admin/users/$', views.search_users_admin, name='search_users_admin'),
     url(r'^search/dosimeters/$', views.search_dosimeters, name='search_dosimeters'),
+    url(r'^admin/compound/new/$', views.admin_compound_new, name='admin_compound_new'),
     url(r'^experiment/(?P<experiment_id>\d+)/compound/new/$', views.compound_new, name='compound_new'),
+    url(r'^compounds/$', views.compounds_list, name='compounds_list'),
     ]

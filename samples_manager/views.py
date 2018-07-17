@@ -222,6 +222,12 @@ def users_list(request):
         })
     return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user})
 
+def compounds_list(request):
+    logged_user = get_logged_user(request)
+    compounds = Compound.objects.all()
+    return render(request, 'samples_manager/compounds_list.html', {'compounds': compounds})
+
+
 def user_details(request, user_id):
     user = get_object_or_404(Users, pk=user_id)
     return render(request, 'samples_manager/user_details.html', {'user': user})
@@ -1295,37 +1301,81 @@ def save_compound_form(request, form, elem_formset, experiment, template_name):
     data = dict()
     if request.method == 'POST':
         if form.is_valid() and elem_formset.is_valid():
-            compound = form.save()
-            if elem_formset.is_valid():
                 if elem_formset.cleaned_data is not None:
-                        for form in elem_formset.forms:
-                            element = form.save()
-                            element.compound = compound
-                            element.save()
-                            print("in element form")
+                        sum = 0
+                        for elem in elem_formset.forms:
+                            print(elem.cleaned_data)
+                            sum = sum + elem.cleaned_data['percentage']
+                        print('sum==== %s'%sum)
+                        if sum == 100:
+                            compound = form.save()
+                            for elem in elem_formset.forms:
+                                element = form.save()
+                                element.compound = compound
+                                element.save()
+                                print("in element form")
+                                data['form_is_valid'] = True
+                                LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=0, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
+                                layers_formset = LayerFormset()
+                                context = {'layers_formset': layers_formset}
+                                data['compound_id'] = compound.id
+                                data['compound_name'] = compound.name
+                                data['state'] = 'ok'
+                        else:
+                            data['form_is_valid'] = False
+                            data['state'] = 'sum not ok'
+                            print(data['state'])
+                            context = {'form': form, 'elem_formset': elem_formset,'experiment': experiment}
+                            data['html_form'] = render_to_string(template_name, context, request=request)
                 else:
-                            print("data none")
-            data['form_is_valid'] = True
-            LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=0, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
-            print('layerformset')
-            layers_formset = LayerFormset()
-            print("I'm here!!!")
-            context = {'layers_formset': layers_formset}
-            data['compound_id'] = compound.id
-            data['compound_name'] = compound.name
-            print("----layers_formset----")
-        else:
-            data['form_is_valid'] = False
-            print("here")
+                    data['form_is_valid'] = False  
+                    data['state'] = 'no data'
+                    print(data['state'])
+                    context = {'form': form, 'elem_formset': elem_formset,'experiment': experiment}
+                    data['html_form'] = render_to_string(template_name, context, request=request)      
+                    print("data none")
     else:
         context = {'form': form, 'elem_formset': elem_formset,'experiment': experiment}
-        print("context")
         data['html_form'] = render_to_string(template_name, context, request=request)
-        print("end")
+    return JsonResponse(data)
+
+def save_admin_compound_form(request,form, elem_formset, template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid() and elem_formset.is_valid():
+            if elem_formset.cleaned_data is not None:
+                        sum = 0
+                        for elem in elem_formset.forms:
+                            sum = sum + elem.cleaned_data['percentage']
+                        if sum == 100:
+                            compound = form.save()
+                            for elem in elem_formset.forms:
+                                element = elem.save()
+                                element.compound = compound
+                                element.save()
+                            compounds = Compound.objects.all()
+                            data['html_compound_list'] = render_to_string('samples_manager/partial_compounds_list.html', {
+                                        'compounds':compounds,
+                                })
+                            data['form_is_valid'] = True
+                            data['state'] = "ok"
+                        else:
+                            print("data not ok!")
+                            data['state'] = "sum not ok"
+                            data['form_is_valid'] = False
+            else:
+                            print("data none")
+                            data['state'] = "no data"
+                            data['form_is_valid'] = False
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form, 'elem_formset': elem_formset}
+    data['html_form'] = render_to_string(template_name, context, request=request)
     return JsonResponse(data)
 
 def compound_new(request, experiment_id):
-    print("compound new")
+    print(request)
+    print("compound new!!!")
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
@@ -1336,6 +1386,18 @@ def compound_new(request, experiment_id):
         form = CompoundForm()
         elem_formset = ElemFormSet()
     return save_compound_form(request, form, elem_formset, experiment, 'samples_manager/partial_compound_create.html' )
+
+def admin_compound_new(request):
+    print("admin compound new")
+    logged_user = get_logged_user(request)
+    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
+    if request.method == 'POST':
+        form = CompoundForm(request.POST)
+        elem_formset = ElemFormSet(request.POST)
+    else:
+        form = CompoundForm()
+        elem_formset = ElemFormSet()
+    return save_admin_compound_form(request, form, elem_formset,'samples_manager/admin_partial_compound_create.html' )
 
 def user_update(request,experiment_id,pk):
     experiment = Experiments.objects.get(pk = experiment_id)
