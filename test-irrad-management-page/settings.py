@@ -97,16 +97,17 @@ WSGI_APPLICATION = 'wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 #This setting on production
-"""DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'pdbr-s.cern.ch:10121/pdbr.cern.ch',
         'USER': 'ps_irrad_admin',
         'PASSWORD': 'RadmonAdmin009',
+        'OPTIONS': {'threaded': True}
     }
 }
-"""
-DATABASES = {
+
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'devdb11-s.cern.ch:10121/devdb11.cern.ch',
@@ -114,7 +115,7 @@ DATABASES = {
         'PASSWORD': 'RadmonAdmin009',
         'OPTIONS': {'threaded': True}
     }
-}
+}"""
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
