@@ -306,8 +306,8 @@ class SamplesForm2(ModelForm):
     def __init__(self, *args, **kwargs):
         self.experiment_id = kwargs.pop('experiment_id')
         super(SamplesForm2, self).__init__(*args, **kwargs)
-        self.fields['height'].label= 'Height (mm) *'
-        self.fields['width'].label= 'Width (mm) *'
+        self.fields['height'].label= 'Total height (mm) *'
+        self.fields['width'].label= 'Total width (mm) *'
 
     class Meta:
             model = Samples
