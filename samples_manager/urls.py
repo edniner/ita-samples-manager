@@ -51,6 +51,8 @@ urlpatterns = [
     url(r'^search/admin/users/$', views.search_users_admin, name='search_users_admin'),
     url(r'^search/dosimeters/$', views.search_dosimeters, name='search_dosimeters'),
     url(r'^admin/compound/new/$', views.admin_compound_new, name='admin_compound_new'),
+    url(r'^admin/compound/(?P<pk>\d+)/update/$', views.admin_compound_update, name='admin_compound_update'),
+    url(r'^admin/compound/(?P<pk>\d+)/delete/$', views.admin_compound_delete, name='admin_compound_delete'),
     url(r'^experiment/(?P<experiment_id>\d+)/compound/new/$', views.compound_new, name='compound_new'),
     url(r'^compounds/$', views.compounds_list, name='compounds_list'),
     ]

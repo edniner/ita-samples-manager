@@ -38,7 +38,7 @@ var loadFormCompound = function () {
   };
 
 var saveFormCompound = function () {
-    var form = $(this);
+var form = $(this);
     console.log("Inside save form");
     $.ajax({
       url: form.attr("action"),
@@ -47,6 +47,7 @@ var saveFormCompound = function () {
       dataType: 'json',
       success: function (data) {
         if (data.form_is_valid) {
+          $("#compound-table tbody").html(data.html_compound_list);  // <-- Replace the table body
           $("#modal-compound").modal("hide");  // <-- Close the modal
           $('.select_element').append($('<option>', {
               value: data['compound_id'],
@@ -54,16 +55,8 @@ var saveFormCompound = function () {
           }));
         }
         else {
-          if(data['state']=='sum not ok'){
-             alert("The sum of weight fractions should be 100!"); 
-            }
-          else if (data['state']=='no ok'){
-            alert("Please, fill at least one element"); 
-          }
-          else{
-             alert("Somenthing went wrong! Please, check your data."); 
-          }
-         $("#modal-compound .modal-content").html(data.html_form);
+          //alert("Something went wrong! Please check your data"); 
+          $("#modal-compound .modal-content").html(data.html_form);
         }
       }
     });
@@ -72,7 +65,6 @@ var saveFormCompound = function () {
 
 var saveForm = function () {
     var form = $(this);
-    console.log("Inside save form");
     $.ajax({
       url: form.attr("action"),
       data: form.serialize(),
@@ -109,15 +101,15 @@ var saveForm = function () {
   $("#admin-modal-compound").on("submit", ".js-compound-create-form",saveForm);
 
    // Update compound
-  $("#compound-table").on("click", ".js-update-compound", loadFormCompound);
-  $("#modal-compound").on("submit", ".js-compound-update-form", saveFormCompound);
+  $("#compound-table").on("click", ".js-update-compound", loadForm);
+  $("#admin-modal-compound").on("submit", ".js-compound-update-form",saveForm);
 
     //Clone compound
-  $("#compound-table").on("click", ".js-clone-compound", loadFormCompound);
+  $("#compound-table").on("click", ".js-clone-compound", loadForm);
 
   // Delete book
-  $("#compound-table").on("click", ".js-delete-compound", loadFormCompound);
-  $("#modal-compound").on("submit", ".js-compound-delete-form", saveFormCompound);
+  $("#compound-table").on("click", ".js-delete-compound", loadForm);
+  $("#admin-modal-compound").on("submit", ".js-compound-delete-form", saveForm);
 
 
 

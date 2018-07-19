@@ -7,7 +7,7 @@
     </button>
     <h4 class="modal-title">Add compound</h4>
   </div>
-<form method="post" action="{% url 'samples_manager:compound_new' experiment.id %}"  class="js-compound-create-form">
+<form method="post" action="{% url 'samples_manager:admin_compound_update' form.instance.pk%}"  class="js-compound-update-form">
   {% csrf_token %}
   <div class="modal-body">
     <div class="row setup-content">
@@ -61,8 +61,8 @@
         </div>
   </div>
   <div class="modal-footer">
-    <button class="btn pull-left back" id="dismiss-compound"  type="button" onclick='javascript: $("#modal-compound").modal("hide");'><span class="glyphicon glyphicon-remove"></span>Cancel</button>
-    <button type="submit" onclick='javascript: alert("new compound!!");' class="btn btn-success btn-lg pull-right">Save</button>
+    <button class="btn pull-left back" id="dismiss-compound" type="button"><span class="glyphicon glyphicon-remove"></span>Cancel</button>
+    <button type="submit" class="btn btn-success btn-lg pull-right">Save</button>
   </div>
 </form>
 <script type="text/javascript">

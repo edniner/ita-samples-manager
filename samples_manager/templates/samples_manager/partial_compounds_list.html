@@ -1,18 +1,21 @@
-{% for compound in compounds %}
+{% for compound_data in compounds_data %}
   <tr>
-    <td>{{ compound.name }}</td>
-    <td>{{ compound.density }}</td>
+    <td>{{ compound_data.compound.name }}</td>
+    <td>{{ compound_data.compound.density }}</td>
+    <td>{{ compound_data.samples_sum}}</td>
     <td>
       <button type="button"
-              class="btn btn-warning btn-sm js-update-user"
-              data-url="">
+              class="btn btn-warning btn-sm js-update-compound"
+              data-url="{% url 'samples_manager:admin_compound_update' compound_data.compound.id %}">
         <span class="glyphicon glyphicon-pencil"></span>
       </button>
-      <button type="button"
-              class="btn btn-danger btn-sm js-delete-user"
-              data-url="">
-        <span class="glyphicon glyphicon-trash"></span>
-      </button>
+      {%if compound_data.samples_sum == 0 %}
+        <button type="button"
+                class="btn btn-danger btn-sm js-delete-compound"
+                data-url="{% url 'samples_manager:admin_compound_delete' compound_data.compound.id %}">
+          <span class="glyphicon glyphicon-trash"></span>
+        </button>
+      {%endif%}
     </td>
   </tr>
 {% empty %}

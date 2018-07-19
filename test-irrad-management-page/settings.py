@@ -112,6 +112,7 @@ DATABASES = {
         'NAME': 'devdb11-s.cern.ch:10121/devdb11.cern.ch',
         'USER': 'ps_irrad_admin',
         'PASSWORD': 'RadmonAdmin009',
+        'OPTIONS': {'threaded': True}
     }
 }
 

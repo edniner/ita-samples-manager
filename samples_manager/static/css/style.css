@@ -93,7 +93,7 @@ button.btn.btn-primary.btn-circle.info{
 button.btn.js-print-sample-label{
     background: #AAA;
 }
-#modal-sample h1,#modal-sample h2,#modal-sample h3,#modal-sample h4,#modal-compound h4,#modal-sample p {
+#modal-sample h1,#modal-sample h2,#modal-sample h3,#modal-sample h4,#modal-compound h4,#admin-modal-compound h4, #modal-sample p {
     color: #333333;
 }
 
@@ -109,6 +109,9 @@ button.btn.js-print-sample-label{
 }
 
 #modal-user h1,#modal-user h2,#modal-user h3,#modal-user h4,#modal-user p  {
+    color: #333333;
+}
+#admin-modal-compound h1,#admin-modal-compound h2,#admin-modal-compound h3,#admin-modal-compound h4,#admin-modal-compound p  {
     color: #333333;
 }
 h4{
