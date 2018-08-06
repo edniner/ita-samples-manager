@@ -1,3 +1,4 @@
+# layer deleting doesn't work well to be checked!!!!
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,Compound,CompoundElements, Layers, Dosimeters,Irradation
@@ -252,12 +253,10 @@ def user_details(request, user_id):
 
 def assign_dosimeters(request, experiment_id):
     data = dict()
-    print("assign dosimeters")
     logged_user = get_logged_user(request)
     samples = Samples.objects.filter(experiment = experiment_id)
     irradiations = []
     if request.method == 'POST':
-        print("in post")
         form = IrradiationForm(request.POST)
         checked_boxes = request.POST.getlist('checks[]')
         if form.is_valid():
@@ -282,7 +281,6 @@ def assign_dosimeters(request, experiment_id):
     return JsonResponse(data)
 
 def assign_samples_dosimeters(request):
-    print("here")
     data = dict()
     return JsonResponse(data)
 
@@ -440,9 +438,7 @@ def generate_dos_id(dosimeter):
 def save_sample_form(request,form1,form2,layers_formset, form3, status, experiment, template_name):
     data = dict()
     logged_user = get_logged_user(request)
-    print("in save")
     if request.method == 'POST':
-        print("post")
         if form1.is_valid() and form2.is_valid() and form3.is_valid() and layers_formset.is_valid():
             if status == 'new':
                 if form1.checking_unique_sample() == True:
@@ -479,11 +475,9 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                                 'experiment': experiment
                             })
                 else:
-                    print(layers_formset)
                     data['form_is_valid'] = False
                     data['state'] = "not unique"     
             elif status == 'update': 
-                print("update")
                 sample_temp = form1.save()
                 form2.save()
                 form3.save()
@@ -492,7 +486,6 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                 sample_updated.updated_by = logged_user
                 sample_updated.experiment = experiment
                 sample_updated.save()
-                print("before layers")
                 if layers_formset.is_valid():
                     layers_formset.save()
                 data['state'] = "Updated"
@@ -517,19 +510,14 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                     sample.experiment = experiment
                     '''sample.set_id = generate_set_id()'''
                     sample.save()
-                    print ("sample saved")
                     if layers_formset.is_valid():
-                        print("layers valid")
                         if  not layers_formset.cleaned_data:
-                            print("layers missing")
                             data['state'] = 'layers missing'
                             data['form_is_valid'] = False
                         else: 
-                            print("saving layers_formset")
                             for form in layers_formset.forms:
                                 layer = form.save()
                                 layer.sample = sample
-                                print("layer sample save")
                                 layer.save()   
                             data['state'] = "Created"
                             data['form_is_valid'] = True
@@ -581,7 +569,6 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
                 dosimeter.dos_id = generate_dos_id(dosimeter)
                 dosimeter.save()
             elif status == 'update':
-                print("update")
                 dosimeter_updated = form1.save()
                 form2.save()
                 dosimeter_updated.status = "Updated"
@@ -771,7 +758,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                                 fluence = form.save()
                                 fluence.experiment = experiment
                                 fluence.save()
-                                print("in fluence form")
                         else:
                             print("data none")
                     else:
@@ -824,10 +810,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 old_experiment = Experiments.objects.get(pk =  form1.instance.pk)
                 old_fluences = ReqFluences.objects.all().filter(experiment = form1.instance.pk).order_by('id')
                 old_materials = Materials.objects.all().filter(experiment = form1.instance.pk).order_by('id')
-                for f in  old_fluences: 
-                    pass
-                for m in  old_materials: 
-                    pass
                 experiment_updated = form1.save()
                 form2.save()
                 form3.save()
@@ -858,8 +840,11 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 else: 
                     print("no category")
                 if fluence_formset.is_valid():
-                    print("fluence valida!!!!")
+                    print("fluence formset update")
+                    print(fluence_formset)
+                    print(fluence_formset.cleaned_data)
                     fluence_formset.save()
+                    print("fluence formset update done")
                 else:
                     print("fluence not valid!!!!!")
                 if  material_formset.is_valid():    
@@ -960,8 +945,8 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
 
 def experiment_new(request):
     logged_user = get_logged_user(request)
-    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
-    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=0, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=1, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=1, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     cern_experiments = Experiments.objects.order_by().values('cern_experiment').distinct()
     cern_experiments_list = []
     for item in cern_experiments:
@@ -1027,8 +1012,8 @@ def experiment_update(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=1, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=1, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
@@ -1099,8 +1084,8 @@ def experiment_validate(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=1, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=1, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
@@ -1170,8 +1155,8 @@ def experiment_clone(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
-    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=0, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=1, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=1, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
@@ -1255,8 +1240,6 @@ def save_user_form(request, form, experiment, template_name):
                 send_mail_notification('IRRAD Data Manager: Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
             data['form_is_valid'] = True
             users = experiment.users.all()
-            print("users")
-            print(users)
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
                 'users': users,
                 'experiment':experiment
@@ -1277,7 +1260,6 @@ def save_admin_user_form(request, form, template_name):
             form.save()
             data['form_is_valid'] = True
             users = Users.objects.all()
-            print(users)
             users_data = []
             row = 0 
             for user in users: 
@@ -1333,7 +1315,7 @@ def save_compound_form(request, form, elem_formset, experiment, template_name):
                 else:
                             print("data none")
             data['form_is_valid'] = True
-            LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=0, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
+            LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=1, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
             layers_formset = LayerFormset()
             context = {'layers_formset': layers_formset}
             data['compound_id'] = compound.id
@@ -1342,18 +1324,11 @@ def save_compound_form(request, form, elem_formset, experiment, template_name):
             data['form_is_valid'] = False
     else:
         context = {'form': form, 'elem_formset': elem_formset,'experiment': experiment}
-        print("context")
-        data['html_form'] = render_to_string(template_name, context, request=request)
-        print("end")
     return JsonResponse(data)
 
 def save_admin_compound_form(request,form, elem_formset,status,template_name):
     data = dict()
     if request.method == 'POST':
-        print("form-----")
-        print(form.is_valid())
-        print("elem formset")
-        print(elem_formset.is_valid())
         if form.is_valid() and elem_formset.is_valid():
             if elem_formset.cleaned_data is not None:
                         sum = 0
@@ -1365,7 +1340,6 @@ def save_admin_compound_form(request,form, elem_formset,status,template_name):
                                 element = elem.save()
                                 element.compound = compound
                                 element.save()
-                            print("sum = %s" %sum)
                             compounds_data = get_compounds_data()
                             data['html_compound_list'] = render_to_string('samples_manager/partial_compounds_list.html', {
                                         'compounds_data':compounds_data,
@@ -1398,11 +1372,9 @@ def save_admin_compound_form(request,form, elem_formset,status,template_name):
     return JsonResponse(data)
 
 def compound_new(request, experiment_id):
-    print(request)
-    print("compound new!!!")
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
-    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
+    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=1, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
     if request.method == 'POST':
         form = CompoundForm(request.POST)
         elem_formset = ElemFormSet(request.POST)
@@ -1412,9 +1384,8 @@ def compound_new(request, experiment_id):
     return save_compound_form(request, form, elem_formset, experiment, 'samples_manager/partial_compound_create.html' )
 
 def admin_compound_new(request):
-    print("admin compound new")
     logged_user = get_logged_user(request)
-    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
+    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=1, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
     if request.method == 'POST':
         form = CompoundForm(request.POST)
         elem_formset = ElemFormSet(request.POST)
@@ -1427,7 +1398,7 @@ def admin_compound_new(request):
 
 def admin_compound_update(request, pk):
     compound = get_object_or_404(Compound, pk=pk)
-    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
+    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=1, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
     if request.method == 'POST':
         form = CompoundForm(request.POST, instance = compound)
         elem_formset = ElemFormSet(request.POST,  instance = compound)
@@ -1552,7 +1523,7 @@ def admin_user_update(request,pk):
     
 def sample_new(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
-    LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=0, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
+    LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=1, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
@@ -1570,7 +1541,7 @@ def sample_new(request, experiment_id):
 def sample_update(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
-    LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=0)
+    LayersFormset = inlineformset_factory(Samples, Layers,form=LayersForm,extra=1)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, instance=sample, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, instance=sample, experiment_id = experiment.id)
@@ -1588,7 +1559,7 @@ def sample_update(request, experiment_id, pk):
 def sample_clone(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
-    LayersFormset = inlineformset_factory(Samples,Layers,form=LayersForm,extra=0)
+    LayersFormset = inlineformset_factory(Samples,Layers,form=LayersForm,extra=1)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id, instance=sample)
