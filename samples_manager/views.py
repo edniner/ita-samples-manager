@@ -35,16 +35,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -52,7 +52,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
     
     email =  email.lower()
     users = Users.objects.all()
@@ -242,6 +242,8 @@ def get_compounds_data():
             })
     return compounds_data
 
+
+
 def compounds_list(request):
     logged_user = get_logged_user(request)
     compounds_data = get_compounds_data()
@@ -290,11 +292,41 @@ def experiment_users_list(request, experiment_id):
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user})
 
+def occupancies (sample):
+    layers = Layers.objects.filter(sample = sample)
+    radiation_length_occupancy = 0
+    nu_coll_length_occupancy = 0
+    nu_int_length_occupancy = 0
+    for layer in layers:
+        compound_elements = CompoundElements.objects.filter(compound = layer.compound_type)
+        layer_radiation_length = 0 
+        layer_nu_coll_length = 0
+        layer_nu_int_length = 0
+        for compound_element in compound_elements:
+            print(compound_element.element_type.radiation_length)
+            print(compound_element.element_type.nu_coll_length)
+            print(compound_element.element_type.nu_int_length)
+            layer_radiation_length = layer_radiation_length + compound_element.percentage * compound_element.element_type.radiation_length
+            layer_nu_coll_length = layer_nu_coll_length + compound_element.percentage * compound_element.element_type.nu_coll_length
+            layer_nu_int_length = layer_nu_int_length + compound_element.percentage * compound_element.element_type.nu_int_length
+        layer_radiation_length = layer_radiation_length /100
+        layer_nu_coll_length = layer_nu_coll_length / 100
+        layer_nu_int_length = layer_nu_int_length / 100
+        layer_linear_radiation_length = layer_radiation_length / compound_element.compound.density
+        layer_linear_nu_coll_length = layer_nu_coll_length / compound_element.compound.density
+        layer_linear_nu_int_length = layer_nu_int_length / compound_element.compound.density
+        print(layer_linear_radiation_length)
+        radiation_length_occupancy = radiation_length_occupancy + layer.length /(10 * layer_linear_radiation_length)
+        nu_coll_length_occupancy = nu_coll_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
+        nu_int_length_occupancy = nu_int_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
+        print()
 
 def experiment_samples_list(request, experiment_id):
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+    for sample in samples:
+        occupancies(sample)
     #get_layers(experiment_id)
     irradiations = []
     if request.method == 'POST':
@@ -1559,7 +1591,7 @@ def sample_update(request, experiment_id, pk):
 def sample_clone(request, experiment_id, pk):
     experiment = Experiments.objects.get(pk = experiment_id)
     sample = get_object_or_404(Samples, pk=pk)
-    LayersFormset = inlineformset_factory(Samples,Layers,form=LayersForm,extra=1)
+    LayersFormset = inlineformset_factory(Samples,Layers,form=LayersForm,extra=0)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id, instance=sample)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id, instance=sample)

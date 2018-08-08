@@ -301,7 +301,7 @@ class Compound(models.Model):
 
 class CompoundElements(models.Model):
     element_type = models.ForeignKey(MaterialElements)
-    percentage = models.PositiveIntegerField(default=0,validators=[MinValueValidator(0)])
+    percentage = models.DecimalField(max_digits=15, decimal_places=4)
     compound = models.ForeignKey(Compound, null = True)
 
 class Layers(models.Model):
@@ -312,6 +312,9 @@ class Layers(models.Model):
     density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
     percentage = models.DecimalField(max_digits=8,decimal_places=4, null = True)
     sample = models.ForeignKey(Samples, null = True)
+
+    def __str__(self):             # __str__ on Python 2
+        return str(self.name)
 
 class Irradation(models.Model):
     sample = models.ForeignKey(Samples, null = True)
