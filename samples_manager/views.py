@@ -35,16 +35,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -52,7 +52,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"
+    home_institute = "MINES ParisTech"'''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -121,6 +121,17 @@ def get_registered_samples_number(experiments):
     for experiment in experiments:
             samples = Samples.objects.filter(experiment = experiment)
             number = samples.count()
+            total_radiation_length_occupancy = 0
+            total_nu_coll_length_occupancy = 0
+            total_nu_int_length_occupancy = 0
+            for sample in samples:
+                occupancy = occupancies(sample)
+                if occupancy is not None:
+                    total_radiation_length_occupancy = total_radiation_length_occupancy + occupancy[0]
+                    total_nu_coll_length_occupancy = total_nu_coll_length_occupancy + occupancy[1]
+                    total_nu_int_length_occupancy = total_nu_int_length_occupancy + occupancy[2]
+                else:
+                    pass
             total_registered_samples = total_registered_samples + number
             total_declared_samples = total_declared_samples + int(experiment.number_samples)
             row = row + 1
@@ -128,6 +139,9 @@ def get_registered_samples_number(experiments):
             "experiment": experiment,
             "number_samples": number,
             "row":row,
+            "total_radiation_length_occupancy": total_radiation_length_occupancy,
+            "total_nu_coll_length_occupancy": total_nu_coll_length_occupancy,
+            "total_nu_int_length_occupancy": total_nu_int_length_occupancy,
             })
     return {"experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples}
 
@@ -292,8 +306,9 @@ def experiment_users_list(request, experiment_id):
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user})
 
-def occupancies (sample):
+def occupancies(sample):
     layers = Layers.objects.filter(sample = sample)
+    occupancies = []
     radiation_length_occupancy = 0
     nu_coll_length_occupancy = 0
     nu_int_length_occupancy = 0
@@ -303,9 +318,6 @@ def occupancies (sample):
         layer_nu_coll_length = 0
         layer_nu_int_length = 0
         for compound_element in compound_elements:
-            print(compound_element.element_type.radiation_length)
-            print(compound_element.element_type.nu_coll_length)
-            print(compound_element.element_type.nu_int_length)
             layer_radiation_length = layer_radiation_length + compound_element.percentage * compound_element.element_type.radiation_length
             layer_nu_coll_length = layer_nu_coll_length + compound_element.percentage * compound_element.element_type.nu_coll_length
             layer_nu_int_length = layer_nu_int_length + compound_element.percentage * compound_element.element_type.nu_int_length
@@ -315,19 +327,28 @@ def occupancies (sample):
         layer_linear_radiation_length = layer_radiation_length / compound_element.compound.density
         layer_linear_nu_coll_length = layer_nu_coll_length / compound_element.compound.density
         layer_linear_nu_int_length = layer_nu_int_length / compound_element.compound.density
-        print(layer_linear_radiation_length)
         radiation_length_occupancy = radiation_length_occupancy + layer.length /(10 * layer_linear_radiation_length)
         nu_coll_length_occupancy = nu_coll_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
-        nu_int_length_occupancy = nu_int_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
-        print()
+        nu_int_length_occupancy = nu_int_length_occupancy + layer.length /(10 * layer_linear_nu_int_length)
+        occupancies.append(round(radiation_length_occupancy,3))
+        occupancies.append(round(nu_coll_length_occupancy,3))
+        occupancies.append(round(nu_int_length_occupancy,3))
+        return(occupancies)
 
 def experiment_samples_list(request, experiment_id):
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+    samples_data = []
     for sample in samples:
-        occupancies(sample)
-    #get_layers(experiment_id)
+        occupancy = occupancies(sample)
+        samples_data.append({
+            "sample": sample,
+            "radiation_length_occupancy": occupancy[0],
+            "nu_coll_length_occupancy" :  occupancy[1],
+            "nu_int_length_occupancy" :   occupancy[2],
+            })
+    print(samples_data)
     irradiations = []
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
@@ -360,9 +381,9 @@ def experiment_samples_list(request, experiment_id):
     else:
         form = IrradiationForm()
         if  logged_user.role == 'Admin': 
-            return render(request, 'samples_manager/admin_samples_list.html', {'form': form, 'samples': samples, 'experiment': experiment,'logged_user': logged_user})
+            return render(request, 'samples_manager/admin_samples_list.html', {'form': form, 'samples': samples, 'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user})
         else:
-            return render(request, 'samples_manager/samples_list.html', {'form': form, 'samples': samples, 'experiment': experiment,'logged_user': logged_user})
+            return render(request, 'samples_manager/samples_list.html', {'form': form, 'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user})
 
 def dosimeters_list(request):
     logged_user = get_logged_user(request)
@@ -842,6 +863,10 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 old_experiment = Experiments.objects.get(pk =  form1.instance.pk)
                 old_fluences = ReqFluences.objects.all().filter(experiment = form1.instance.pk).order_by('id')
                 old_materials = Materials.objects.all().filter(experiment = form1.instance.pk).order_by('id')
+                for f in  old_fluences: 
+                    pass
+                for m in  old_materials: 
+                    pass
                 experiment_updated = form1.save()
                 form2.save()
                 form3.save()
@@ -1347,15 +1372,15 @@ def save_compound_form(request, form, elem_formset, experiment, template_name):
                 else:
                             print("data none")
             data['form_is_valid'] = True
-            LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=1, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
-            layers_formset = LayerFormset()
-            context = {'layers_formset': layers_formset}
+            context = {}
             data['compound_id'] = compound.id
             data['compound_name'] = compound.name
         else:
             data['form_is_valid'] = False
     else:
         context = {'form': form, 'elem_formset': elem_formset,'experiment': experiment}
+        data['html_form'] = render_to_string(template_name, context, request=request)
+    print("I'm here!!")
     return JsonResponse(data)
 
 def save_admin_compound_form(request,form, elem_formset,status,template_name):

@@ -1,30 +1,33 @@
-{% for sample in samples %}
+{% for sample_data in samples_data %}
   <tr>
     <td><input type="checkbox" class="chkbox" id="{{sample.id}}" name="checks[]" value="{{sample.set_id}}</font></b><br/>{{sample.category}}<br/>{{sample.req_fluence}}<br/>{{experiment.responsible}}<br/>{{sample.name}}"></td>
-    <td>{{ sample.updated_at|date:"d.m.Y"}} {{ sample.updated_at|time:"H:i"}}</td>
-    {%if sample.set_id %}
-    <td>{{sample.set_id}}</td>
+    <td>{{  sample_data.sample.updated_at|date:"d.m.Y"}} {{ sample_data.sample.updated_at|time:"H:i"}}</td>
+    {%if sample_data.sample.set_id %}
+    <td>{{sample_data.sample.set_id}}</td>
     {%else %}
     <td>Not allocated yet</td>
     {%endif%}
-    <td>{{ sample.name }}</td>
-    <td>{{ sample.category}}</td>
-    <td>{{ sample.req_fluence}}</td>
-    <td>{{ sample.updated_by}}</td>
+    <td>{{ sample_data.sample.name }}</td>
+    <td>{{ sample_data.sample.category}}</td>
+    <td>{{ sample_data.sample.req_fluence}}</td>
+    <td>{{ sample_data.radiation_length_occupancy}}</td>
+    <td>{{ sample_data.nu_coll_length_occupancy}}</td>
+    <td>{{ sample_data.nu_int_length_occupancy}}</td>
+    <td>{{ sample_data.sample.updated_by}}</td>
      <td>
         <button type="button"
                 class="btn btn-warning js-update-sample"
-                data-url="{%  url 'samples_manager:sample_update' experiment.id sample.id %}"
+                data-url="{%  url 'samples_manager:sample_update' experiment.id sample_data.sample.id %}"
                 title='View or Edit sample'>
               <span class="glyphicon glyphicon-pencil"></span>
         </button>
         <button type="button"
                 class="btn btn-primary js-clone-sample"
-                data-url="{%url 'samples_manager:sample_clone' experiment.id sample.id %}"
+                data-url="{%url 'samples_manager:sample_clone' experiment.id sample_data.sample.id %}"
                 title='Clone sample'>
           <span class="glyphicon glyphicon-duplicate"></span>
         </button>
-      <a href="{% url 'samples_manager:print_sample_view' experiment.id sample.id  %}">
+      <a href="{% url 'samples_manager:print_sample_view' experiment.id sample_data.sample.id  %}">
         <button type="button"
               class="btn btn-info"
               title='Print'>
@@ -33,14 +36,14 @@
       </a>
         <button type="button"
               class="btn js-print-sample-label"
-              data-url="{% url 'samples_manager:print_sample_label_view' experiment.id sample.id %}"
+              data-url="{% url 'samples_manager:print_sample_label_view' experiment.id sample_data.sample.id %}"
               title='Assign Sample ID and print Label'>
         <span class="glyphicon glyphicon glyphicon-barcode"></span>
       </button>
       <button type="button"
                 class="btn btn-danger js-delete-sample"
                 title='Delete'
-                data-url="{% url 'samples_manager:sample_delete' experiment.id sample.id %}">
+                data-url="{% url 'samples_manager:sample_delete' experiment.id sample_data.sample.id %}">
           <span class="glyphicon glyphicon-trash"></span>
         </button>
     </td>
