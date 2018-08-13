@@ -60,7 +60,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'samples_manager.remuser.ProxyRemoteUserMiddleware',
     #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    #'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Uncomment this in production!!!!
     'whitenoise.middleware.WhiteNoiseMiddleware',

@@ -117,6 +117,9 @@ def get_registered_samples_number(experiments):
     experiment_data = []
     total_registered_samples = 0
     total_declared_samples = 0
+    total_experiments_radiation_length_occupancy = 0
+    total_experiments_nu_coll_length_occupancy = 0
+    total_experiments_int_length_occupancy = 0
     row = 0
     for experiment in experiments:
             samples = Samples.objects.filter(experiment = experiment)
@@ -143,7 +146,18 @@ def get_registered_samples_number(experiments):
             "total_nu_coll_length_occupancy": total_nu_coll_length_occupancy,
             "total_nu_int_length_occupancy": total_nu_int_length_occupancy,
             })
-    return {"experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples}
+            total_experiments_radiation_length_occupancy = total_experiments_radiation_length_occupancy + total_radiation_length_occupancy
+            total_experiments_nu_coll_length_occupancy = total_experiments_nu_coll_length_occupancy + total_nu_coll_length_occupancy
+            total_experiments_int_length_occupancy = total_experiments_int_length_occupancy + total_nu_int_length_occupancy
+    print(total_experiments_radiation_length_occupancy)
+    print(total_experiments_nu_coll_length_occupancy)
+    data = {
+            "experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples,
+            "total_experiments_radiation_length_occupancy": total_experiments_radiation_length_occupancy,
+            "total_experiments_nu_coll_length_occupancy": total_experiments_nu_coll_length_occupancy,
+            "total_experiments_int_length_occupancy": total_experiments_int_length_occupancy
+            }
+    return data
 
 
 def get_layers(experiment):
@@ -197,7 +211,7 @@ def experiments_list(request):
     if logged_user.role == 'Admin':
         experiments = authorised_experiments(logged_user)
         experiment_data = get_registered_samples_number(experiments)
-        return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data["experiments"],"total_registered_samples": experiment_data["total_registered_samples"], "total_declared_samples": experiment_data["total_declared_samples"], 'logged_user': logged_user})
+        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user})
     else:
         experiments = authorised_experiments(logged_user)
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
@@ -213,7 +227,7 @@ def admin_experiments_list(request):
     experiments = Experiments.objects.order_by('-updated_at')
     experiment_data = get_registered_samples_number(experiments)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data["experiments"],"total_registered_samples": experiment_data["total_registered_samples"], "total_declared_samples": experiment_data["total_declared_samples"],'logged_user': logged_user})
+    return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data': experiment_data,'logged_user': logged_user})
 
 def users_list(request):
     logged_user = get_logged_user(request)
@@ -312,6 +326,7 @@ def occupancies(sample):
     radiation_length_occupancy = 0
     nu_coll_length_occupancy = 0
     nu_int_length_occupancy = 0
+    print(sample)
     for layer in layers:
         compound_elements = CompoundElements.objects.filter(compound = layer.compound_type)
         layer_radiation_length = 0 
@@ -324,31 +339,51 @@ def occupancies(sample):
         layer_radiation_length = layer_radiation_length /100
         layer_nu_coll_length = layer_nu_coll_length / 100
         layer_nu_int_length = layer_nu_int_length / 100
-        layer_linear_radiation_length = layer_radiation_length / compound_element.compound.density
-        layer_linear_nu_coll_length = layer_nu_coll_length / compound_element.compound.density
-        layer_linear_nu_int_length = layer_nu_int_length / compound_element.compound.density
+        layer_linear_radiation_length = layer_radiation_length / layer.compound_type.density
+        layer_linear_nu_coll_length = layer_nu_coll_length /  layer.compound_type.density
+        layer_linear_nu_int_length = layer_nu_int_length / layer.compound_type.density
         radiation_length_occupancy = radiation_length_occupancy + layer.length /(10 * layer_linear_radiation_length)
         nu_coll_length_occupancy = nu_coll_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
         nu_int_length_occupancy = nu_int_length_occupancy + layer.length /(10 * layer_linear_nu_int_length)
-        occupancies.append(round(radiation_length_occupancy,3))
-        occupancies.append(round(nu_coll_length_occupancy,3))
-        occupancies.append(round(nu_int_length_occupancy,3))
-        return(occupancies)
+    radiation_length_occupancy = radiation_length_occupancy * 100
+    nu_coll_length_occupancy = nu_coll_length_occupancy * 100
+    nu_int_length_occupancy = nu_int_length_occupancy * 100
+    occupancies.append(round(radiation_length_occupancy,3))
+    occupancies.append(round(nu_coll_length_occupancy,3))
+    occupancies.append(round(nu_int_length_occupancy,3))
+    return(occupancies)
+
+def get_samples_occupancies(samples):
+    samples_data = []
+    total_radiation_length_occupancy = 0
+    total_nu_coll_length_occupancy = 0
+    total_nu_int_length_occupancy = 0
+    for sample in samples:
+        occupancy = occupancies(sample)
+        if  occupancy is not None: 
+            total_radiation_length_occupancy = total_radiation_length_occupancy + occupancy[0]
+            total_nu_coll_length_occupancy = total_nu_coll_length_occupancy +  occupancy[1]
+            total_nu_int_length_occupancy =  total_nu_int_length_occupancy +  occupancy[2]
+            samples_data.append({
+                "sample": sample,
+                "radiation_length_occupancy": occupancy[0],
+                "nu_coll_length_occupancy" :  occupancy[1],
+                "nu_int_length_occupancy" :   occupancy[2],
+                })
+        else:
+            samples_data.append({
+                "sample": sample,
+                "radiation_length_occupancy": 0,
+                "nu_coll_length_occupancy" :  0,
+                "nu_int_length_occupancy" :   0,
+                })
+    return samples_data
 
 def experiment_samples_list(request, experiment_id):
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
-    samples_data = []
-    for sample in samples:
-        occupancy = occupancies(sample)
-        samples_data.append({
-            "sample": sample,
-            "radiation_length_occupancy": occupancy[0],
-            "nu_coll_length_occupancy" :  occupancy[1],
-            "nu_int_length_occupancy" :   occupancy[2],
-            })
-    print(samples_data)
+    samples_data = get_samples_occupancies(samples)
     irradiations = []
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
@@ -523,8 +558,10 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                             data['state'] = "Created"
                             data['form_is_valid'] = True
                             samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+                            samples_data = get_samples_occupancies(samples)
                             data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                                 'samples':samples,
+                                'samples_data': samples_data,
                                 'experiment': experiment
                             })
                 else:
@@ -544,8 +581,10 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                 data['state'] = "Updated"
                 data['form_is_valid'] = True
                 samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+                samples_data = get_samples_occupancies(samples)
                 data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                         'samples':samples,
+                        'samples_data': samples_data,
                         'experiment': experiment
                 })
             elif status == 'clone':
@@ -561,22 +600,28 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                     sample.created_by = logged_user
                     sample.updated_by = logged_user
                     sample.experiment = experiment
-                    '''sample.set_id = generate_set_id()'''
                     sample.save()
                     if layers_formset.is_valid():
                         if  not layers_formset.cleaned_data:
                             data['state'] = 'layers missing'
                             data['form_is_valid'] = False
                         else: 
-                            for form in layers_formset.forms:
-                                layer = form.save()
-                                layer.sample = sample
-                                layer.save()   
+                            for lay in layers_formset.cleaned_data:
+                                    layer = Layers()
+                                    layer.name = lay['name']
+                                    print(layer.name)
+                                    layer.length = lay['length']
+                                    layer.compound_type = lay['compound_type']
+                                    layer.sample = sample
+                                    layer.save()
+                                    print("saved layer")
                             data['state'] = "Created"
                             data['form_is_valid'] = True
                             samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+                            samples_data = get_samples_occupancies(samples)
                             data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                                 'samples':samples,
+                                'samples_data': samples_data,
                                 'experiment': experiment
                             })
                 else:
@@ -592,8 +637,10 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                 data['state'] = "Updated"
                 data['form_is_valid'] = True
                 samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+                samples_data = get_samples_occupancies(samples)
                 data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                     'samples':samples,
+                    'samples_data': samples_data,
                     'experiment': experiment
                 })
         else:
@@ -828,15 +875,14 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     data['form_is_valid'] = True
                     if logged_user.role == 'Admin':
                         experiments = Experiments.objects.all().order_by('-updated_at')
-                        experiments_data = get_registered_samples_number(experiments)
-                        experiments = experiments_data['experiments']
+                        experiment_data = get_registered_samples_number(experiments)
+                        template_data = {'experiment_data': experiment_data}
                         output_template = 'samples_manager/partial_admin_experiments_list.html'
                     else: 
                         experiments = authorised_experiments(logged_user)
+                        template_data = {'experiments': experiments}
                         output_template = 'samples_manager/partial_experiments_list.html'
-                    data['html_experiment_list'] = render_to_string(output_template, {
-                            'experiments': experiments,
-                            })
+                    data['html_experiment_list'] = render_to_string(output_template, template_data)
                     data['state'] = "Created"
                     message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
                     send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
@@ -897,11 +943,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 else: 
                     print("no category")
                 if fluence_formset.is_valid():
-                    print("fluence formset update")
-                    print(fluence_formset)
-                    print(fluence_formset.cleaned_data)
                     fluence_formset.save()
-                    print("fluence formset update done")
                 else:
                     print("fluence not valid!!!!!")
                 if  material_formset.is_valid():    
@@ -909,15 +951,14 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['form_is_valid'] = True
                 if logged_user.role == 'Admin':
                     experiments = Experiments.objects.all().order_by('-updated_at')
-                    experiments_data = get_registered_samples_number(experiments)
-                    experiments = experiments_data['experiments']
+                    experiment_data = get_registered_samples_number(experiments)
+                    template_data = {'experiment_data': experiment_data, 'logged_user': logged_user}
                     output_template = 'samples_manager/partial_admin_experiments_list.html'
                 else: 
                     experiments = authorised_experiments(logged_user)
+                    template_data = {'experiments': experiments}
                     output_template = 'samples_manager/partial_experiments_list.html'
-                data['html_experiment_list'] = render_to_string(output_template, {
-                        'experiments': experiments,
-                        })
+                data['html_experiment_list'] = render_to_string(output_template, template_data)
                 data['state'] = "Updated"
                 text = updated_experiment_data(old_experiment,old_fluences,old_materials,old_category,experiment)
                 message2irrad=mark_safe("The user with e-mail: "+logged_user.email+" updated the experiment with title '"+experiment.title+"'.\n"
@@ -970,17 +1011,15 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     material_formset.save()
                 data['form_is_valid'] = True
                 experiments = Experiments.objects.all().order_by('-updated_at')
-                experiments_data = get_registered_samples_number(experiments)
-                experiments = experiments_data['experiments']
+                experiment_data = get_registered_samples_number(experiments)
                 data['state'] = "Validated"
                 data['html_experiment_list'] = render_to_string('samples_manager/partial_admin_experiments_list.html', {
-                            'experiments': experiments,
+                            'experiment_data':  experiment_data, 'logged_user':logged_user 
                         })
                 message='Dear user,\nyour experiment with title "%s" was validated. \nYou can now add samples and additional users related to your irradiation experiment.\nPlease, find all your experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch'% experiment.title
                 send_mail_notification('IRRAD Data Manager: Experiment  %s validation' % experiment.title,message,'irrad.ps@cern.ch',experiment.responsible.email)
                 message2irrad='You validated the experiment with title: %s' % experiment.title
                 send_mail_notification('IRRAD Data Manager: Experiment %s validation' % experiment.title,message2irrad,'irrad.ps@cern.ch','irrad.ps@cern.ch')
-                print("Message sent")
             else:
                 print("form1: ",form1.is_valid())
                 print("form2: ",form2.is_valid())
@@ -1046,11 +1085,11 @@ def experiment_status_update(request, pk):
                         send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
             data['form_is_valid'] = True
             experiments = Experiments.objects.all().order_by('-updated_at')
-            experiments_data = get_registered_samples_number(experiments)
-            experiments = experiments_data['experiments']
+            experiment_data = get_registered_samples_number(experiments)
+            experiment_data = experiment_data['experiments']
             data['state'] = experiment.status
             data['html_experiment_list'] = render_to_string('samples_manager/partial_admin_experiments_list.html', {
-                            'experiments': experiments,
+                            'experiment_data': experiment_data,
                         })
         else:
             print("form is not valid")
@@ -1069,8 +1108,8 @@ def experiment_update(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=1, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=1, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
@@ -1141,8 +1180,8 @@ def experiment_validate(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=1, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
-    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=1, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments, Materials, form=MaterialsForm, extra=0, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
@@ -1212,8 +1251,8 @@ def experiment_clone(request, pk):
     for item in cern_experiments:
         cern_experiments_list.append(item['cern_experiment'])
     experiment = get_object_or_404(Experiments, pk=pk)
-    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=1, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
-    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=1, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=0, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     if request.method == 'POST':
         form1 = ExperimentsForm1(request.POST, instance=experiment,data_list=cern_experiments_list)
         form2 = ExperimentsForm2(request.POST, instance=experiment)
@@ -1244,15 +1283,14 @@ def experiment_delete(request, pk):
         data['form_is_valid'] = True
         if logged_user.role == 'Admin':
                 experiments = Experiments.objects.all().order_by('-updated_at')
-                experiments_data = get_registered_samples_number(experiments)
-                experiments = experiments_data['experiments']
+                experiment_data = get_registered_samples_number(experiments)
+                template_data = { 'experiment_data': experiment_data }
                 output_template = 'samples_manager/partial_admin_experiments_list.html'
         else: 
                 experiments = authorised_experiments(logged_user)
+                template_data = { 'experiments': experiments }
                 output_template = 'samples_manager/partial_experiments_list.html'
-        data['html_experiment_list'] = render_to_string(output_template, {
-                'experiments': experiments,
-        })
+        data['html_experiment_list'] = render_to_string(output_template, template_data)
         data['state']='Deleted'
         message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was deleted by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
         send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
@@ -1638,8 +1676,10 @@ def sample_delete(request,experiment_id, pk):
         sample.delete()
         data['form_is_valid'] = True  # This is just to play along with the existing code
         samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+        samples_data = get_samples_occupancies(samples)
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
             'samples': samples,
+            'samples_data': samples_data,
             'experiment': experiment
         })
     else:
@@ -1998,7 +2038,7 @@ def search_experiments_admin(request):
             entry_query = get_query(query_string, ['title', 'status'])
             experiments = Experiments.objects.filter(entry_query)
             experiment_data = get_registered_samples_number(experiments)
-        return render(request, 'samples_manager/admin_experiments_list.html', {'experiments': experiment_data["experiments"],"total_registered_samples": experiment_data["total_registered_samples"], "total_declared_samples": experiment_data["total_declared_samples"], 'logged_user': logged_user})
+        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user})
 
 def search_experiment_users(request, experiment_id):
         query_string = ''
