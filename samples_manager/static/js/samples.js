@@ -218,6 +218,7 @@ var dymoPrintSamples = function(){
                     record.setTextMarkup('Text', textMarkup);
                 }
                 
+                console.log("I'm here now!")
                 // select printer to print on
                 // for simplicity sake just use the first LabelWriter printer
                 var printers = dymo.label.framework.getPrinters();
