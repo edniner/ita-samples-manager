@@ -326,7 +326,6 @@ def occupancies(sample):
     radiation_length_occupancy = 0
     nu_coll_length_occupancy = 0
     nu_int_length_occupancy = 0
-    print(sample)
     for layer in layers:
         compound_elements = CompoundElements.objects.filter(compound = layer.compound_type)
         layer_radiation_length = 0 
@@ -1661,7 +1660,7 @@ def sample_clone(request, experiment_id, pk):
         form3 = SamplesForm3(request.POST, experiment_id = experiment.id, instance=sample)
         layers_formset = LayersFormset(request.POST,instance=sample)
     else:
-        form1 = SamplesForm1(experiment_id = experiment.id, instance=sample)
+        form1 = SamplesForm1(experiment_id = experiment.id, instance=sample, initial={'set_id': ""})
         form2 = SamplesForm2(experiment_id = experiment.id, instance=sample)
         form3 = SamplesForm3(experiment_id = experiment.id, instance=sample)
         layers_formset = LayersFormset(instance=sample)
@@ -1935,8 +1934,10 @@ def print_sample_label_view(request, experiment_id, pk):
         print('responsible')
         data['responsible'] = experiment.responsible.email
         samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+        samples_data = get_samples_occupancies(samples)
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
                 'samples': samples,
+                'samples_data' : samples_data, 
                 'experiment': experiment
             })
     else:
