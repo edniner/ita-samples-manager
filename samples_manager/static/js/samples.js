@@ -174,7 +174,7 @@ var dymoPrintSamples = function(){
             {
             var labelXml = '<?xml version="1.0" encoding="utf-8"?>\
                                 <DieCutLabel Version="8.0" Units="twips" MediaType="Default">\
-                                    <PaperOrientation>Landscape</PaperOrientation>\
+                                    <PaperOrientation>Portrait</PaperOrientation>\
                                     <Id>Small30332</Id>\
                                     <IsOutlined>false</IsOutlined>\
                                     <PaperName>30332 1 in x 1 in</PaperName>\
@@ -199,7 +199,7 @@ var dymoPrintSamples = function(){
                                             <Verticalized>False</Verticalized>\
                                             <StyledText/>\
                                             </TextObject>\
-                                        <Bounds X="144" Y="57" Width="1207.55907325383" Height="1298.26773603346" />\
+                                        <Bounds X="82" Y="144" Width="1301" Height="1210" />\
                                     </ObjectInfo>\
                             </DieCutLabel>';
 
