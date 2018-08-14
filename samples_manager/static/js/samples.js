@@ -183,7 +183,7 @@ var dymoPrintSamples = function(){
                     </DrawCommands>\
                     <ObjectInfo>\
                       <TextObject>\
-                        <Name>TEXT</Name>\
+                        <Name>Text</Name>\
                         <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />\
                         <BackColor Alpha="0" Red="255" Green="255" Blue="255" />\
                         <LinkedObjectName />\
