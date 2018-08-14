@@ -213,7 +213,7 @@ var dymoPrintSamples = function(){
                 var i;
                 var textMarkup = '';
                 for (i = 0; i <checked_samples.length; i++) { 
-                    textMarkup = '<b><font family="Arial" size="12">'+checked_samples[i];
+                    textMarkup = '<b><font family="Arial" size="18">'+checked_samples[i];
                     console.log(textMarkup);
                     var record = labelSetBuilder.addRecord();
                     record.setTextMarkup('Text', textMarkup);
