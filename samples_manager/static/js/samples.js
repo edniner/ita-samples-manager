@@ -173,35 +173,36 @@ var dymoPrintSamples = function(){
             try
             {
             var labelXml = '<?xml version="1.0" encoding="utf-8"?>\
-                  <DieCutLabel Version="8.0" Units="twips" MediaType="Default">\
-                    <PaperOrientation>Portrait</PaperOrientation>\
-                    <Id>Small30332</Id>\
-                    <IsOutlined>false</IsOutlined>\
-                    <PaperName>30332 1 in x 1 in</PaperName>\
-                    <DrawCommands>\
-                      <RoundRectangle X="0" Y="0" Width="1440" Height="1440" Rx="180" Ry="180" />\
-                    </DrawCommands>\
-                    <ObjectInfo>\
-                      <TextObject>\
-                        <Name>Text</Name>\
-                        <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />\
-                        <BackColor Alpha="0" Red="255" Green="255" Blue="255" />\
-                        <LinkedObjectName />\
-                        <Rotation>Rotation0</Rotation>\
-                        <IsMirrored>False</IsMirrored>\
-                        <IsVariable>False</IsVariable>\
-                        <GroupID>-1</GroupID>\
-                        <IsOutlined>False</IsOutlined>\
-                        <HorizontalAlignment>Center</HorizontalAlignment>\
-                        <VerticalAlignment>Top</VerticalAlignment>\
-                        <TextFitMode>ShrinkToFit</TextFitMode>\
-                        <UseFullFontHeight>True</UseFullFontHeight>\
-                        <Verticalized>False</Verticalized>\
-                        </StyledText>\
-                      </TextObject>\
-                      <Bounds X="82" Y="144" Width="1301" Height="1210" />\
-                    </ObjectInfo>\
-                  </DieCutLabel>';
+                                <DieCutLabel Version="8.0" Units="twips" MediaType="Default">\
+                                    <PaperOrientation>Landscape</PaperOrientation>\
+                                    <Id>Small30332</Id>\
+                                    <IsOutlined>false</IsOutlined>\
+                                    <PaperName>30332 1 in x 1 in</PaperName>\
+                                    <DrawCommands>\
+                                        <RoundRectangle X="0" Y="0" Width="1440" Height="1440" Rx="180" Ry="180" />\
+                                    </DrawCommands>\
+                                    <ObjectInfo>\
+                                        <TextObject>\
+                                            <Name>Text</Name>\
+                                            <ForeColor Alpha="255" Red="0" Green="0" Blue="0" />\
+                                            <BackColor Alpha="0" Red="255" Green="255" Blue="255" />\
+                                            <LinkedObjectName />\
+                                            <Rotation>Rotation0</Rotation>\
+                                            <IsMirrored>False</IsMirrored>\
+                                            <IsVariable>True</IsVariable>\
+                                            <GroupID>-1</GroupID>\
+                                            <IsOutlined>False</IsOutlined>\
+                                            <HorizontalAlignment>Center</HorizontalAlignment>\
+                                            <VerticalAlignment>Middle</VerticalAlignment>\
+                                            <TextFitMode>ShrinkToFit</TextFitMode>\
+                                            <UseFullFontHeight>True</UseFullFontHeight>\
+                                            <Verticalized>False</Verticalized>\
+                                            <StyledText/>\
+                                            </TextObject>\
+                                        <Bounds X="144" Y="57" Width="1207.55907325383" Height="1298.26773603346" />\
+                                    </ObjectInfo>\
+                            </DieCutLabel>';
+
 
                 var label = dymo.label.framework.openLabelXml(labelXml);
                 console.log(label);
@@ -222,6 +223,7 @@ var dymoPrintSamples = function(){
                 // select printer to print on
                 // for simplicity sake just use the first LabelWriter printer
                 var printers = dymo.label.framework.getPrinters();
+                console.log(printers)
                 if (printers.length == 0)
                     alert("No DYMO printers are installed. Install DYMO printers.");
                 else{
