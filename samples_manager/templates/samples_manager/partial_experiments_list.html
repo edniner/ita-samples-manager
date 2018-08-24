@@ -1,9 +1,9 @@
 <meta charset="UTF-8"> 
 {% for experiment in experiments %}
   <tr>
-    <td>{{ experiment.updated_at|date:"d.m.Y"}} {{ experiment.updated_at|time:"H:i"}}</td>
+    <td>{{ experiment.updated_at|date:"d/m/Y"}}</td>
     <td>{{ experiment.title }}</td>
-    <td>{{ experiment.availability|date:"d.m.Y" }}</td>
+    <td>{{ experiment.availability|date:"d/m/Y" }}</td>
     <td>{{ experiment.number_samples }}</td>
     <td>{{ experiment.users.count }}</td>
     <td>{{ experiment.status }}</td>

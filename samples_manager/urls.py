@@ -55,4 +55,5 @@ urlpatterns = [
     url(r'^admin/compound/(?P<pk>\d+)/delete/$', views.admin_compound_delete, name='admin_compound_delete'),
     url(r'^experiment/(?P<experiment_id>\d+)/compound/new/$', views.compound_new, name='compound_new'),
     url(r'^compounds/$', views.compounds_list, name='compounds_list'),
+    url(r'^experiment/(?P<experiment_id>\d+)/assign_set_ids/$', views.assign_set_ids, name='assign_set_ids'),
     ]

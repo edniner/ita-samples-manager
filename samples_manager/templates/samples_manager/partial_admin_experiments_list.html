@@ -14,9 +14,9 @@
     </td>
     {%endif%}
     <td>{{experiment.row}}</td>
-    <td>{{ experiment.experiment.updated_at|date:"d.m.Y"}} {{ experiment.experiment.updated_at|time:"H:i"}}</td>
+    <td>{{ experiment.experiment.updated_at|date:"d/m/Y"}}</td>
     <td>{{ experiment.experiment.title }}</td>
-    <td>{{ experiment.experiment.availability|date:"d.m.Y"}}</td>
+    <td>{{ experiment.experiment.availability|date:"d/m/Y"}}</td>
     <td>{{ experiment.number_samples}}/{{ experiment.experiment.number_samples }}</td>
     <td>{{ experiment.total_radiation_length_occupancy}}</td>
     <td>{{ experiment.total_nu_coll_length_occupancy}}</td>

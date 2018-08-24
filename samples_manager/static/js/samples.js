@@ -9,6 +9,7 @@ $(function () {
         checked_sample_values = checked_sample_values + 1;
         $('#new_sample').hide();
         $('#print_samples').show();
+        $('#assign_ids').show();
         $('#assign_dosimeters').show();
         $('#dos_selectbox').show();
         $("#assign_samples_dosimeter").css("display", "inline-block");
@@ -20,6 +21,7 @@ $(function () {
       if (checked_sample_values == 0){
         $('#new_sample').show();
         $('#print_samples').hide();
+        $('#assign_ids').hide();
         $('#assign_dosimeters').hide();
         $("select#id_dosimeter.form-control").css("display", "none");
         $("select#id_irrad_table.form-control").css("display", "none");
@@ -37,6 +39,7 @@ var load_values = function() {
         checked_sample_values = checked_sample_values + 1;
         $('#new_sample').hide();
         $('#print_samples').show();
+        $('#assign_ids').show();
         $('#assign_dosimeters').show();
         $('#dos_selectbox').show();
         $("#assign_samples_dosimeter").css("display", "inline-block");
@@ -49,6 +52,7 @@ var load_values = function() {
       if (checked_sample_values == 0){
         $('#new_sample').show();
         $('#print_samples').hide();
+        $('#assign_ids').hide();
         $('#assign_dosimeters').hide();
         $('#dos_selectbox').hide();
         $("select#id_dosimeter.form-control").css("display", "none");
@@ -64,6 +68,7 @@ $("#samples-select-all").click(function(){
         checked_sample_values = checked_sample_values + 1;
         $('#new_sample').hide();
         $('#print_samples').show();
+        $('#assign_ids').show();
         $('#assign_dosimeters').show();
         $('#dos_selectbox').show();
         $("#assign_samples_dosimeter").css("display", "inline-block");
@@ -76,6 +81,7 @@ $("#samples-select-all").click(function(){
       if (checked_sample_values == 0){
         $('#new_sample').show();
         $('#print_samples').hide();
+        $('#assign_ids').hide();
         $('#assign_dosimeters').hide();
         $('#dos_selectbox').hide();
         $("select#id_dosimeter.form-control").css("display", "none");
@@ -169,7 +175,6 @@ var dymoPrintSamples = function(){
             $('.chkbox:checked').each(function(i){
                 checked_samples[i] = $(this).val();
             });
-            console.log(checked_samples);
             try
             {
             var labelXml = '<?xml version="1.0" encoding="utf-8"?>\
@@ -215,15 +220,14 @@ var dymoPrintSamples = function(){
                 for (i = 0; i <checked_samples.length; i++) { 
                     textMarkup = '<b><font family="Arial" size="18">'+checked_samples[i];
                     console.log(textMarkup);
+                    console.log("checked_sample:",checked_samples[i]);
                     var record = labelSetBuilder.addRecord();
                     record.setTextMarkup('Text', textMarkup);
                 }
                 
-                console.log("I'm here now!")
                 // select printer to print on
                 // for simplicity sake just use the first LabelWriter printer
                 var printers = dymo.label.framework.getPrinters();
-                console.log(printers)
                 if (printers.length == 0)
                     alert("No DYMO printers are installed. Install DYMO printers.");
                 else{
@@ -239,10 +243,12 @@ var dymoPrintSamples = function(){
                       else
                         alert('No Dymo printer connected!')
                 }
+
                 $('.chkbox:checked').removeAttr('checked');
                 checked_sample_values = 0;
                 $('#new_sample').show();
                 $('#print_samples').hide();
+                $('#assign_ids').hide();
                 load_values();
             }
             catch(e)
@@ -265,6 +271,34 @@ var dymoPrintSamples = function(){
         $("#modal-sample .modal-content").html(data.html_form);
       }
     });
+  };
+
+var assignids = function () {
+    console.log("sendsamples");
+    var btn = $(this);
+    var form = $('#assign_samples_dosimeter');
+    console.log(form)
+     $.ajax({
+      url: btn.attr("data-url"),
+      data:  form.serialize(),
+      type: form.attr("method"),
+      dataType: 'json',
+      success: function (data) {
+        if (data.form_is_valid) {
+          $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
+          $('.chkbox:checked').removeAttr('checked');
+          checked_sample_values = 0;
+          $('#new_sample').show();
+          $('#print_samples').hide();
+          $('#assign_ids').hide();
+          load_values();
+        }
+        else {
+          alert("we are sorry. Something went wrong.")
+        }
+      }
+    });
+    return false;
   };
 
 
@@ -290,5 +324,6 @@ var dymoPrintSamples = function(){
   // Print label
   $("#sample-table").on("click", ".js-print-sample-label", loadForm);
   $("#modal-sample").on("submit", ".js-print-sample-label-form", printLabel);
-  $("#print_samples").click(dymoPrintSamples);
+  $("#print_samples").on("click",dymoPrintSamples);
+  $("#assign_ids").on("click",assignids);
 });

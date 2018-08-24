@@ -289,6 +289,7 @@ def assign_dosimeters(request, experiment_id):
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
         checked_boxes = request.POST.getlist('checks[]')
+        print(checked_boxes)
         if form.is_valid():
             if form.cleaned_data is not None:
                 dosimeter = form.cleaned_data['dosimeter']
@@ -393,7 +394,9 @@ def experiment_samples_list(request, experiment_id):
                 irrad_table = form.cleaned_data['irrad_table']
                 table_position = form.cleaned_data['table_position']
                 for sample in checked_samples:
+                    print("sample -->", sample)
                     sample_splitted = sample.split("<")
+                    print("------sample splitted: ",sample_splitted)
                     if sample_splitted[0] == "":
                         sample_name = sample_splitted[6].split(">")[1]
                         sample_object = Samples.objects.get(name = sample_name)
@@ -1588,6 +1591,7 @@ def admin_user_delete(request ,pk):
 def generate_dos_ids(request):
     data = dict()
     if request.method == 'POST':
+        print("in request post")
         number_ids = int(request.POST['number_ids'])
         for i in range(0,number_ids):
             dosimeter = Dosimeters(status = "Registered", dos_type = "Aluminium")
@@ -1630,6 +1634,63 @@ def sample_new(request, experiment_id):
         form3 = SamplesForm3(experiment_id = experiment.id)
     status = 'new'
     return save_sample_form(request,form1,form2,layers_formset,form3,status,experiment,'samples_manager/partial_sample_create.html')
+
+
+def assign_set_ids(request, experiment_id): 
+    print("assign set ids!!!!")
+    experiment = Experiments.objects.get(pk = experiment_id)
+    logged_user = get_logged_user(request)
+    data = dict()
+    if request.method == 'POST':
+        data['form_is_valid'] = True
+        checked_samples = request.POST.getlist('checks[]')
+        print(checked_samples)
+        for sample in checked_samples:
+                    sample_splitted = sample.split("<")
+                    print("------sample splitted: ",sample_splitted[0])
+                    if sample_splitted[0] == "":
+                        sample_name = sample_splitted[6].split(">")[1]
+                        sample_object = Samples.objects.get(name = sample_name)
+                        sample_object.set_id = generate_set_id(sample_object)
+                        sample_object.save()
+                    else:
+                        sample_object = Samples.objects.get(set_id = sample_splitted[0])
+        print("1")
+    samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+    print("samples")
+    samples_data = get_samples_occupancies(samples)
+    print("samples_data")
+    context =  {'samples': samples, 'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user}
+    print("context")
+    if  logged_user.role == 'Admin': 
+        data['html_sample_list'] =  render_to_string('samples_manager/partial_samples_list.html', context, request=request)
+    else:
+        data['html_sample_list'] =  render_to_string('samples_manager/partial_samples_list.html', context, request=request)
+    return JsonResponse(data)
+
+
+''' add data to the function above''' 
+'''    if request.method == 'POST':
+        sample.delete()
+        data['form_is_valid'] = True  # This is just to play along with the existing code
+        samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+        samples_data = get_samples_occupancies(samples)
+        data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+            'samples': samples,
+            'samples_data': samples_data,
+            'experiment': experiment
+        })
+    else:
+        context = {'sample': sample, 'experiment': experiment }
+        data['html_form'] = render_to_string('samples_manager/partial_sample_delete.html',
+            context,
+            request=request,
+        )
+    return JsonResponse(data)
+
+    '''
+
+        
 
 
 def sample_update(request, experiment_id, pk):
