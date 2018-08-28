@@ -380,11 +380,13 @@ def get_samples_occupancies(samples):
     return samples_data
 
 def experiment_samples_list(request, experiment_id):
+    print("experiment samples list")
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
     samples_data = get_samples_occupancies(samples)
     irradiations = []
+    print("before post")
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
         checked_samples = request.POST.getlist('checks[]')
@@ -412,11 +414,13 @@ def experiment_samples_list(request, experiment_id):
                         irradiation.table_position = table_position
                     irradiation.save()
                     irradiations.append(irradiation)
+            print("before admin")
             if logged_user.role == 'Admin':
                 irradiations = Irradation.objects.all()
             return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
     else:
         form = IrradiationForm()
+        print("not post")
         if  logged_user.role == 'Admin': 
             return render(request, 'samples_manager/admin_samples_list.html', {'form': form, 'samples': samples, 'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user})
         else:
@@ -887,9 +891,9 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     data['html_experiment_list'] = render_to_string(output_template, template_data)
                     data['state'] = "Created"
                     message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                    send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
+                    #send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
                     message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
-                    send_mail_notification('IRRAD Data Manager: New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+                    #send_mail_notification('IRRAD Data Manager: New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
                 else:
                     data['form_is_valid'] = False
                     data['state'] = "not unique"
@@ -965,7 +969,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 text = updated_experiment_data(old_experiment,old_fluences,old_materials,old_category,experiment)
                 message2irrad=mark_safe("The user with e-mail: "+logged_user.email+" updated the experiment with title '"+experiment.title+"'.\n"
                 +"The updated fields are: \n"+text+"\nPlease, find all the experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
-                send_mail_notification('IRRAD Data Manager: Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+                #send_mail_notification('IRRAD Data Manager: Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
             else:
                 print("form1: ",form1.is_valid())
                 print("form2: ",form2.is_valid())
@@ -1008,7 +1012,12 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 else: 
                     print("no category")
                 if fluence_formset.is_valid():
+                    print(fluence_formset.cleaned_data)
                     fluence_formset.save()
+                    print(fluence_formset)
+                else:
+                    print("fluence not valid")
+                    print(fluence_formset)
                 if  material_formset.is_valid():   
                     material_formset.save()
                 data['form_is_valid'] = True
@@ -1019,9 +1028,9 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                             'experiment_data':  experiment_data, 'logged_user':logged_user 
                         })
                 message='Dear user,\nyour experiment with title "%s" was validated. \nYou can now add samples and additional users related to your irradiation experiment.\nPlease, find all your experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch'% experiment.title
-                send_mail_notification('IRRAD Data Manager: Experiment  %s validation' % experiment.title,message,'irrad.ps@cern.ch',experiment.responsible.email)
+                #send_mail_notification('IRRAD Data Manager: Experiment  %s validation' % experiment.title,message,'irrad.ps@cern.ch',experiment.responsible.email)
                 message2irrad='You validated the experiment with title: %s' % experiment.title
-                send_mail_notification('IRRAD Data Manager: Experiment %s validation' % experiment.title,message2irrad,'irrad.ps@cern.ch','irrad.ps@cern.ch')
+                #send_mail_notification('IRRAD Data Manager: Experiment %s validation' % experiment.title,message2irrad,'irrad.ps@cern.ch','irrad.ps@cern.ch')
             else:
                 print("form1: ",form1.is_valid())
                 print("form2: ",form2.is_valid())
@@ -1043,8 +1052,8 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
 
 def experiment_new(request):
     logged_user = get_logged_user(request)
-    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=1, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
-    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=1, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
+    FluenceFormSet = inlineformset_factory( Experiments, ReqFluences, form=ReqFluencesForm,extra=0, min_num=1,validate_min=True, error_messages="Fluence field is not correctly filled.", formset=ReqFluencesFormSet)
+    MaterialFormSet = inlineformset_factory( Experiments,  Materials, form=MaterialsForm, extra=0, min_num=1,validate_min=True, error_messages="Samples type field is not correctly filled.", formset=MaterialsFormSet)
     cern_experiments = Experiments.objects.order_by().values('cern_experiment').distinct()
     cern_experiments_list = []
     for item in cern_experiments:
@@ -1081,10 +1090,11 @@ def experiment_status_update(request, pk):
             updated_experiment = Experiments.objects.get(id = experiment.id)
             if  updated_experiment.status == 'Completed':
                 message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was completed.\nTwo weeks time is still needed for the cool down. Please, contact us after that period.\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
+                #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
                 exp_users= updated_experiment.users.values()
                 for user in exp_users:
-                        send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
+                    pass
+                    #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
             data['form_is_valid'] = True
             experiments = Experiments.objects.all().order_by('-updated_at')
             experiment_data = get_registered_samples_number(experiments)
@@ -1295,9 +1305,9 @@ def experiment_delete(request, pk):
         data['html_experiment_list'] = render_to_string(output_template, template_data)
         data['state']='Deleted'
         message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was deleted by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-        send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
+        #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
         message2irrad=mark_safe("The user with the account: "+logged_user.email+" deleted the experiment with title '"+ experiment.title+"'.\n")
-        send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message2irrad,experiment.responsible.email, 'irrad.ps@cern.ch')
+        #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message2irrad,experiment.responsible.email, 'irrad.ps@cern.ch')
     else:
         context = {'experiment': experiment}
         data['html_form'] = render_to_string('samples_manager/partial_experiment_delete.html',
@@ -1334,7 +1344,7 @@ def save_user_form(request, form, experiment, template_name):
                         experiment.users.add(user)
                 print("here")
                 message=mark_safe('Dear user,\nyou were assigned as a user for the experiment '+experiment.title+' by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                send_mail_notification('IRRAD Data Manager: Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
+                #send_mail_notification('IRRAD Data Manager: Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
             data['form_is_valid'] = True
             users = experiment.users.all()
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
@@ -1429,7 +1439,13 @@ def save_admin_compound_form(request,form, elem_formset,status,template_name):
         if form.is_valid() and elem_formset.is_valid():
             if elem_formset.cleaned_data is not None:
                         sum = 0
+                        print(elem_formset.cleaned_data)
+                        element = elem_formset.save()
+                        '''print('element:', element)
+                        for e in element:
+                            print(e.compound)
                         for elem in elem_formset.forms:
+                            print(elem.cleaned_data['percentage'])
                             sum = sum + elem.cleaned_data['percentage']
                         if sum == 100:
                             compound = form.save()
@@ -1446,7 +1462,19 @@ def save_admin_compound_form(request,form, elem_formset,status,template_name):
                         else:
                             print("data not ok!")
                             data['state'] = "sum not ok"
-                            data['form_is_valid'] = False
+                            data['form_is_valid'] = False'''
+                        compound = form.save()
+                        for elem in elem_formset.forms:
+                            element = elem.save()
+                            element.compound = compound
+                            element.save()
+                        compounds_data = get_compounds_data()
+                        data['html_compound_list'] = render_to_string('samples_manager/partial_compounds_list.html', {
+                                        'compounds_data':compounds_data,
+                                })
+                        data['form_is_valid'] = True
+                        data['state'] = "ok"
+
             else:
                             print("data none")
                             data['state'] = "no data"
@@ -1471,7 +1499,7 @@ def save_admin_compound_form(request,form, elem_formset,status,template_name):
 def compound_new(request, experiment_id):
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
-    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=1, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
+    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
     if request.method == 'POST':
         form = CompoundForm(request.POST)
         elem_formset = ElemFormSet(request.POST)
@@ -1482,7 +1510,7 @@ def compound_new(request, experiment_id):
 
 def admin_compound_new(request):
     logged_user = get_logged_user(request)
-    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=1, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
+    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, min_num=1,validate_min=True, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
     if request.method == 'POST':
         form = CompoundForm(request.POST)
         elem_formset = ElemFormSet(request.POST)
@@ -1495,7 +1523,7 @@ def admin_compound_new(request):
 
 def admin_compound_update(request, pk):
     compound = get_object_or_404(Compound, pk=pk)
-    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=1, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
+    ElemFormSet = inlineformset_factory(Compound, CompoundElements, form=CompoundElementsForm,extra=0, error_messages="Compound is not filled", formset=CompoundElementsFormSet)
     if request.method == 'POST':
         form = CompoundForm(request.POST, instance = compound)
         elem_formset = ElemFormSet(request.POST,  instance = compound)
@@ -1621,7 +1649,7 @@ def admin_user_update(request,pk):
     
 def sample_new(request, experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)
-    LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=1, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
+    LayerFormset = inlineformset_factory( Samples, Layers, form = LayersForm, extra=0, min_num=1,validate_min=True, error_messages="Layers not correctly filled.", formset = LayersFormSet)
     if request.method == 'POST':
         form1 = SamplesForm1(request.POST, experiment_id = experiment.id)
         form2 = SamplesForm2(request.POST, experiment_id = experiment.id)
@@ -1637,17 +1665,14 @@ def sample_new(request, experiment_id):
 
 
 def assign_set_ids(request, experiment_id): 
-    print("assign set ids!!!!")
     experiment = Experiments.objects.get(pk = experiment_id)
     logged_user = get_logged_user(request)
     data = dict()
     if request.method == 'POST':
         data['form_is_valid'] = True
         checked_samples = request.POST.getlist('checks[]')
-        print(checked_samples)
         for sample in checked_samples:
                     sample_splitted = sample.split("<")
-                    print("------sample splitted: ",sample_splitted[0])
                     if sample_splitted[0] == "":
                         sample_name = sample_splitted[6].split(">")[1]
                         sample_object = Samples.objects.get(name = sample_name)
@@ -1655,42 +1680,14 @@ def assign_set_ids(request, experiment_id):
                         sample_object.save()
                     else:
                         sample_object = Samples.objects.get(set_id = sample_splitted[0])
-        print("1")
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
-    print("samples")
     samples_data = get_samples_occupancies(samples)
-    print("samples_data")
     context =  {'samples': samples, 'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user}
-    print("context")
     if  logged_user.role == 'Admin': 
         data['html_sample_list'] =  render_to_string('samples_manager/partial_samples_list.html', context, request=request)
     else:
         data['html_sample_list'] =  render_to_string('samples_manager/partial_samples_list.html', context, request=request)
     return JsonResponse(data)
-
-
-''' add data to the function above''' 
-'''    if request.method == 'POST':
-        sample.delete()
-        data['form_is_valid'] = True  # This is just to play along with the existing code
-        samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
-        samples_data = get_samples_occupancies(samples)
-        data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
-            'samples': samples,
-            'samples_data': samples_data,
-            'experiment': experiment
-        })
-    else:
-        context = {'sample': sample, 'experiment': experiment }
-        data['html_form'] = render_to_string('samples_manager/partial_sample_delete.html',
-            context,
-            request=request,
-        )
-    return JsonResponse(data)
-
-    '''
-
-        
 
 
 def sample_update(request, experiment_id, pk):

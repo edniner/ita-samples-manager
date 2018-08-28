@@ -24,12 +24,11 @@
                 if (options.extraClasses) {
                     row.removeClass(flatExtraClasses);
                     row.addClass(options.extraClasses[ndx % options.extraClasses.length]);
-                    console.log("applying extra classes");
-                    console.log(row);
                 }
             },
 
             updateElementIndex = function(elem, prefix, ndx) {
+
                 var idRegex = new RegExp(prefix + '-(\\d+|__prefix__)-'),
                     replacement = prefix + '-' + ndx + '-';
                     class_name = prefix;
@@ -37,6 +36,7 @@
                 if (elem.attr('id')) elem.attr('id', elem.attr('id').replace(idRegex, replacement));
                 if (elem.attr('name')) elem.attr('name', elem.attr('name').replace(idRegex, replacement));
                 if (elem.attr('class')) elem.attr('class', elem.attr('class').replace(idRegex, class_name));
+                console.log("idRegex", replacement);
             },
 
             hasChildElements = function(row) {
@@ -96,13 +96,12 @@
                         del = row.find('input:hidden[id $= "-DELETE"]'),
                         buttonRow = row.siblings("a." + addCssSelector + ', .' + options.formCssClass + '-add'),
                         forms;
-                    console.log("del length");
-                    console.log(del.length);
                     if (del.length) {
-                        tf=totalForms.val()-1;
+                        // removed because editing and deleting was not working well
+                        /*tf=totalForms.val()-1;
                         totalForms.val(tf);
                         console.log("totalForms");
-                        console.log(totalForms);
+                        console.log(totalForms.val());*/
                         // We're dealing with an inline formset.
                         // Rather than remove this form from the DOM, we'll mark it as deleted
                         // and hide it, then let Django handle the deleting:
@@ -114,8 +113,8 @@
                         // Update the TOTAL_FORMS count:
                         forms = $('.' + options.formCssClass).not('.formset-custom-template');
                         // ina: subtracting 1 from totalForms
-                        tf=totalForms.val()-1;
-                        totalForms.val(tf);
+                        /*tf=totalForms.val()-1;
+                        totalForms.val(tf);*/
                     }
                     for (var i=0, formCount=forms.length; i<formCount; i++) {
                         // Apply `extraClasses` to form rows so they're nicely alternating:
@@ -135,7 +134,10 @@
                     // Check if we need to show the add button:
                     if (buttonRow.is(':hidden') && showAddButton()) buttonRow.show();
                     // If a post-delete callback was provided, call it with the deleted form:
-                    if (options.removed) options.removed(row);
+                    if (options.removed){
+                        console.log(options);
+                        options.removed(row);
+                     }
                     return false;
                 });
             };
@@ -187,14 +189,15 @@
             } else {
                 // Otherwise, use the last form in the formset; this works much better if you've got
                 // extra (>= 1) forms (thnaks to justhamade for pointing this out):
-                if (options.prefix=='compoundelements_set'){
+               /*if (options.prefix=='compoundelements_set'){
                     template = $('.elem_formset_row.dynamic-form').clone(true).removeAttr('id');
-                }
-                else{
-                    template = $('.' + options.formCssClass + ':last').clone(true).removeAttr('id');
-                    console.log("****template*******");
+                    console.log("cloning the template");
                     console.log(template);
+                    alert("Template");
                 }
+                else{*/
+                template = $('.' + options.formCssClass + ':last').clone(true).removeAttr('id');
+                //}
                 template.find('input:hidden[id $= "-DELETE"]').remove();
                 // Clear all cloned fields, except those the user wants to keep (thanks to brunogola for the suggestion):
                 template.find(childElementSelector).not(options.keepFieldValues).each(function() {
@@ -227,16 +230,15 @@
                 if (hideAddButton) addButton.hide();
             }
             addButton.click(function() {
-                console.log('add button *******************');
                 var formCount = parseInt(totalForms.val());
-                console.log(formCount);
                 if (options.prefix=='layers_set'){
                    var row = $('#layers_table').find('tr:eq(1)').clone(true).find('input').val('').end().removeClass('formset-custom-template');
-                   console.log($('#layers_table'));
-                   console.log("adding layers!!");
+                   //console.log($('#layers_table'));
+                   //console.log("adding layers!!");
                 }
                 else{
                    var row = options.formTemplate.clone(true).removeClass('formset-custom-template');
+                   console.log(row)
                 }
                 var buttonRow = $($(this).parents('tr.' + options.formCssClass + '-add').get(0) || this);
                 var delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.');
@@ -244,10 +246,11 @@
                 row.insertBefore(buttonRow).show();
                 row.find(childElementSelector).each(function() {
                     updateElementIndex($(this), options.prefix, formCount);
+                    console.log("s5.5");
                 });
                 if (showDeleteLinks()){
                     $('a.' + delCssSelector).each(function(){$(this).show();});
-                }
+                };
                 // Check if we've exceeded the maximum allowed number of forms:
                 if (!showAddButton()) buttonRow.hide();
                 // If a post-add callback was supplied, call it with the added form:

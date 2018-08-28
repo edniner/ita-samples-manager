@@ -45,7 +45,14 @@
                         class="btn btn-primary js-create-sample"
                         data-url="{% url 'samples_manager:sample_new' experiment.id %}">
                         <span class="glyphicon glyphicon-plus"></span>New Sample
-                </button> 
+                </button>
+                <button  type="submit"
+                        id = "assign_ids"
+                        class="btn btn-warning"
+                        data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
+                        style="color:white;display:none">
+                        <span class="glyphicon glyphicon-tags"></span> Assign SET ID
+                </button>  
                 <button  type="button"
                         id = "print_samples"
                         class="btn js-print-labels"
@@ -58,6 +65,8 @@
         <div class="panel-body">
                 <div class="row">
                     {% csrf_token %}
+                    <form method="post" id='assign_samples_dosimeter' class="col-sm-12" action="{% url 'samples_manager:experiment_samples_list' experiment.id%}">
+                     {% csrf_token %}    
                         <table class="col-sm-12 table-responsive sortable" id="sample-table">
                             <thead>
                                 <tr>
@@ -78,6 +87,7 @@
                                 {% include 'samples_manager/partial_samples_list.html' %}
                             </tbody>
                         </table>
+                    </form>
                 </div>
         </div>   
 </div>

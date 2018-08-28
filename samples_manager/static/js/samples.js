@@ -274,31 +274,41 @@ var dymoPrintSamples = function(){
   };
 
 var assignids = function () {
-    console.log("sendsamples");
-    var btn = $(this);
-    var form = $('#assign_samples_dosimeter');
-    console.log(form)
-     $.ajax({
-      url: btn.attr("data-url"),
-      data:  form.serialize(),
-      type: form.attr("method"),
-      dataType: 'json',
-      success: function (data) {
-        if (data.form_is_valid) {
-          $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
-          $('.chkbox:checked').removeAttr('checked');
-          checked_sample_values = 0;
-          $('#new_sample').show();
-          $('#print_samples').hide();
-          $('#assign_ids').hide();
-          load_values();
+    var r = confirm("Allocating SET-ID means that your samples are ready to be irradiated. Please, proceed only if you are sure.")
+    if(r == true) {
+      var btn = $(this);
+      var form = $('#assign_samples_dosimeter');
+      $.ajax({
+        url: btn.attr("data-url"),
+        data:  form.serialize(),
+        type: form.attr("method"),
+        dataType: 'json',
+        success: function (data) {
+          if (data.form_is_valid) {
+            $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
+            $('.chkbox:checked').removeAttr('checked');
+            checked_sample_values = 0;
+            $('#new_sample').show();
+            $('#print_samples').hide();
+            $('#assign_ids').hide();
+            load_values();
+          }
+          else {
+            alert("We are sorry. Something went wrong.")
+          }
         }
-        else {
-          alert("we are sorry. Something went wrong.")
-        }
-      }
-    });
+      });
+    }
+    else{
+        $('.chkbox:checked').removeAttr('checked');
+        checked_sample_values = 0;
+        $('#new_sample').show();
+        $('#print_samples').hide();
+        $('#assign_ids').hide();
+        load_values();
+    }
     return false;
+
   };
 
 
