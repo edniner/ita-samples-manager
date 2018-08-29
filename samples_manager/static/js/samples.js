@@ -1,5 +1,33 @@
 $(function () {
   checked_sample_values = 0;
+  
+  var activate_hidden_buttons = function() {
+        $('#new_sample').hide();
+        $('#print_samples').show();
+        $('#assign_ids').show();
+        $('#assign_dosimeters').show();
+        $('#dos_selectbox').show();
+        $('#move_samples').show();
+        $("select#id_experiments.form-control").css("display", "inline-block");
+        $("#assign_samples_dosimeter").css("display", "inline-block");
+        $("select#id_irrad_table.form-control").css("display", "inline-block");
+        $("select#id_table_position.form-control").css("display", "inline-block");
+  }
+
+  var disactivate_hidden_buttons = function(){
+        $('#new_sample').show();
+        $('#print_samples').hide();
+        $('#assign_ids').hide();
+        $('#assign_dosimeters').hide();
+        $('#dos_selectbox').hide();
+        $('#move_samples').hide();
+        $('#id_experiments').hide();
+        $("select#id_experiments.form-control").css("display", "none");
+        $("select#id_dosimeter.form-control").css("display", "none");
+        $("select#id_irrad_table.form-control").css("display", "none");
+        $("select#id_table_position.form-control").css("display", "none");
+  }
+
 
   $('.chkbox').change(function() {
     /*if(this.checked) {
@@ -7,29 +35,17 @@ $(function () {
         }   */ 
     if (this.checked){
         checked_sample_values = checked_sample_values + 1;
-        $('#new_sample').hide();
-        $('#print_samples').show();
-        $('#assign_ids').show();
-        $('#assign_dosimeters').show();
-        $('#dos_selectbox').show();
-        $("#assign_samples_dosimeter").css("display", "inline-block");
-        $("select#id_irrad_table.form-control").css("display", "inline-block");
-        $("select#id_table_position.form-control").css("display", "inline-block");
+        activate_hidden_buttons();
       } 
     else{
       checked_sample_values = checked_sample_values - 1;
       if (checked_sample_values == 0){
-        $('#new_sample').show();
-        $('#print_samples').hide();
-        $('#assign_ids').hide();
-        $('#assign_dosimeters').hide();
-        $("select#id_dosimeter.form-control").css("display", "none");
-        $("select#id_irrad_table.form-control").css("display", "none");
-        $("select#id_table_position.form-control").css("display", "none");
+        disactivate_hidden_buttons();
       }
     }
   });
 
+  
   
 var load_values = function() {
   checked_sample_values = 0;
@@ -37,27 +53,12 @@ var load_values = function() {
   $('.chkbox').change(function() {
     if (this.checked){
         checked_sample_values = checked_sample_values + 1;
-        $('#new_sample').hide();
-        $('#print_samples').show();
-        $('#assign_ids').show();
-        $('#assign_dosimeters').show();
-        $('#dos_selectbox').show();
-        $("#assign_samples_dosimeter").css("display", "inline-block");
-        $("select#id_dosimeter.form-control").css("display", "inline-block");
-        $("select#id_irrad_table.form-control").css("display", "inline-block");
-        $("select#id_table_position.form-control").css("display", "inline-block");
+        activate_hidden_buttons();
       } 
     else{
       checked_sample_values = checked_sample_values - 1;
       if (checked_sample_values == 0){
-        $('#new_sample').show();
-        $('#print_samples').hide();
-        $('#assign_ids').hide();
-        $('#assign_dosimeters').hide();
-        $('#dos_selectbox').hide();
-        $("select#id_dosimeter.form-control").css("display", "none");
-        $("select#id_irrad_table.form-control").css("display", "none");
-        $("select#id_table_position.form-control").css("display", "none");
+        disactivate_hidden_buttons();
       }
     }
   });  
@@ -66,27 +67,12 @@ $("#samples-select-all").click(function(){
     $('.chkbox').not(this).prop('checked', this.checked);
         if (this.checked){
         checked_sample_values = checked_sample_values + 1;
-        $('#new_sample').hide();
-        $('#print_samples').show();
-        $('#assign_ids').show();
-        $('#assign_dosimeters').show();
-        $('#dos_selectbox').show();
-        $("#assign_samples_dosimeter").css("display", "inline-block");
-        $("select#id_dosimeter.form-control").css("display", "inline-block");
-        $("select#id_irrad_table.form-control").css("display", "inline-block");
-        $("select#id_table_position.form-control").css("display", "inline-block");
+        activate_hidden_buttons();
       } 
     else{
       checked_sample_values = checked_sample_values - 1;
       if (checked_sample_values == 0){
-        $('#new_sample').show();
-        $('#print_samples').hide();
-        $('#assign_ids').hide();
-        $('#assign_dosimeters').hide();
-        $('#dos_selectbox').hide();
-        $("select#id_dosimeter.form-control").css("display", "none");
-        $("select#id_irrad_table.form-control").css("display", "none");
-        $("select#id_table_position.form-control").css("display", "none");
+        disactivate_hidden_buttons();
       }
     }
   });
@@ -246,9 +232,6 @@ var dymoPrintSamples = function(){
 
                 $('.chkbox:checked').removeAttr('checked');
                 checked_sample_values = 0;
-                $('#new_sample').show();
-                $('#print_samples').hide();
-                $('#assign_ids').hide();
                 load_values();
             }
             catch(e)
@@ -288,9 +271,6 @@ var assignids = function () {
             $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
             $('.chkbox:checked').removeAttr('checked');
             checked_sample_values = 0;
-            $('#new_sample').show();
-            $('#print_samples').hide();
-            $('#assign_ids').hide();
             load_values();
           }
           else {
@@ -302,9 +282,6 @@ var assignids = function () {
     else{
         $('.chkbox:checked').removeAttr('checked');
         checked_sample_values = 0;
-        $('#new_sample').show();
-        $('#print_samples').hide();
-        $('#assign_ids').hide();
         load_values();
     }
     return false;

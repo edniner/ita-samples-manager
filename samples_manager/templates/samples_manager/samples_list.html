@@ -19,6 +19,20 @@
 </div>
 
 <div class='panel panel-default' id="main_panel">
+    <button  type="submit"
+                        id = "assign_ids"
+                        class="btn btn-warning"
+                        data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
+                        style="color:white;display:none">
+                        <span class="glyphicon glyphicon-tags"></span> Assign SET ID
+                </button>  
+                <button  type="button"
+                        id = "print_samples"
+                        class="btn js-print-labels"
+                        data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
+                        style="color:white;display:none">
+                        <span class="glyphicon glyphicon-barcode"></span> Print labels
+                </button>   
         <div class="row" style="margin-bottom: 20px ">
             <div class="col-sm-12">
                 <h3><span style="font-size: 150%; text-decoration: underline">{{experiment.title}} samples </span></h3>
@@ -46,20 +60,6 @@
                         data-url="{% url 'samples_manager:sample_new' experiment.id %}">
                         <span class="glyphicon glyphicon-plus"></span>New Sample
                 </button>
-                <button  type="submit"
-                        id = "assign_ids"
-                        class="btn btn-warning"
-                        data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
-                        style="color:white;display:none">
-                        <span class="glyphicon glyphicon-tags"></span> Assign SET ID
-                </button>  
-                <button  type="button"
-                        id = "print_samples"
-                        class="btn js-print-labels"
-                        data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
-                        style="color:white;display:none">
-                        <span class="glyphicon glyphicon-barcode"></span> Print labels
-                </button>    
             </div>
         </div>
         <div class="panel-body">

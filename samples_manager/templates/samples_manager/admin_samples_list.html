@@ -20,6 +20,41 @@
 </div>
 
 <div class='panel panel-default' id="main_panel">
+        <div class="row">
+            <button  type="submit"
+                            id = "assign_ids"
+                            class="btn btn-warning col-sm-2"
+                            data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
+                            style="color:white;display:none">
+                            <span class="glyphicon glyphicon-tags"></span> Assign SET ID
+            </button> 
+            <button  type="submit"
+                            id = "print_samples"
+                            class="btn col-sm-2"
+                            style="color:white;display:none">
+                            <span class="glyphicon glyphicon-barcode"></span> Print labels
+            </button>       
+            <div class="col-sm-5">
+                <div class="row">
+                    <form method="post" id='' class="col-sm-12"  action="{% url 'samples_manager:experiment_samples_list' experiment.id%}"> 
+                        <div class="btn col-sm-10">
+                            <select class="form-control" id="id_experiments" name="experiments" style="display:none;">
+                                <option value="" selected="selected">Move samples to another experiment</option>
+                                {% for experiment in experiments %}
+                                    <option value="{{experiment.id}}">{{experiment.title}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                            <button type="submit"
+                                id = "change_experiment"
+                                class="col-sm-2 btn btn-success"
+                                style="color:white;display:none">
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </button>
+                    </form>
+                </div>
+            </div>
+        </div>
         <div class="row" style="margin-bottom: 20px ">
             <div class="col-sm-12">
                 <h3><span style="font-size: 150%; text-decoration: underline">{{experiment.title}} samples </span></h3>
@@ -47,24 +82,11 @@
                         data-url="{% url 'samples_manager:sample_new' experiment.id %}">
                         <span class="glyphicon glyphicon-plus"></span>New Sample
                 </button> 
-                <button  type="submit"
-                        id = "assign_ids"
-                        class="btn btn-warning"
-                        data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
-                        style="color:white;display:none">
-                        <span class="glyphicon glyphicon-tags"></span> Assign SET ID
-                </button> 
-                <button  type="submit"
-                        id = "print_samples"
-                        class="btn"
-                        style="color:white;display:none">
-                        <span class="glyphicon glyphicon-barcode"></span> Print labels
-                </button>    
             </div>
         </div>
         <div class="panel-body">
                 <div class="row">
-                    <form method="post" id='assign_samples_dosimeter' class="col-sm-12"  action="{% url 'samples_manager:experiment_samples_list' experiment.id%}">
+                   <form method="post" id='assign_samples_dosimeter' class="col-sm-12"  action="{% url 'samples_manager:experiment_samples_list' experiment.id%}">
                     {% csrf_token %}
                       <div class = "row">
                           <div  class="col-sm-2"></div>

@@ -35,16 +35,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -52,7 +52,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
     
     email =  email.lower()
     users = Users.objects.all()
@@ -386,6 +386,7 @@ def experiment_samples_list(request, experiment_id):
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
     samples_data = get_samples_occupancies(samples)
     irradiations = []
+    experiments = Experiments.objects.all()
     print("before post")
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
@@ -417,14 +418,14 @@ def experiment_samples_list(request, experiment_id):
             print("before admin")
             if logged_user.role == 'Admin':
                 irradiations = Irradation.objects.all()
-            return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
+            return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user, 'experiments':experiments})
     else:
         form = IrradiationForm()
         print("not post")
         if  logged_user.role == 'Admin': 
-            return render(request, 'samples_manager/admin_samples_list.html', {'form': form, 'samples': samples, 'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user})
+            return render(request, 'samples_manager/admin_samples_list.html', {'form': form, 'samples': samples, 'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
         else:
-            return render(request, 'samples_manager/samples_list.html', {'form': form, 'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user})
+            return render(request, 'samples_manager/samples_list.html', {'form': form, 'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
 
 def dosimeters_list(request):
     logged_user = get_logged_user(request)
