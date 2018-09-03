@@ -26,7 +26,7 @@ STATIC_URL = 'http://test-irrad-management-page.web.cern.ch/static/'
 SECRET_KEY = 'ma_nu+jq0tcka72kv2rls1+dv6^&0@i7v3#mi(nmzcp7h1f+q-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -49,7 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'widget_tweaks',
     #Don't forget to uncomment this part in production!!!
-    #'mod_wsgi.server',
+    'mod_wsgi.server',
     'samples_manager',
 )
 
@@ -63,7 +63,7 @@ MIDDLEWARE_CLASSES = (
     #'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Uncomment this in production!!!!
-    #'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
 
@@ -140,7 +140,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 #Uncomment this in production!!!!
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 INTERNAL_IPS = ['127.0.0.1']
 

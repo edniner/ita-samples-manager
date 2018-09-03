@@ -1,38 +1,39 @@
-$(function () {
-  checked_sample_values = 0;
-  
-  var activate_hidden_buttons = function() {
+var activate_hidden_buttons = function() {
         $('#new_sample').hide();
         $('#print_samples').show();
         $('#assign_ids').show();
         $('#assign_dosimeters').show();
         $('#dos_selectbox').show();
-        $('#move_samples').show();
-        $("select#id_experiments.form-control").css("display", "inline-block");
+        $('#id_experiments').show();
+        $('#change_experiment').show();
+        /*$("select#id_experiments.form-control").css("display", "inline-block");
         $("#assign_samples_dosimeter").css("display", "inline-block");
         $("select#id_irrad_table.form-control").css("display", "inline-block");
-        $("select#id_table_position.form-control").css("display", "inline-block");
+        $("select#id_table_position.form-control").css("display", "inline-block");*/
   }
-
-  var disactivate_hidden_buttons = function(){
+var disactivate_hidden_buttons = function(){
         $('#new_sample').show();
         $('#print_samples').hide();
         $('#assign_ids').hide();
         $('#assign_dosimeters').hide();
         $('#dos_selectbox').hide();
-        $('#move_samples').hide();
         $('#id_experiments').hide();
-        $("select#id_experiments.form-control").css("display", "none");
+        $('#change_experiment').hide();
+        /*$("select#id_experiments.form-control").css("display", "none");
         $("select#id_dosimeter.form-control").css("display", "none");
         $("select#id_irrad_table.form-control").css("display", "none");
-        $("select#id_table_position.form-control").css("display", "none");
+        $("select#id_table_position.form-control").css("display", "none");*/
   }
 
+$(function () {
+  checked_sample_values = 0;
 
   $('.chkbox').change(function() {
     /*if(this.checked) {
             alert($(this).val());
         }   */ 
+
+
     if (this.checked){
         checked_sample_values = checked_sample_values + 1;
         activate_hidden_buttons();
@@ -45,7 +46,6 @@ $(function () {
     }
   });
 
-  
   
 var load_values = function() {
   checked_sample_values = 0;
@@ -72,6 +72,7 @@ $("#samples-select-all").click(function(){
     else{
       checked_sample_values = checked_sample_values - 1;
       if (checked_sample_values == 0){
+        console.log("nothing check!");
         disactivate_hidden_buttons();
       }
     }
@@ -232,6 +233,9 @@ var dymoPrintSamples = function(){
 
                 $('.chkbox:checked').removeAttr('checked');
                 checked_sample_values = 0;
+                $('#new_sample').show();
+                $('#print_samples').hide();
+                $('#assign_ids').hide();
                 load_values();
             }
             catch(e)
@@ -271,6 +275,44 @@ var assignids = function () {
             $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
             $('.chkbox:checked').removeAttr('checked');
             checked_sample_values = 0;
+            $('#new_sample').show();
+            $('#print_samples').hide();
+            $('#assign_ids').hide();
+            load_values();
+          }
+          else {
+            alert("We are sorry. Something went wrong.")
+          }
+        }
+      });
+    }
+    else{
+        $('.chkbox:checked').removeAttr('checked');
+        checked_sample_values = 0;
+        $('#new_sample').show();
+        $('#print_samples').hide();
+        $('#assign_ids').hide();
+        load_values();
+    }
+    return false;
+
+  };
+
+  var assignids = function () {
+    var r = confirm("Allocating SET-ID means that your samples are ready to be irradiated. Please, proceed only if you are sure.")
+    if(r == true) {
+      var btn = $(this);
+      var form = $('#move_samples');
+      $.ajax({
+        url: btn.attr("data-url"),
+        data:  form.serialize(),
+        type: form.attr("method"),
+        dataType: 'json',
+        success: function (data) {
+          if (data.form_is_valid) {
+            $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
+            $('.chkbox:checked').removeAttr('checked');
+            checked_sample_values = 0;
             load_values();
           }
           else {
@@ -285,9 +327,33 @@ var assignids = function () {
         load_values();
     }
     return false;
-
   };
 
+var move_samples = function (){
+      console.log("move_samples")
+      var btn = $(this);
+      var form = $('#move_samples');
+      $.ajax({
+        url: btn.attr("data-url"),
+        data:  form.serialize(),
+        type: form.attr("method"),
+        dataType: 'json',
+        success: function (data) {
+          if (data.form_is_valid) {
+            $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
+            $('.chkbox:checked').removeAttr('checked');
+            checked_sample_values = 0;
+            disactivate_hidden_buttons();
+            load_values();
+            console.log("returning data")
+          }
+          else {
+            alert("We are sorry. Something went wrong.")
+          }
+        }
+      });
+      return false;
+}
 
   // Create sample
   $(".js-create-sample").click(loadForm);
@@ -312,5 +378,10 @@ var assignids = function () {
   $("#sample-table").on("click", ".js-print-sample-label", loadForm);
   $("#modal-sample").on("submit", ".js-print-sample-label-form", printLabel);
   $("#print_samples").on("click",dymoPrintSamples);
+
+    //Assign SET_IDs
   $("#assign_ids").on("click",assignids);
+
+  //Move samples
+  $("#change_experiment").on("click",move_samples);
 });

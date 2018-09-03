@@ -18,7 +18,8 @@
                 </div>
         </div>
 </div>
-
+<form method="post" id='move_samples' class="col-sm-12"  action="{% url 'samples_manager:move_samples' experiment.id%}">
+{% csrf_token %} 
 <div class='panel panel-default' id="main_panel">
         <div class="row">
             <button  type="submit"
@@ -36,9 +37,8 @@
             </button>       
             <div class="col-sm-5">
                 <div class="row">
-                    <form method="post" id='' class="col-sm-12"  action="{% url 'samples_manager:experiment_samples_list' experiment.id%}"> 
                         <div class="btn col-sm-10">
-                            <select class="form-control" id="id_experiments" name="experiments" style="display:none;">
+                            <select class="form-control" id="id_experiments" name="new_experiment" style="display:none;">
                                 <option value="" selected="selected">Move samples to another experiment</option>
                                 {% for experiment in experiments %}
                                     <option value="{{experiment.id}}">{{experiment.title}}</option>
@@ -47,11 +47,11 @@
                         </div>
                             <button type="submit"
                                 id = "change_experiment"
-                                class="col-sm-2 btn btn-success"
+                                data-url="{% url 'samples_manager:move_samples' experiment.id %}"
+                                class="btn btn-success col-sm-2"
                                 style="color:white;display:none">
                                 <span class="glyphicon glyphicon-ok"></span>
                             </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -62,19 +62,20 @@
         </div>
         <div class="row">
             <div class="col-sm-4" style="text-align: left">
-             {%if request.path|slice:":23" == '/samples_manager/search' %}
-                <a  href="{%  url 'samples_manager:experiment_samples_list' experiment.id  %}" type="button" class="btn back" title='Back'>
-            {%else %}
-                <a  href="{% url 'samples_manager:experiments_list' %}" type="button" class="btn back" title='Back'>
-            {%endif%}
-                <span class="glyphicon glyphicon-chevron-left"></span>Back
-            </a>
+                {%if request.path|slice:":23" == '/samples_manager/search' %}
+                    <a  href="{%  url 'samples_manager:experiment_samples_list' experiment.id  %}" type="button" class="btn back" title='Back'>
+                {%else %}
+                    <a  href="{% url 'samples_manager:experiments_list' %}" type="button" class="btn back" title='Back'>
+                {%endif%}
+                    <span class="glyphicon glyphicon-chevron-left"></span>Back
+                </a>
             </div>
-            <form style="text-align: center" id="search_samples" class="col-sm-4" name="search_form" method="GET" action="{% url 'samples_manager:search_samples' experiment.id %}"> 
-                <input title="Search by sample ID, name or category" id="search_box" type="text" name="search_box"  placeholder="Search..." >
-                <button title="Search by sample ID, name or category" class="btn-sm btn-warning" id="search_submit" type="submit"><span class="glyphicon glyphicon-search line_height"></span></button>
-            </form>
-            
+            <div class="col-sm-4">
+                <form style="text-align: center" id="search_samples" class="col-sm-4" name="search_form" method="GET" action="{% url 'samples_manager:search_samples' experiment.id %}"> 
+                    <input title="Search by sample ID, name or category" id="search_box" type="text" name="search_box"  placeholder="Search..." >
+                    <button title="Search by sample ID, name or category" class="btn-sm btn-warning" id="search_submit" type="submit"><span class="glyphicon glyphicon-search line_height"></span></button>
+                </form>
+            </div>
             <div class="col-sm-4" style="text-align: right">
                 <button type="button"
                         id = "new_sample"
@@ -86,25 +87,6 @@
         </div>
         <div class="panel-body">
                 <div class="row">
-                   <form method="post" id='assign_samples_dosimeter' class="col-sm-12"  action="{% url 'samples_manager:experiment_samples_list' experiment.id%}">
-                    {% csrf_token %}
-                      <div class = "row">
-                          <div  class="col-sm-2"></div>
-                            {% for field in form %}
-                                <div style="text-align: right" class="col-sm-2 form-group{% if field.errors %} has-error{% endif %}">
-                                {% render_field field class="form-control" %}
-                            {% for error in field.errors %}
-                                <p class="help-block">{{ error }}</p>
-                            {% endfor %}
-                                </div>
-                            {% endfor %}
-                            <button type="submit"
-                                        id = "assign_dosimeters"
-                                        class="col-sm-1 btn btn-success"
-                                        style="color:white;display:none">
-                                        <span class="glyphicon glyphicon-ok"></span>
-                            </button>
-                      </div>
                       <table class="col-sm-12 table-responsive sortable" id="sample-table">
                             <thead>
                                 <tr>
@@ -125,10 +107,13 @@
                                 {% include 'samples_manager/partial_samples_list.html' %}
                             </tbody>
                         </table>
-                    </form>
+                </div>
+                <div class="row" style="text-align: right">
+                    <p><a href="{% url 'samples_manager:archive_experiment_samples' experiment.id%}">Archive</a></p>
                 </div>
         </div>   
 </div>
+</form>
 {% endblock %}
 
 

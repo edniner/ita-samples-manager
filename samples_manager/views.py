@@ -1,7 +1,7 @@
 # layer deleting doesn't work well to be checked!!!!
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,Compound,CompoundElements, Layers, Dosimeters,Irradation
+from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,Compound,CompoundElements, Layers, Dosimeters,Irradation,ArchiveExperimentSample
 from django.template import loader
 from django.core.urlresolvers import reverse
 import datetime
@@ -35,16 +35,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -52,7 +52,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"
+    home_institute = "MINES ParisTech"'''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -379,6 +379,51 @@ def get_samples_occupancies(samples):
                 })
     return samples_data
 
+def archive_experiment_samples(request,experiment_id):
+    logged_user = get_logged_user(request)
+    experiment =  Experiments.objects.get(pk = experiment_id)
+    archives = ArchiveExperimentSample.objects.filter(experiment = experiment)
+    return render(request, 'samples_manager/archive_experiment_samples.html', {'archives': archives, 'logged_user':logged_user, 'experiment': experiment})
+
+def move_samples(request, experiment_id):
+    print("move samples")
+    data = dict()
+    logged_user = get_logged_user(request)
+    experiment = Experiments.objects.get(pk = experiment_id)
+    experiments = authorised_experiments(logged_user)
+    if request.method == 'POST':
+        checked_samples = request.POST.getlist('checks[]')
+        new_experiment_value = request.POST.get("new_experiment","")
+        new_experiment = Experiments.objects.get(pk = new_experiment_value)
+        for sample in checked_samples:
+                    sample_splitted = sample.split("<")
+                    sample_name = sample_splitted[6].split(">")[1]
+                    sample_object = Samples.objects.get(name = sample_name)
+                    old_experiment = sample_object.experiment
+                    sample_object.experiment = new_experiment
+                    sample_object.save() 
+                    new_archive = ArchiveExperimentSample()
+                    new_archive.experiment = old_experiment
+                    new_archive.sample = sample_object
+                    new_archive.save()
+                    print(new_archive)
+        data['form_is_valid'] = True
+        samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+        samples_data = get_samples_occupancies(samples)
+        data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
+                                'samples':samples,
+                                'samples_data': samples_data,
+                                'experiment': experiment
+                            })
+        return JsonResponse(data)
+    else:
+        samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+        samples_data = get_samples_occupancies(samples)
+        if  logged_user.role == 'Admin': 
+                return render(request, 'samples_manager/admin_samples_list.html', {'samples': samples, 'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
+        else:
+                return render(request, 'samples_manager/samples_list.html', {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
+
 def experiment_samples_list(request, experiment_id):
     print("experiment samples list")
     logged_user = get_logged_user(request)
@@ -386,11 +431,12 @@ def experiment_samples_list(request, experiment_id):
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
     samples_data = get_samples_occupancies(samples)
     irradiations = []
-    experiments = Experiments.objects.all()
+    experiments = authorised_experiments(logged_user)
     print("before post")
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
         checked_samples = request.POST.getlist('checks[]')
+        print(checked_samples)
         if form.is_valid():
             if form.cleaned_data is not None:
                 dosimeter = form.cleaned_data['dosimeter']
@@ -831,6 +877,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 if form1.checking_unique() == True:
                     experiment_data = {}
                     experiment_data.update(form1.cleaned_data)
+                    print(experiment_data)
                     experiment_data.update(form2.cleaned_data)
                     experiment_data.update(form3.cleaned_data)
                     experiment_temp = Experiments.objects.create(**experiment_data)

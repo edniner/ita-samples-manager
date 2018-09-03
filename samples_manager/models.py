@@ -340,6 +340,19 @@ class Irradation(models.Model):
         self.updated_at = timezone.now()
         return super(Irradation, self).save(*args, **kwargs)
 
+class ArchiveExperimentSample(models.Model):
+    timestamp = models.DateTimeField(editable=False)
+    experiment = models.ForeignKey(Experiments, null=True)
+    sample = models.ForeignKey(Samples, null=True)
+
+    def save(self, *args, **kwargs):
+        ''' On save, update timestamps '''
+        if not self.id:
+            self.timestamp= timezone.now()
+        return super(ArchiveExperimentSample, self).save(*args, **kwargs)
+
+
+
 
 
 
