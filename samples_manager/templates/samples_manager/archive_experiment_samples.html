@@ -13,7 +13,8 @@
                         <tr>
                         <th>Sample ID</th>
                         <th>Sample Name</th>
-                        <th>Timestamp</th>
+                        <th>Current experiment</th>
+                        <th>Timestamp of change</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -21,6 +22,7 @@
                         <tr>
                             <td>{{ archive.sample.set_id }}</td>
                             <td>{{ archive.sample.name }}</td>
+                            <td><a href="{% url 'samples_manager:experiment_samples_list' archive.sample.experiment.id  %}">{{archive.sample.experiment}}</a></td>
                             <td>{{ archive.timestamp|date:"d/m/Y"}}</td>
                         </tr>
                         {% empty %}
