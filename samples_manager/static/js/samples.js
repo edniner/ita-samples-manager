@@ -6,6 +6,7 @@ var activate_hidden_buttons = function() {
         $('#dos_selectbox').show();
         $('#id_experiments').show();
         $('#change_experiment').show();
+        $('#new_irradiation').show();
         /*$("select#id_experiments.form-control").css("display", "inline-block");
         $("#assign_samples_dosimeter").css("display", "inline-block");
         $("select#id_irrad_table.form-control").css("display", "inline-block");
@@ -19,6 +20,7 @@ var disactivate_hidden_buttons = function(){
         $('#dos_selectbox').hide();
         $('#id_experiments').hide();
         $('#change_experiment').hide();
+        $('#new_irradiation').hide();
         /*$("select#id_experiments.form-control").css("display", "none");
         $("select#id_dosimeter.form-control").css("display", "none");
         $("select#id_irrad_table.form-control").css("display", "none");
