@@ -360,12 +360,18 @@ def get_samples_occupancies(samples):
     total_nu_int_length_occupancy = 0
     for sample in samples:
         occupancy = occupancies(sample)
+        if sample.experiment.category == 'Passive Standard':
+            print(sample.category)
+            sample_category = sample.category.split("standard",1)[1]
+        else:
+            sample_category = category.split(":",1)[1]
         if  occupancy is not None: 
             total_radiation_length_occupancy = total_radiation_length_occupancy + occupancy[0]
             total_nu_coll_length_occupancy = total_nu_coll_length_occupancy +  occupancy[1]
             total_nu_int_length_occupancy =  total_nu_int_length_occupancy +  occupancy[2]
             samples_data.append({
                 "sample": sample,
+                "sample_category": sample_category,
                 "radiation_length_occupancy": occupancy[0],
                 "nu_coll_length_occupancy" :  occupancy[1],
                 "nu_int_length_occupancy" :   occupancy[2],
@@ -373,6 +379,7 @@ def get_samples_occupancies(samples):
         else:
             samples_data.append({
                 "sample": sample,
+                "sample_category": sample_category,
                 "radiation_length_occupancy": 0,
                 "nu_coll_length_occupancy" :  0,
                 "nu_int_length_occupancy" :   0,
@@ -384,6 +391,28 @@ def archive_experiment_samples(request,experiment_id):
     experiment =  Experiments.objects.get(pk = experiment_id)
     archives = ArchiveExperimentSample.objects.filter(experiment = experiment)
     return render(request, 'samples_manager/archive_experiment_samples.html', {'archives': archives, 'logged_user':logged_user, 'experiment': experiment})
+
+def save_irradiation_form(request, form, experiment, template_name):
+    data = dict()
+    logged_user = get_logged_user(request)
+    context = {'form': form, 'experiment': experiment}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+def new_irradiation(request, experiment_id):
+    data = dict()
+    experiment = Experiments.objects.get(pk = experiment_id)
+    if request.method == 'POST':
+        checked_samples = request.POST.getlist('checks[]')
+        print(checked_samples)
+    data['request_valid'] = True
+    form = IrradiationForm()
+    context = {'form': form, 'experiment_id': experiment_id}
+    data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html', context, request=request)
+    return JsonResponse(data)
+
+
+    return save_irradiation_form(request, form, experiment, 'samples_manager/partial_irradiation_form.html')
 
 def move_samples(request, experiment_id):
     print("move samples")
@@ -432,46 +461,11 @@ def experiment_samples_list(request, experiment_id):
     samples_data = get_samples_occupancies(samples)
     irradiations = []
     experiments = authorised_experiments(logged_user)
-    print("before post")
-    if request.method == 'POST':
-        form = IrradiationForm(request.POST)
-        checked_samples = request.POST.getlist('checks[]')
-        print(checked_samples)
-        if form.is_valid():
-            if form.cleaned_data is not None:
-                dosimeter = form.cleaned_data['dosimeter']
-                irrad_table = form.cleaned_data['irrad_table']
-                table_position = form.cleaned_data['table_position']
-                for sample in checked_samples:
-                    print("sample -->", sample)
-                    sample_splitted = sample.split("<")
-                    print("------sample splitted: ",sample_splitted)
-                    if sample_splitted[0] == "":
-                        sample_name = sample_splitted[6].split(">")[1]
-                        sample_object = Samples.objects.get(name = sample_name)
-                        sample_object.set_id = generate_set_id(sample_object)
-                        sample_object.save()
-                    else:
-                        sample_object = Samples.objects.get(set_id = sample_splitted[0])
-                    irradiation = Irradation()
-                    irradiation.sample = sample_object
-                    irradiation.dosimeter = dosimeter
-                    irradiation.irrad_table = irrad_table
-                    if table_position:
-                        irradiation.table_position = table_position
-                    irradiation.save()
-                    irradiations.append(irradiation)
-            print("before admin")
-            if logged_user.role == 'Admin':
-                irradiations = Irradation.objects.all()
-            return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user, 'experiments':experiments})
+    if  logged_user.role == 'Admin': 
+        template_url = 'samples_manager/admin_samples_list.html'
     else:
-        form = IrradiationForm()
-        print("not post")
-        if  logged_user.role == 'Admin': 
-            return render(request, 'samples_manager/admin_samples_list.html', {'form': form, 'samples': samples, 'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
-        else:
-            return render(request, 'samples_manager/samples_list.html', {'form': form, 'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
+         template_url = 'samples_manager/samples_list.html'
+    return render(request,template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
 
 def dosimeters_list(request):
     logged_user = get_logged_user(request)
@@ -2033,11 +2027,13 @@ def print_sample_label_view(request, experiment_id, pk):
         category = sample.category
         print("data category")
         if experiment.category == 'Passive Standard':
-            data['category'] = sample.category
+            print(sample.category)
+            data['category'] = sample.category.split("standard",1)[1]
         else:
             data['category'] = category.split(":",1)[1]
         print('responsible')
-        data['responsible'] = experiment.responsible.email
+        data['responsible'] = experiment.responsible.surname
+        data['sample_name'] = sample.name
         samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
         samples_data = get_samples_occupancies(samples)
         data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {

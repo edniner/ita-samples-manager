@@ -21,19 +21,23 @@
 {% csrf_token %} 
 <div class='panel panel-default' id="main_panel">
     <div class="row">
-            <button  type="submit"
-                            id = "assign_ids"
-                            class="btn btn-warning col-sm-1"
-                            data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
-                            style="color:white;display:none">
-                            <span class="glyphicon glyphicon-tags"></span> Assign SET ID
-            </button> 
-            <button  type="submit"
-                            id = "print_samples"
-                            class="btn col-sm-1"
-                            style="color:white;display:none">
-                            <span class="glyphicon glyphicon-barcode"></span> Print labels
-            </button>       
+            <div class="col-sm-2">
+                <button  type="submit"
+                                id = "assign_ids"
+                                class="btn btn-warning"
+                                data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
+                                style="color:white;display:none">
+                                <span class="glyphicon glyphicon-tags"></span> Assign SET ID
+                </button> 
+            </div>
+            <div class="col-sm-2">
+                <button  type="submit"
+                                id = "print_samples"
+                                class="btn"
+                                style="color:white;display:none">
+                                <span class="glyphicon glyphicon-barcode"></span> Print labels
+                </button>   
+            </div>       
             <div class="col-sm-5">
                 <div class="row">
                         <div class="btn col-sm-10">

@@ -12,11 +12,6 @@
     <h4 class="modal-title"> Assign dosimeter </h4>
   </div>
   <div class="modal-body">
-  {% for sample in samples %}
-    {% if sample.set_id %}
-    <p>{{sample.set_id}} <input type="checkbox" class="chkbox" id="{{sample.id}}" name="checks[]" value="{{sample.id}}"></p>
-    {% endif %}
-  {% endfor %}
   {% for field in form %}
     <div class="form-group{% if field.errors %} has-error{% endif %}">
       <label for="{{ field.id_for_label }}">{{ field.label }}</label>

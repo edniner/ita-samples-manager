@@ -3,28 +3,18 @@ var activate_hidden_buttons = function() {
         $('#print_samples').show();
         $('#assign_ids').show();
         $('#assign_dosimeters').show();
-        $('#dos_selectbox').show();
         $('#id_experiments').show();
         $('#change_experiment').show();
         $('#new_irradiation').show();
-        /*$("select#id_experiments.form-control").css("display", "inline-block");
-        $("#assign_samples_dosimeter").css("display", "inline-block");
-        $("select#id_irrad_table.form-control").css("display", "inline-block");
-        $("select#id_table_position.form-control").css("display", "inline-block");*/
   }
 var disactivate_hidden_buttons = function(){
         $('#new_sample').show();
         $('#print_samples').hide();
         $('#assign_ids').hide();
         $('#assign_dosimeters').hide();
-        $('#dos_selectbox').hide();
         $('#id_experiments').hide();
         $('#change_experiment').hide();
         $('#new_irradiation').hide();
-        /*$("select#id_experiments.form-control").css("display", "none");
-        $("select#id_dosimeter.form-control").css("display", "none");
-        $("select#id_irrad_table.form-control").css("display", "none");
-        $("select#id_table_position.form-control").css("display", "none");*/
   }
 
 $(function () {
@@ -144,7 +134,7 @@ var loadForm = function () {
             success: function (data) {
                   $("#modal-sample").modal("hide");  // <-- Close the modal
                   var text = '<html><head><title>'+data['set_id']+'</title></head><body onafterprint="self.close()"><h1 style ="text-align: center; font-size:350%; margin:0">'+data['set_id'] +'</h1>';
-                  text = text+ '<h2 style = "text-align:center; margin:0">'+data['category'] +'<br>'+data['req_fluence'] +' '+data['responsible'] +' IRRAD</h2></body></html>';
+                  text = text+ '<h2 style = "text-align:center; margin:0">'+data['category'] +'<br>'+data['req_fluence'] +'<br>'+data['responsible'] +'<br>'+data['sample_name']+'</h2></body></html>';
                   my_window = window.open('', 'mywindow', 'status=1,width=300,height=300');
                   my_window.document.write(text);
                   my_window.document.close();
@@ -203,13 +193,10 @@ var dymoPrintSamples = function(){
 
                 // create label set to print data
                 var labelSetBuilder = new dymo.label.framework.LabelSetBuilder();
-                console.log(labelSetBuilder);
                 var i;
                 var textMarkup = '';
                 for (i = 0; i <checked_samples.length; i++) { 
                     textMarkup = '<b><font family="Arial" size="18">'+checked_samples[i];
-                    console.log(textMarkup);
-                    console.log("checked_sample:",checked_samples[i]);
                     var record = labelSetBuilder.addRecord();
                     record.setTextMarkup('Text', textMarkup);
                 }
@@ -357,6 +344,35 @@ var move_samples = function (){
       return false;
 }
 
+var new_irradiation = function (){
+      console.log("new_irradiation")
+      var btn = $(this);
+      var form = $('#move_samples');
+      $.ajax({
+        url: btn.attr("data-url"),
+        data:  form.serialize(),
+        type: form.attr("method"),
+        dataType: 'json',
+        success: function (data) {
+          if (data.request_valid) {
+            console.log("request valid")
+            $('.chkbox:checked').removeAttr('checked');
+            checked_sample_values = 0;
+            //disactivate_hidden_buttons();
+            //load_values();
+            $("#modal-sample").modal("show");
+            $("#modal-sample .modal-content").html(data.html_form);
+          }
+          else {
+            alert("We are sorry. Something went wrong.")
+          }
+        }
+      });
+      return false;
+}
+
+
+
   // Create sample
   $(".js-create-sample").click(loadForm);
   //$("#assign_dosimeters").on("submit", ".js-assign-dosimeters-form",assign_dosimeters);
@@ -380,10 +396,10 @@ var move_samples = function (){
   $("#sample-table").on("click", ".js-print-sample-label", loadForm);
   $("#modal-sample").on("submit", ".js-print-sample-label-form", printLabel);
   $("#print_samples").on("click",dymoPrintSamples);
-
-    //Assign SET_IDs
+  //Assign SET_IDs
   $("#assign_ids").on("click",assignids);
-
   //Move samples
   $("#change_experiment").on("click",move_samples);
+  //New irradiation
+  $("#new_irradiation").on("click",new_irradiation);
 });

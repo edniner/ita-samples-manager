@@ -1,11 +1,11 @@
 {% for sample_data in samples_data %}
   <tr>
-    <td><input type="checkbox" class="chkbox" id="{{sample.id}}" name="checks[]" value="{{sample_data.sample.set_id}}</font></b><br/>{{sample_data.sample.category}}<br/>{{sample_data.sample.req_fluence}}<br/>{{experiment.responsible.surname}}<br/>{{sample_data.sample.name}}"></td>
+    <td><input type="checkbox" class="chkbox" id="{{sample.id}}" name="checks[]" value="{{sample_data.sample.set_id}}</font></b><br/>{{sample_data.sample_category}}<br/>{{sample_data.sample.req_fluence}}<br/>{{experiment.responsible.surname}}<br/>{{sample_data.sample.name}}"></td>
     <td>{{ sample_data.sample.updated_at|date:"d/m/Y"}}</td>
     {%if sample_data.sample.set_id %}
     <td>{{sample_data.sample.set_id}}</td>
     {%else %}
-    <td>Not allocated yet</td>
+    <td>Not assigned</td>
     {%endif%}
     <td>{{ sample_data.sample.name }}</td>
     <td>{{ sample_data.sample.category}}</td>

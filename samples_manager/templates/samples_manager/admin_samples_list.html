@@ -18,7 +18,7 @@
                 </div>
         </div>
 </div>
-<form method="post" id='move_samples' class="col-sm-12"  action="{% url 'samples_manager:move_samples' experiment.id%}">
+<form method="post" id='move_samples' class="col-sm-12"  action="{% url 'samples_manager:experiment_samples_list' experiment.id%}">
 {% csrf_token %} 
 <div class='panel panel-default' id="main_panel">
         <div class="row">
@@ -38,7 +38,16 @@
                                 style="color:white;display:none">
                                 <span class="glyphicon glyphicon-barcode"></span> Print labels
                 </button>   
-            </div>       
+            </div>
+            <div class="col-sm-2">
+                <button  type="button"
+                                id = "new_irradiation"
+                                class="btn btn-danger"
+                                data-url="{% url 'samples_manager:new_irradiation' experiment.id %}"
+                                style="color:white;display:none">
+                                <span class="glyphicon glyphicon-flash"></span> New irradiation
+                </button>   
+            </div>        
             <div class="col-sm-4">
                 <div class="row">
                         <div class="btn col-sm-10">
