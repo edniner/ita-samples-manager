@@ -38,18 +38,21 @@ button.btn.btn-primary.btn-circle.info{
 }
 
 
-#experiment-table thead,#compound-table thead,#user-table thead,#sample-table thead, #dosimeter-table thead, #archive-table thead{
+#experiment-table thead,#compound-table thead,#user-table thead,#sample-table thead, #dosimeter-table thead, #archive-table thead,#irradiation-table thead{
       background-color: #333;
       color: #cccccc;
       font-weight: bold;
       cursor: default;
       border-bottom: 1px solid #cccccc;
      }
-#experiment-table td,#compound-table td, #user-table td, #sample-table td, #dosimeter-table td, #archive-table td{
+#experiment-table td,#compound-table td, #user-table td, #sample-table td, #dosimeter-table td, #archive-table td, #irradiation-table td{
     padding-bottom: 10px;
     text-align: center;
 }
 #experiment-table th:hover{
+     background-color: rgb(44, 44, 44);
+     }
+#irradiation-table th:hover{
      background-color: rgb(44, 44, 44);
      }
 #user-table th:hover{
@@ -365,11 +368,11 @@ div.circle {
 }
 
 .red{ 
-    background: #FF0000;
+    background: rgb(196,51,47);
 }
 
 .blue{
-    background: #0000FF;
+    background: rgb(40,95,143);
 }
 
 .green{

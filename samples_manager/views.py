@@ -35,16 +35,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -52,7 +52,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
     
     email =  email.lower()
     users = Users.objects.all()
@@ -199,7 +199,6 @@ def filtered_authorised_experiments(logged_user, experiments):
         return experiments 
 
 def irradiations(request):
-     print("authorised users")
      logged_user = get_logged_user(request)
      irradiations = []
      if logged_user.role == 'Admin':
@@ -281,15 +280,61 @@ def user_details(request, user_id):
     user = get_object_or_404(Users, pk=user_id)
     return render(request, 'samples_manager/user_details.html', {'user': user})
 
-def assign_dosimeters(request, experiment_id):
+
+def new_group_irradiation(request, experiment_id):
+    data = dict()
+    print("new_irradiation")
+    experiment = Experiments.objects.get(pk = experiment_id)
+    selected_samples = []
+    if request.method == 'POST':
+        checked_samples = request.POST.getlist('checks[]')
+        for sample in checked_samples:
+                    sample_splitted = sample.split("<")
+                    sample_name = sample_splitted[6].split(">")[1]
+                    sample_object = Samples.objects.get(name = sample_name)
+                    selected_samples.append(sample_object.name)
+    data['request_valid'] = True
+    form = GroupIrradiationForm()
+    request.session['selected_samples'] = selected_samples
+    context = {'form': form, 'experiment_id': experiment_id,'selected_samples':selected_samples}    
+    data['html_form'] = render_to_string('samples_manager/partial_group_irradiation_form.html', context, request=request)
+    print("selected:",selected_samples)
+    return JsonResponse(data)
+
+def irradiation_new(request):
     data = dict()
     logged_user = get_logged_user(request)
-    samples = Samples.objects.filter(experiment = experiment_id)
-    irradiations = []
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
-        checked_boxes = request.POST.getlist('checks[]')
-        print(checked_boxes)
+        print(form.is_valid())
+        if form.is_valid():
+            form.save()
+            irradiations = Irradation.objects.all()
+            data['form_is_valid'] = True
+            data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user})
+        else:
+            data['form_is_valid'] = False
+    else:
+        form = IrradiationForm()
+        context = {'form': form, 'logged_user': logged_user}
+        data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html',
+                    context,
+                    request=request,
+                )
+    return JsonResponse(data)
+
+
+def assign_dosimeters(request, experiment_id):
+    data = dict()
+    print("assign dosimeters")
+    sample_names = request.session['selected_samples']
+    logged_user = get_logged_user(request)
+    samples = []
+    for sample_name in sample_names:
+        sample = Samples.objects.get(name = sample_name)
+        samples.append(sample)
+    if request.method == 'POST':
+        form = GroupIrradiationForm(request.POST)
         if form.is_valid():
             if form.cleaned_data is not None:
                 dosimeter = form.cleaned_data['dosimeter']
@@ -297,19 +342,27 @@ def assign_dosimeters(request, experiment_id):
                         irradiation = Irradation()
                         irradiation.sample = sample
                         irradiation.dosimeter = dosimeter
+                        irradiation.irrad_table = form.cleaned_data['irrad_table']
+                        irradiation.table_position = form.cleaned_data['table_position']
+                        irradiation.status = "Registered"
+                        irradiation.updated_by = logged_user
+                        irradiation.created_by = logged_user
                         irradiation.save()
-                        irradiations.append(irradiation)
-            if logged_user.role == 'Admin':
-                irradiations = Irradation.objects.all()
-            return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
+            irradiations = Irradation.objects.all()
+            data['form_is_valid'] = True
+            data['html_irradiation_list'] = render_to_string('samples_manager/irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user})
+        else:
+            data['form_is_valid'] = False
     else:
-        form = IrradiationForm()
+        form = GroupIrradiationForm()
         context = {'form': form, 'experiment_id':  experiment_id, 'samples': samples}
-        data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html',
+        data['html_form'] = render_to_string('samples_manager/partial_group_irradiation_form.html',
                 context,
                 request=request,
             )
     return JsonResponse(data)
+
+
 
 def assign_samples_dosimeters(request):
     data = dict()
@@ -361,7 +414,6 @@ def get_samples_occupancies(samples):
     for sample in samples:
         occupancy = occupancies(sample)
         if sample.experiment.category == 'Passive Standard':
-            print(sample.category)
             sample_category = sample.category.split("standard",1)[1]
         else:
             sample_category = category.split(":",1)[1]
@@ -391,28 +443,6 @@ def archive_experiment_samples(request,experiment_id):
     experiment =  Experiments.objects.get(pk = experiment_id)
     archives = ArchiveExperimentSample.objects.filter(experiment = experiment)
     return render(request, 'samples_manager/archive_experiment_samples.html', {'archives': archives, 'logged_user':logged_user, 'experiment': experiment})
-
-def save_irradiation_form(request, form, experiment, template_name):
-    data = dict()
-    logged_user = get_logged_user(request)
-    context = {'form': form, 'experiment': experiment}
-    data['html_form'] = render_to_string(template_name, context, request=request)
-    return JsonResponse(data)
-
-def new_irradiation(request, experiment_id):
-    data = dict()
-    experiment = Experiments.objects.get(pk = experiment_id)
-    if request.method == 'POST':
-        checked_samples = request.POST.getlist('checks[]')
-        print(checked_samples)
-    data['request_valid'] = True
-    form = IrradiationForm()
-    context = {'form': form, 'experiment_id': experiment_id}
-    data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html', context, request=request)
-    return JsonResponse(data)
-
-
-    return save_irradiation_form(request, form, experiment, 'samples_manager/partial_irradiation_form.html')
 
 def move_samples(request, experiment_id):
     print("move samples")
@@ -1124,6 +1154,7 @@ def experiment_new(request):
 
 def experiment_status_update(request, pk):
     data = dict()
+    logged_user = get_logged_user(request)
     experiment = get_object_or_404(Experiments, pk=pk)
     if request.method == 'POST':
         form =  ExperimentStatus(request.POST,instance=experiment)
@@ -1137,13 +1168,16 @@ def experiment_status_update(request, pk):
                 for user in exp_users:
                     send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
             data['form_is_valid'] = True
-            experiments = Experiments.objects.all().order_by('-updated_at')
-            experiment_data = get_registered_samples_number(experiments)
-            experiment_data = experiment_data['experiments']
-            data['state'] = experiment.status
-            data['html_experiment_list'] = render_to_string('samples_manager/partial_admin_experiments_list.html', {
-                            'experiment_data': experiment_data,
-                        })
+            if logged_user.role == 'Admin':
+                    experiments = Experiments.objects.all().order_by('-updated_at')
+                    experiment_data = get_registered_samples_number(experiments)
+                    template_data = {'experiment_data': experiment_data}
+                    output_template = 'samples_manager/partial_admin_experiments_list.html'
+            else: 
+                    experiments = authorised_experiments(logged_user)
+                    template_data = {'experiments': experiments}
+                    output_template = 'samples_manager/partial_experiments_list.html'
+            data['html_experiment_list'] = render_to_string(output_template, template_data)
         else:
             print("form is not valid")
     else:

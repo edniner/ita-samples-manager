@@ -331,7 +331,7 @@ class Irradation(models.Model):
     status = models.CharField(max_length=50, choices=STATUS)
 
     def __str__(self):             # __str__ on Python 2
-        return str(self.id)
+        return str(self.sample) + str(self.dosimeter)
     
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''

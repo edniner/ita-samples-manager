@@ -18,9 +18,7 @@
     <td>{{ experiment.experiment.title }}</td>
     <td>{{ experiment.experiment.availability|date:"d/m/Y"}}</td>
     <td>{{ experiment.number_samples}}/{{ experiment.experiment.number_samples }}</td>
-    <td>{{ experiment.total_radiation_length_occupancy}}</td>
-    <td>{{ experiment.total_nu_coll_length_occupancy}}</td>
-    <td>{{ experiment.total_nu_int_length_occupancy}}</td>
+    <td>{{ experiment.total_radiation_length_occupancy}} / {{ experiment.total_nu_coll_length_occupancy}} / {{ experiment.total_nu_int_length_occupancy}}</td>
     <td>{{ experiment.experiment.users.count }}</td>
     {%if experiment.experiment.responsible.surname %}
       <td>{{experiment.experiment.responsible.name}} {{experiment.experiment.responsible.surname}}</td>

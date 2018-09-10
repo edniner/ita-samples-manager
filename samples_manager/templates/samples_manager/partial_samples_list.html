@@ -10,11 +10,9 @@
     <td>{{ sample_data.sample.name }}</td>
     <td>{{ sample_data.sample.category}}</td>
     <td>{{ sample_data.sample.req_fluence}}</td>
-    <td>{{ sample_data.radiation_length_occupancy}}</td>
-    <td>{{ sample_data.nu_coll_length_occupancy}}</td>
-    <td>{{ sample_data.nu_int_length_occupancy}}</td>
+    <td>{{ sample_data.radiation_length_occupancy}} / {{ sample_data.nu_coll_length_occupancy}} / {{ sample_data.nu_int_length_occupancy}}</td>
     <td>{{ sample_data.sample.updated_by}}</td>
-     <td>
+    <td>
         <button type="button"
                 class="btn btn-warning js-update-sample"
                 data-url="{%  url 'samples_manager:sample_update' experiment.id sample_data.sample.id %}"

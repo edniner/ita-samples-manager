@@ -1,18 +1,34 @@
 {% for irradiation in irradiations %}
   <tr>
-    <td>{{ irradiation.updated_at|date:"d.m.Y"}} {{ irradiation.updated_at|time:"H:i"}}</td>
+    <td>{{ irradiation.updated_at|date:"d/m/Y"}}</td>
     <td>{{ irradiation.sample.set_id}}</td>
     <td>{{ irradiation.dosimeter.dos_id }}</td>
-    <td>{{ irradiation.date_in|date:"d.m.Y"}} {{ irradiation.date_in|time:"H:i"}}</td>
-    <td>{{ irradiation.date_out|date:"d.m.Y"}} {{ irradiation.updated_out|time:"H:i"}}</td>
+    <td>{{ irradiation.date_in|date:"d/m/Y"}} {{ irradiation.date_in|time:"H:i"}} - {{ irradiation.date_out|date:"d/m/Y"}} {{ irradiation.updated_out|time:"H:i"}}</td>
     <td>{{ irradiation.irrad_table }}</td>
-    <td>{{ irradiation.table_position }}</td>
+    <td> {{ irradiation.table_position }}</td>
     <td>{{ irradiation.accumulated_fluence}}</td>
     <td>{{ irradiation.updated_by}}</td>
     <td>{{ irradiation.status}}</td>
     <td>
-
-      </td>
+      <button type="button"
+                class="btn btn-warning js-update-irradiation"
+                data-url=""
+                title='View or Edit Irradiation'>
+              <span class="glyphicon glyphicon-pencil"></span>
+      </button>
+      <button type="button"
+              class="btn btn-info js-change-irradiation-status"
+              data-url=""
+              title='Change status'>
+        <span class="glyphicon glyphicon glyphicon-record"></span>
+      </button>
+      <button type="button"
+                class="btn btn-danger js-delete-sample"
+                title='Delete'
+                data-url="">
+          <span class="glyphicon glyphicon-trash"></span>
+      </button>
+    </td>
     </tr>
   {% empty %}
     <tr>

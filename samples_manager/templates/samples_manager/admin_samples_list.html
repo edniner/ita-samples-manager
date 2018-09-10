@@ -4,6 +4,13 @@
 {% load widget_tweaks %}
 
 <!-- THE MODAL WE WILL BE USING -->
+<div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-irradiation">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+</div>
+
 <div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-sample">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -41,9 +48,9 @@
             </div>
             <div class="col-sm-2">
                 <button  type="button"
-                                id = "new_irradiation"
+                                id = "new_group_irradiation"
                                 class="btn btn-danger"
-                                data-url="{% url 'samples_manager:new_irradiation' experiment.id %}"
+                                data-url="{% url 'samples_manager:new_group_irradiation' experiment.id %}"
                                 style="color:white;display:none">
                                 <span class="glyphicon glyphicon-flash"></span> New irradiation
                 </button>   
@@ -109,9 +116,7 @@
                                 <th>Name</th>
                                 <th>Category</th>
                                 <th>Requested<br>fluence</th>
-                                <th>Radiation Length<br>Occupancy<br>(%)</th>
-                                <th>Nu. Coll. Length<br>Occupancy<br>(%)</th>
-                                <th>Nu. Int. Length<br>Occupancy<br>(%)</th>
+                                <th>Radiation / Nu. Coll. / Nu. Int.<br>Length Occupancy (%)</th>
                                 <th>Last<br>updated by</th>
                                 <th class="sorttable_nosort">Actions</th>
                                 </tr>

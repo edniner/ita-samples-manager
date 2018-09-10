@@ -400,6 +400,4 @@ var new_irradiation = function (){
   $("#assign_ids").on("click",assignids);
   //Move samples
   $("#change_experiment").on("click",move_samples);
-  //New irradiation
-  $("#new_irradiation").on("click",new_irradiation);
 });

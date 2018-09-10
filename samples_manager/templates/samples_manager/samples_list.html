@@ -4,6 +4,12 @@
 {% load widget_tweaks %}
 
 <!-- THE MODAL WE WILL BE USING -->
+<div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-irradiation">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+</div>
 <div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-sample">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -99,9 +105,7 @@
                                 <th>Sample Name</th>
                                 <th>Category</th>
                                 <th>Requested fluence</th>
-                                <th>Radiation Length<br>Occupancy<br>(%)</th>
-                                <th>Nu. Coll. Length<br>Occupancy<br>(%)</th>
-                                <th>Nu. Int. Length<br>Occupancy<br>(%)</th>
+                                <th>Radiation / Nu. Coll. / Nu. Int.<br>Length Occupancy (%)</th>
                                 <th>Last updated by</th>
                                 <th class="sorttable_nosort">Actions</th>
                                 </tr>

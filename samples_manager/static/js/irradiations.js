@@ -1,7 +1,6 @@
 $(function () {
 
-var new_irradiation = function (){
-      console.log("new_irradiation")
+var newGroupIrradiation = function (){
       var btn = $(this);
       var form = $('#move_samples');
       $.ajax({
@@ -16,8 +15,8 @@ var new_irradiation = function (){
             checked_sample_values = 0;
             //disactivate_hidden_buttons();
             //load_values();
-            $("#modal-sample").modal("show");
-            $("#modal-sample .modal-content").html(data.html_form);
+            $("#modal-irradiation").modal("show");
+            $("#modal-irradiation .modal-content").html(data.html_form);
           }
           else {
             alert("We are sorry. Something went wrong.")
@@ -26,6 +25,21 @@ var new_irradiation = function (){
       });
       return false;
 }
+
+var loadForm = function () {
+    var btn = $(this);
+    $.ajax({
+      url: btn.attr("data-url"),
+      type: 'get',
+      dataType: 'json',
+      beforeSend: function () {
+        $("#modal-irradiation").modal("show");
+      },
+      success: function (data) {
+        $("#modal-irradiation .modal-content").html(data.html_form);
+      }
+    });
+  };
 
  var saveForm = function () {
     var form = $(this);
@@ -36,25 +50,15 @@ var new_irradiation = function (){
       dataType: 'json',
       success: function (data) {
         if (data.form_is_valid) {
-          if(data['state']=='Created')
-            alert("Your sample was successfully saved!")
-          else if (data['state']=='Updated')
-            alert("Your sample was successfully updated!")
-          else if (data['state']=='Deleted')
-            alert("The sample was deleted!")
-          $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
-          $("#modal-sample").modal("hide");  // <-- Close the modal
+          $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+          $("#modal-irradiation").modal("hide");  // <-- Close the modal
+          window.location.href =  form.attr("data-url");
             /*if(data.experiment_id != -1)
             samplesloadForm(data.experiment_id);*/
         }
         else {
-          $("#modal-sample .modal-content").html(data.html_form);
-          if(data['state']=='not unique')
-            alert("This name already exists! Please, choose a different name.");
-          else if (data['state']=='layers missing')
-            alert("Please, fill the layers fields!")
-          else
-            alert("Please, check the form and fill all the required fields!");
+          $("#modal-irradiation .modal-content").html(data.html_form);
+          alert("Please, check the form and fill all the required fields!");
         }
       }
     });
@@ -62,6 +66,7 @@ var new_irradiation = function (){
   };
 
 //New irradiation
-  $("#new_irradiation").on("click",new_irradiation);
-  $("#modal-sample").on("submit", ".js-assign-dosimeters-form",saveForm);
+  $("#new_group_irradiation").on("click",newGroupIrradiation);
+  $("#irradiation_new").on("click",loadForm);
+  $("#modal-irradiation").on("submit", ".js-irradiation-form",saveForm);
 });

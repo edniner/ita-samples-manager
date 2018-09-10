@@ -403,19 +403,36 @@ class DosimetersForm2(ModelForm):
         }
 
 
-class IrradiationForm(ModelForm):
+class GroupIrradiationForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        super(IrradiationForm, self).__init__(*args, **kwargs)
+        super(GroupIrradiationForm, self).__init__(*args, **kwargs)
         self.fields['dosimeter'].required = True
         self.fields['dosimeter'].empty_label = 'Select dosimeter'
         self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES)
         self.fields['irrad_table'].required = True
         self.fields['table_position'] = forms.ChoiceField(choices = TABLE_POSITIONS)
+        self.fields['table_position'].required = False
 
     class Meta:
         model = Irradation
         fields = ['dosimeter','irrad_table', 'table_position']
-        exclude = ('sample','date_in', 'date_out', 'position', 'accumulated_fluence')
+        exclude = ('sample','date_in', 'date_out', 'accumulated_fluence')
+
+class IrradiationForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(IrradiationForm, self).__init__(*args, **kwargs)
+        self.fields['sample'].required = True
+        self.fields['dosimeter'].required = True
+        self.fields['dosimeter'].empty_label = 'Select dosimeter'
+        self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES)
+        self.fields['irrad_table'].required = True
+        self.fields['table_position'] = forms.ChoiceField(choices = TABLE_POSITIONS)
+        self.fields['table_position'].required = False
+
+    class Meta:
+        model = Irradation
+        fields = ['sample','dosimeter','irrad_table', 'table_position']
+        exclude = ('date_in', 'date_out', 'accumulated_fluence')
 
 
 class CompoundElementsFormSet(forms.BaseInlineFormSet):
