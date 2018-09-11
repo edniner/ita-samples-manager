@@ -316,7 +316,7 @@ class Layers(models.Model):
     def __str__(self):             # __str__ on Python 2
         return str(self.name)
 
-class Irradation(models.Model):
+class Irradiation(models.Model):
     sample = models.ForeignKey(Samples, null = True)
     dosimeter = models.ForeignKey(Dosimeters, null = True)
     date_in = models.DateTimeField(blank=True, null=True)
@@ -338,7 +338,7 @@ class Irradation(models.Model):
         if not self.id:
             self.created_at= timezone.now()
         self.updated_at = timezone.now()
-        return super(Irradation, self).save(*args, **kwargs)
+        return super(Irradiation, self).save(*args, **kwargs)
 
 class ArchiveExperimentSample(models.Model):
     timestamp = models.DateTimeField(editable=False)

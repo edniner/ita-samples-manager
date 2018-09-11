@@ -5,7 +5,7 @@ var activate_hidden_buttons = function() {
         $('#assign_dosimeters').show();
         $('#id_experiments').show();
         $('#change_experiment').show();
-        $('#new_irradiation').show();
+        $('#new_group_irradiation').show();
   }
 var disactivate_hidden_buttons = function(){
         $('#new_sample').show();
@@ -14,7 +14,7 @@ var disactivate_hidden_buttons = function(){
         $('#assign_dosimeters').hide();
         $('#id_experiments').hide();
         $('#change_experiment').hide();
-        $('#new_irradiation').hide();
+        $('#new_group_irradiation').hide();
   }
 
 $(function () {

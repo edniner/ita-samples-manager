@@ -69,4 +69,8 @@ var loadForm = function () {
   $("#new_group_irradiation").on("click",newGroupIrradiation);
   $("#irradiation_new").on("click",loadForm);
   $("#modal-irradiation").on("submit", ".js-irradiation-form",saveForm);
+
+// Update irradiation
+  $("#irradiation-table").on("click", ".js-update-irradiation", loadForm);
+  $("#modal-irradiation").on("submit", ".js-irradiation-update-form",saveForm);
 });

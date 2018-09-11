@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.admin import widgets   
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,DateTimeInput,Textarea
-from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,Compound,CompoundElements, Layers,Dosimeters, Irradation
+from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,Compound,CompoundElements, Layers,Dosimeters, Irradiation
 from django.forms.models import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
@@ -65,7 +65,7 @@ class ExperimentsForm1(forms.ModelForm):
         self.fields['emergency_phone'].label = 'Emergency telephone number*'
         self.fields['emergency_phone'].required = True
         self.fields['constraints'].required = False
-        self.fields['availability'] = forms.DateField(('%d/%m/%Y',),widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When your samples will be available for irradiation'} ) )
+        self.fields['availability'] = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When your samples will be available for irradiation'} ) )
         self.fields['availability'].label= 'Availability *'
 
     class Meta:
@@ -414,7 +414,7 @@ class GroupIrradiationForm(ModelForm):
         self.fields['table_position'].required = False
 
     class Meta:
-        model = Irradation
+        model = Irradiation
         fields = ['dosimeter','irrad_table', 'table_position']
         exclude = ('sample','date_in', 'date_out', 'accumulated_fluence')
 
@@ -430,9 +430,29 @@ class IrradiationForm(ModelForm):
         self.fields['table_position'].required = False
 
     class Meta:
-        model = Irradation
+        model = Irradiation
         fields = ['sample','dosimeter','irrad_table', 'table_position']
         exclude = ('date_in', 'date_out', 'accumulated_fluence')
+
+class IrradiationFormEdit(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(IrradiationFormEdit, self).__init__(*args, **kwargs)
+        self.fields['sample'].required = True
+        self.fields['dosimeter'].required = True
+        self.fields['dosimeter'].empty_label = 'Select dosimeter'
+        self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES)
+        self.fields['irrad_table'].required = True
+        self.fields['table_position'] = forms.ChoiceField(choices = TABLE_POSITIONS)
+        self.fields['table_position'].required = False
+        self.fields['date_in'] = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When irradiation started'} ) )
+        self.fields['date_in'].required = False
+        self.fields['date_out'] = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When irradiation ended'} ) )
+        self.fields['date_out'].required = False
+
+    class Meta:
+        model = Irradiation
+        fields = ['sample','dosimeter','irrad_table', 'table_position','date_in', 'date_out']
+        exclude = ('accumulated_fluence',)
 
 
 class CompoundElementsFormSet(forms.BaseInlineFormSet):
