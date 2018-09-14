@@ -408,38 +408,34 @@ def save_occupancies(sample, status):
     nu_int_length_occupancy = 0
     for layer in layers:
         compound_elements = CompoundElements.objects.filter(compound = layer.compound_type)
-        print("compound_elements:",compound_elements)
-        layer_radiation_length = 0 
-        layer_nu_coll_length = 0
-        layer_nu_int_length = 0
-        for compound_element in compound_elements:
-            layer_radiation_length = layer_radiation_length + compound_element.percentage * compound_element.element_type.radiation_length
-            layer_nu_coll_length = layer_nu_coll_length + compound_element.percentage * compound_element.element_type.nu_coll_length
-            layer_nu_int_length = layer_nu_int_length + compound_element.percentage * compound_element.element_type.nu_int_length
-        layer_radiation_length = layer_radiation_length /100
-        layer_nu_coll_length = layer_nu_coll_length / 100
-        layer_nu_int_length = layer_nu_int_length / 100
-        print("layer_nu_int_length:",layer_nu_int_length)
-        if layer.compound_type.density != 0:
-            layer_linear_radiation_length = layer_radiation_length / layer.compound_type.density
-            layer_linear_nu_coll_length = layer_nu_coll_length /  layer.compound_type.density
-            layer_linear_nu_int_length = layer_nu_int_length / layer.compound_type.density
-        else:
-            layer_linear_radiation_length = 0
-            layer_linear_nu_coll_length = 0
-            layer_linear_nu_int_length = 0
-        print("layer_linear_radiation_length:",layer_linear_radiation_length)
-        if layer_linear_radiation_length != 0: 
-            radiation_length_occupancy = radiation_length_occupancy + layer.length /(10 * layer_linear_radiation_length)
-        if layer_linear_nu_coll_length != 0:
-            nu_coll_length_occupancy = nu_coll_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
-        if layer_linear_nu_int_length != 0:
-            nu_int_length_occupancy = nu_int_length_occupancy + layer.length /(10 * layer_linear_nu_int_length)
-        print("nu_int_length_occupancy:",nu_int_length_occupancy)
+        if len(compound_elements) != 0:
+            layer_radiation_length = 0 
+            layer_nu_coll_length = 0
+            layer_nu_int_length = 0
+            for compound_element in compound_elements:
+                layer_radiation_length = layer_radiation_length + compound_element.percentage * compound_element.element_type.radiation_length
+                layer_nu_coll_length = layer_nu_coll_length + compound_element.percentage * compound_element.element_type.nu_coll_length
+                layer_nu_int_length = layer_nu_int_length + compound_element.percentage * compound_element.element_type.nu_int_length
+            layer_radiation_length = layer_radiation_length /100
+            layer_nu_coll_length = layer_nu_coll_length / 100
+            layer_nu_int_length = layer_nu_int_length / 100
+            if layer.compound_type.density != 0:
+                layer_linear_radiation_length = layer_radiation_length / layer.compound_type.density
+                layer_linear_nu_coll_length = layer_nu_coll_length /  layer.compound_type.density
+                layer_linear_nu_int_length = layer_nu_int_length / layer.compound_type.density
+            else:
+                layer_linear_radiation_length = 0
+                layer_linear_nu_coll_length = 0
+                layer_linear_nu_int_length = 0
+            if layer_linear_radiation_length != 0: 
+                radiation_length_occupancy = radiation_length_occupancy + layer.length /(10 * layer_linear_radiation_length)
+            if layer_linear_nu_coll_length != 0:
+                nu_coll_length_occupancy = nu_coll_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
+            if layer_linear_nu_int_length != 0:
+                nu_int_length_occupancy = nu_int_length_occupancy + layer.length /(10 * layer_linear_nu_int_length)
     radiation_length_occupancy = radiation_length_occupancy * 100
     nu_coll_length_occupancy = nu_coll_length_occupancy * 100
     nu_int_length_occupancy = nu_int_length_occupancy * 100
-    print("nu_int_length_occupancy:",nu_int_length_occupancy)
     if status == "new" or status == "clone":
         sample_occupancy = Occupancies()
         sample_occupancy.sample = sample
@@ -450,7 +446,6 @@ def save_occupancies(sample, status):
         else:
             sample_occupancy = Occupancies()
             sample_occupancy.sample = sample
-    print("sample_occupancy:",sample_occupancy)
     sample_occupancy.radiation_length_occupancy = round(radiation_length_occupancy,3)
     sample_occupancy.nu_coll_length_occupancy = round(nu_coll_length_occupancy,3)
     sample_occupancy.nu_int_length_occupancy = round(nu_int_length_occupancy,3)     
