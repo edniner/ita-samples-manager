@@ -246,7 +246,6 @@
                 row.insertBefore(buttonRow).show();
                 row.find(childElementSelector).each(function() {
                     updateElementIndex($(this), options.prefix, formCount);
-                    console.log("s5.5");
                 });
                 if (showDeleteLinks()){
                     $('a.' + delCssSelector).each(function(){$(this).show();});

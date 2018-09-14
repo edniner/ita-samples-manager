@@ -418,12 +418,21 @@ def save_occupancies(sample, status):
         layer_radiation_length = layer_radiation_length /100
         layer_nu_coll_length = layer_nu_coll_length / 100
         layer_nu_int_length = layer_nu_int_length / 100
-        layer_linear_radiation_length = layer_radiation_length / layer.compound_type.density
-        layer_linear_nu_coll_length = layer_nu_coll_length /  layer.compound_type.density
-        layer_linear_nu_int_length = layer_nu_int_length / layer.compound_type.density
-        radiation_length_occupancy = radiation_length_occupancy + layer.length /(10 * layer_linear_radiation_length)
-        nu_coll_length_occupancy = nu_coll_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
-        nu_int_length_occupancy = nu_int_length_occupancy + layer.length /(10 * layer_linear_nu_int_length)
+        if layer.compound_type.density != 0:
+            layer_linear_radiation_length = layer_radiation_length / layer.compound_type.density
+            layer_linear_nu_coll_length = layer_nu_coll_length /  layer.compound_type.density
+            layer_linear_nu_int_length = layer_nu_int_length / layer.compound_type.density
+        else:
+            layer_linear_radiation_length = 0
+            layer_linear_nu_coll_length = 0
+            layer_linear_nu_int_length = 0
+        
+        if layer_linear_radiation_length != 0: 
+            radiation_length_occupancy = radiation_length_occupancy + layer.length /(10 * layer_linear_radiation_length)
+        if layer_linear_nu_coll_length != 0:
+            nu_coll_length_occupancy = nu_coll_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
+        if layer_linear_nu_int_length != 0:
+            nu_int_length_occupancy = nu_int_length_occupancy + layer.length /(10 * layer_linear_nu_int_length)
     radiation_length_occupancy = radiation_length_occupancy * 100
     nu_coll_length_occupancy = nu_coll_length_occupancy * 100
     nu_int_length_occupancy = nu_int_length_occupancy * 100
