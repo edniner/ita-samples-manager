@@ -435,6 +435,7 @@ def save_occupancies(sample, status):
             nu_coll_length_occupancy = nu_coll_length_occupancy + layer.length /(10 * layer_linear_nu_coll_length)
         if layer_linear_nu_int_length != 0:
             nu_int_length_occupancy = nu_int_length_occupancy + layer.length /(10 * layer_linear_nu_int_length)
+        print("nu_int_length_occupancy:",nu_int_length_occupancy)
     radiation_length_occupancy = radiation_length_occupancy * 100
     nu_coll_length_occupancy = nu_coll_length_occupancy * 100
     nu_int_length_occupancy = nu_int_length_occupancy * 100
@@ -444,7 +445,7 @@ def save_occupancies(sample, status):
         sample_occupancy.sample = sample
     else:
         sample_occupancies =  Occupancies.objects.filter(sample = sample)
-        if len(sample_occupancies) !=0 :
+        if len(sample_occupancies) != 0:
             sample_occupancy = sample_occupancies[0]
         else:
             sample_occupancy = Occupancies()
