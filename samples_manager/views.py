@@ -438,16 +438,12 @@ def save_occupancies(sample, status):
     nu_int_length_occupancy = nu_int_length_occupancy * 100
     if status == "new" or status == "clone":
         sample_occupancy = Occupancies()
-        print("sample")
         sample_occupancy.sample = sample
-        print(sample_occupancy)
     else:
         sample_occupancy =  Occupancies.objects.get(sample = sample)
-    print(radiation_length_occupancy)
     sample_occupancy.radiation_length_occupancy = round(radiation_length_occupancy,3)
     sample_occupancy.nu_coll_length_occupancy = round(nu_coll_length_occupancy,3)
-    sample_occupancy.nu_int_length_occupancy = round(nu_int_length_occupancy,3)
-    print(sample_occupancy)        
+    sample_occupancy.nu_int_length_occupancy = round(nu_int_length_occupancy,3)     
     sample_occupancy.save()
     print("sample_occupancy")
     print(sample_occupancy)
