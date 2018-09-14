@@ -65,7 +65,7 @@ class ExperimentsForm1(forms.ModelForm):
         self.fields['emergency_phone'].label = 'Emergency telephone number*'
         self.fields['emergency_phone'].required = True
         self.fields['constraints'].required = False
-        self.fields['availability'] = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When your samples will be available for irradiation'} ) )
+        self.fields['availability'] =self.fields['availability'] = forms.DateField(('%d/%m/%Y',),widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When your samples will be available for irradiation'} ) )
         self.fields['availability'].label= 'Availability *'
 
     class Meta:

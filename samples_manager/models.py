@@ -247,6 +247,16 @@ class Samples(models.Model):
         self.updated_at = timezone.now()
         return super(Samples, self).save(*args, **kwargs)
 
+
+class Occupancies(models.Model):
+    radiation_length_occupancy =  models.DecimalField(max_digits=9,decimal_places=3)
+    nu_coll_length_occupancy =  models.DecimalField(max_digits=9,decimal_places=3)
+    nu_int_length_occupancy =  models.DecimalField(max_digits=9,decimal_places=3)
+    sample = models.ForeignKey(Samples,null=True)
+
+    def __str__(self):              # __str__ on Python 2
+        return str(self.radiation_length_occupancy) + " "+ str(self.nu_coll_length_occupancy) +  " "+ str(self.nu_int_length_occupancy)
+
 class Dosimeters(models.Model):
     dos_id= models.CharField(max_length=50, null= True, unique = True)
     responsible = models.ForeignKey(Users, related_name="%(class)s_responsible",  null= True)

@@ -1,7 +1,7 @@
 # layer deleting doesn't work well to be checked!!!!
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
-from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,Compound,CompoundElements, Layers, Dosimeters,Irradiation,ArchiveExperimentSample
+from .models import Experiments,ReqFluences, Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Users,Samples,Compound,CompoundElements, Layers, Dosimeters,Irradiation, ArchiveExperimentSample, Occupancies
 from django.template import loader
 from django.core.urlresolvers import reverse
 import datetime
@@ -128,11 +128,14 @@ def get_registered_samples_number(experiments):
             total_nu_coll_length_occupancy = 0
             total_nu_int_length_occupancy = 0
             for sample in samples:
-                occupancy = occupancies(sample)
-                if occupancy is not None:
-                    total_radiation_length_occupancy = total_radiation_length_occupancy + occupancy[0]
-                    total_nu_coll_length_occupancy = total_nu_coll_length_occupancy + occupancy[1]
-                    total_nu_int_length_occupancy = total_nu_int_length_occupancy + occupancy[2]
+                occupancy = Occupancies.objects.filter(sample=sample)
+                if len(occupancy) == 0:
+                    save_occupancies(sample,"new")
+                    occupancy = Occupancies.objects.filter(sample=sample)
+                if len(occupancy) != 0:
+                    total_radiation_length_occupancy = total_radiation_length_occupancy + occupancy[0].radiation_length_occupancy
+                    total_nu_coll_length_occupancy = total_nu_coll_length_occupancy + occupancy[0].nu_coll_length_occupancy
+                    total_nu_int_length_occupancy = total_nu_int_length_occupancy + occupancy[0].nu_int_length_occupancy
                 else:
                     pass
             total_registered_samples = total_registered_samples + number
@@ -149,8 +152,6 @@ def get_registered_samples_number(experiments):
             total_experiments_radiation_length_occupancy = total_experiments_radiation_length_occupancy + total_radiation_length_occupancy
             total_experiments_nu_coll_length_occupancy = total_experiments_nu_coll_length_occupancy + total_nu_coll_length_occupancy
             total_experiments_int_length_occupancy = total_experiments_int_length_occupancy + total_nu_int_length_occupancy
-    print(total_experiments_radiation_length_occupancy)
-    print(total_experiments_nu_coll_length_occupancy)
     data = {
             "experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples,
             "total_experiments_radiation_length_occupancy": total_experiments_radiation_length_occupancy,
@@ -398,7 +399,8 @@ def experiment_users_list(request, experiment_id):
     logged_user = get_logged_user(request)
     return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user})
 
-def occupancies(sample):
+def save_occupancies(sample, status):
+    print("save_occupancies")
     layers = Layers.objects.filter(sample = sample)
     occupancies = []
     radiation_length_occupancy = 0
@@ -425,40 +427,37 @@ def occupancies(sample):
     radiation_length_occupancy = radiation_length_occupancy * 100
     nu_coll_length_occupancy = nu_coll_length_occupancy * 100
     nu_int_length_occupancy = nu_int_length_occupancy * 100
-    occupancies.append(round(radiation_length_occupancy,3))
-    occupancies.append(round(nu_coll_length_occupancy,3))
-    occupancies.append(round(nu_int_length_occupancy,3))
-    return(occupancies)
+    if status == "new" or status == "clone":
+        sample_occupancy = Occupancies()
+        print("sample")
+        sample_occupancy.sample = sample
+        print(sample_occupancy)
+    else:
+        sample_occupancy =  Occupancies.objects.get(sample = sample)
+    print(radiation_length_occupancy)
+    sample_occupancy.radiation_length_occupancy = round(radiation_length_occupancy,3)
+    sample_occupancy.nu_coll_length_occupancy = round(nu_coll_length_occupancy,3)
+    sample_occupancy.nu_int_length_occupancy = round(nu_int_length_occupancy,3)
+    print(sample_occupancy)        
+    sample_occupancy.save()
+    print("sample_occupancy")
+    print(sample_occupancy)
 
 def get_samples_occupancies(samples):
     samples_data = []
-    total_radiation_length_occupancy = 0
-    total_nu_coll_length_occupancy = 0
-    total_nu_int_length_occupancy = 0
     for sample in samples:
-        occupancy = occupancies(sample)
         if sample.experiment.category == 'Passive Standard':
             sample_category = sample.category.split("standard",1)[1]
         else:
             sample_category = category.split(":",1)[1]
-        if  occupancy is not None: 
-            total_radiation_length_occupancy = total_radiation_length_occupancy + occupancy[0]
-            total_nu_coll_length_occupancy = total_nu_coll_length_occupancy +  occupancy[1]
-            total_nu_int_length_occupancy =  total_nu_int_length_occupancy +  occupancy[2]
-            samples_data.append({
+        occupancy = Occupancies.objects.filter(sample=sample)
+        if len(occupancy) == 0:
+            save_occupancies(sample, "new")
+        occupancy1 = Occupancies.objects.filter(sample=sample.id)[0]
+        samples_data.append({
                 "sample": sample,
                 "sample_category": sample_category,
-                "radiation_length_occupancy": occupancy[0],
-                "nu_coll_length_occupancy" :  occupancy[1],
-                "nu_int_length_occupancy" :   occupancy[2],
-                })
-        else:
-            samples_data.append({
-                "sample": sample,
-                "sample_category": sample_category,
-                "radiation_length_occupancy": 0,
-                "nu_coll_length_occupancy" :  0,
-                "nu_int_length_occupancy" :   0,
+                "occupancy": occupancy1,
                 })
     return samples_data
 
@@ -658,6 +657,7 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                                 layer.save()   
                             data['state'] = "Created"
                             data['form_is_valid'] = True
+                            save_occupancies(sample, status)
                             samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
                             samples_data = get_samples_occupancies(samples)
                             data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
@@ -681,6 +681,7 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                     layers_formset.save()
                 data['state'] = "Updated"
                 data['form_is_valid'] = True
+                save_occupancies(sample_updated, status)
                 samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
                 samples_data = get_samples_occupancies(samples)
                 data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
@@ -718,6 +719,7 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                                     print("saved layer")
                             data['state'] = "Created"
                             data['form_is_valid'] = True
+                            save_occupancies(sample, status)
                             samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
                             samples_data = get_samples_occupancies(samples)
                             data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
@@ -737,6 +739,7 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                     layers_formset.save()
                 data['state'] = "Updated"
                 data['form_is_valid'] = True
+                save_occupancies(sample_updated, status)
                 samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
                 samples_data = get_samples_occupancies(samples)
                 data['html_sample_list'] = render_to_string('samples_manager/partial_samples_list.html', {
