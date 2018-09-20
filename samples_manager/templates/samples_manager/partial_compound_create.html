@@ -1,33 +1,24 @@
 <meta charset="UTF-8"> 
 {% load staticfiles %}
 {% load widget_tweaks %}
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" data-dismiss="modal"  aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <h4 class="modal-title">Add compound</h4>
-  </div>
-<form method="post" action="{% url 'samples_manager:compound_new' experiment.id %}"  class="js-compound-create-form">
+<form method="post" action="{% url 'samples_manager:compound_new' experiment.id %}"  class="ui form js-compound-create-form">
   {% csrf_token %}
-  <div class="modal-body">
-    <div class="row setup-content">
-        <div class="col-xs-12">
-            <div class="col-md-12">
-                {% for field in form %}
-                    <div class="form-group{% if field.errors %} has-error{% endif %}">
+   <div class="ui center aligned segment container">
+      <div class="ui centered header">
+            <h3>New Compound</h3>
+      </div>
+
+       {% for field in form %}
+                    <div class="field form-group{% if field.errors %} has-error{% endif %}">
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {% render_field field class="form-control" %}
                 {% for error in field.errors %}
-                    <span class="help-block">{{error }}</span>
+                    <span class="ui red basic label">{{error }}</span>
                 {% endfor %}
                     </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    <div class="row">
-         <div class="col-md-12">
-                <table  class="table formset_table">
+      {% endfor %}
+
+      <table class="ui celled table formset_table">
                         {{ elem_formset.management_form }}
                         {% for form in elem_formset.forms %}
                         {% if forloop.first %}
@@ -50,21 +41,20 @@
                                         {% endif %}
                                         {{ field }}
                                         {% for error in field.errors %}
-                                            <span class="help-block">{{error}}</span>
+                                            <span class="ui red basic label">{{error}}</span>
                                         {% endfor %}
                                     </td>
                                 {% endfor %}
                             </tr>
                         {% endfor %}
-                    </table>
+            </table>
+            <div class="two ui buttons actions">
+              <button  type="button"  class="ui deny medium button">Cancel</button>
+              <button  type="submit" class="ui positive medium button submit">Submit</button>
             </div>
-        </div>
-  </div>
-  <div class="modal-footer">
-    <button class="btn pull-left back" id="dismiss-compound"  type="button" onclick='javascript: $("#modal-compound").modal("hide");'><span class="glyphicon glyphicon-remove"></span>Cancel</button>
-    <button type="submit" class="btn btn-success btn-lg pull-right">Save</button>
-  </div>
+    </div>
 </form>
+<script src="{% static 'js/jquery.formset.js' %}"></script>
 <script type="text/javascript">
         $('.elem_formset_row').formset({
             addText: 'Add element',

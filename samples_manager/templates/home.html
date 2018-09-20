@@ -1,31 +1,21 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<div class='panel panel-default' id="main_panel">
-    <div class="row">
-      <h3 class="lead"><strong> Welcome to IRRAD Data Manager,<br>the all-in-one data management tool for the registration, supervision and follow up of IRRAD experiments.<br>If you are not member of irrad-ps-users e-group, please <a  target="_blank" style="text-decoration: underline;" href="https://e-groups.cern.ch/e-groups/Egroup.do?egroupId=10115020">subscribe</a> there before signing in.<br> <strong></h3>
+<div class= "ui center aligned inverted segment">
+      <h1 class="ui center aligned header">IRRAD Data Manager</h1>
+      <p > Welcome to IRRAD Data Manager,the all-in-one data management tool for the registration, supervision and follow up of IRRAD experiments.If you are not member of irrad-ps-users e-group, please <a  target="_blank" style="text-decoration: underline;" href="https://e-groups.cern.ch/e-groups/Egroup.do?egroupId=10115020">subscribe</a> there before signing in.</p>
+      <div class="ui compact buttons ">
+                      <a target="_blank" style="text-decoration: underline;" href="https://e-groups.cern.ch/e-groups/Egroup.do?egroupId=10115020" title="Subscribe to irrad-ps-users e-group">
+                        <button type="button" class="ui positive compact icon button">
+                          <h3>Subscribe in e-group</h3>
+                        </button>  
+                      </a>
+                      <a href='{% url 'samples_manager:index' %}' title="Sign in">
+                        <button type="button" class="ui yellow compact icon button">
+                          <h3>Sign in</h3>
+                        </button>  
+                      </a>
     </div>
-    <div class="row">
-        <div class="col-sm-3">
-        </div>
-        <div class="col-sm-3" style="text-align: right">
-                    <a  target="_blank" style="text-decoration: underline;" href="https://e-groups.cern.ch/e-groups/Egroup.do?egroupId=10115020" title="Subscribe to irrad-ps-users e-group">
-                      <button type="button" class="btn btn-success">
-                        <h3>Subscribe in e-group</h3>
-                      </button>  
-                    </a>
-
-        </div>
-        <div class="col-sm-3" style="text-align: center" > 
-                    <a href='{% url 'samples_manager:index' %}' title="Sign in">
-                      <button type="button" class="btn btn-warning">
-                        <h3>Sign in</h3>
-                      </button>  
-                    </a>
-      </div>
-       <div class="col-sm-3">
-        </div>
-</div>
+  </div>
 
 
  <!-- THE MODAL WE WILL BE USING -->

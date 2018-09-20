@@ -1,16 +1,13 @@
-<form method="post" action="{% url 'samples_manager:sample_delete' experiment.id sample.id %}" class="js-sample-delete-form">
+<form method="post" action="{% url 'samples_manager:sample_delete' experiment.id sample.id %}" class="ui form js-sample-delete-form">
   {% csrf_token %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <h4 class="modal-title">Confirm sample deletion</h4>
-  </div>
-  <div class="modal-body">
-    <p class="lead">Are you sure you want to delete the sample <strong>{{ sample.description }}</strong>?</p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-    <button type="submit" class="btn btn-danger">Delete sample</button>
-  </div>
+   <div class="ui center aligned segment container">
+      <div class="ui centered header">
+            <h3>Confirm sample deletion</h3>
+      </div>
+      <p>Are you sure you want to delete the sample <strong>{{ sample.name }}</strong>?</p>
+      <div class="two ui buttons actions">
+        <button  type="button"  class="ui deny medium button">Cancel</button>
+        <button  type="submit"  class="ui negative medium button submit">Delete</button>
+      </div>
+ </div>
 </form>

@@ -1,42 +1,34 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
-<div class='panel panel-default' id="main_panel">  
-    <div class="row"  style="margin-bottom: 20px "> 
-        <div class="col-sm-12">
-            <h3><span style="font-size: 150%; text-decoration: underline">Archived {{experiment.title}} samples</span></h3>
-        </div>
-    </div>      
-    <div class="panel-body">
-        <div class="row">
-                <table class="col-sm-12 table-responsive sortable" id="archive-table">
-                    <thead>
-                        <tr>
-                        <th>Sample ID</th>
-                        <th>Sample Name</th>
-                        <th>Current experiment</th>
-                        <th>Timestamp of change</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for archive in archives %}
-                        <tr>
-                            <td>{{ archive.sample.set_id }}</td>
-                            <td>{{ archive.sample.name }}</td>
-                            <td><a href="{% url 'samples_manager:experiment_samples_list' archive.sample.experiment.id  %}">{{archive.sample.experiment}}</a></td>
-                            <td>{{ archive.timestamp|date:"d/m/Y"}}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="8" class="text-center">There are no archived samples</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-        </div>
-    </div>
+{% load staticfiles %}
+{% load widget_tweaks %}
+<div class= "ui center aligned segment">
+    <h2>Archived {{experiment.title}} samples</h2>
+        <table class="ui center aligned sortable celled table" id="archive-table">
+            <thead>
+                <tr>
+                    <th>Sample ID</th>
+                    <th>Sample Name</th>
+                    <th>Current experiment</th>
+                    <th>Timestamp of change</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for archive in archives %}
+                <tr>
+                    <td>{{ archive.sample.set_id }}</td>
+                    <td>{{ archive.sample.name }}</td>
+                    <td><a href="{% url 'samples_manager:experiment_samples_list' archive.sample.experiment.id  %}">{{archive.sample.experiment}}</a></td>
+                    <td>{{ archive.timestamp|date:"d/m/Y"}}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">There are no archived samples</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 </div>
-
-
 
 </div>
 

@@ -1,16 +1,15 @@
-<form method="post" action="{% url 'samples_manager:print_sample_label_view' experiment.id sample.id %}" class="js-print-sample-label-form">
+<meta charset="UTF-8"> 
+{% load staticfiles %}
+{% load widget_tweaks %}
+<form method="post" action="{% url 'samples_manager:print_sample_label_view' experiment.id sample.id %}" class="ui form js-print-sample-label-form">
   {% csrf_token %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <h4 class="modal-title"> Confirm SET-ID allocation</h4>
+   <div class="ui center aligned segment container">
+      <div class="ui centered header">
+    <h3> Confirm SET-ID allocation</h3>
   </div>
-  <div class="modal-body">
-    <p class="lead">Allocating a SET-ID means that the sample is <b>ready to be irradiated</b>. Are you sure you want already to allocate a SET-ID to the sample <strong>{{ sample.name }}</strong>? </p>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-    <button type="submit" class="btn btn-warning">Assign &amp; Print SET-ID</button>
+  <p>Allocating a SET-ID means that the sample is <b>ready to be irradiated</b>. Are you sure you want already to allocate a SET-ID to the sample <strong>{{ sample.name }}</strong>? </p>
+  <div class="two ui buttons actions">
+        <button  type="button"  class="ui deny medium button">Cancel</button>
+        <button  type="submit"  class="ui orange medium button submit">Print</button>
   </div>
 </form>

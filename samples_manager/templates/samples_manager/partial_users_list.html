@@ -7,14 +7,14 @@
     <td>{{ user.role }}</td>
     <td>
       <button type="button"
-              class="btn btn-warning btn-sm js-update-user"
+              class="mini ui yellow icon button js-update-user"
               data-url="{% url 'samples_manager:user_update' experiment.id user.id %}">
-        <span class="glyphicon glyphicon-pencil"></span>
+        <i class="pencil icon"></i>Edit
       </button>
       <button type="button"
-              class="btn btn-danger btn-sm js-delete-user"
+              class="mini ui negative icon button js-delete-user"
               data-url="{% url 'samples_manager:user_delete_from_experiment' experiment.id user.id %}">
-        <span class="glyphicon glyphicon-trash"></span>
+        <i class="trash icon"></i>Remove
       </button>
     </td>
   </tr>

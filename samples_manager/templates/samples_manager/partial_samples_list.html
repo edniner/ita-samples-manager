@@ -14,35 +14,26 @@
     <td>{{ sample_data.sample.updated_by}}</td>
     <td>
         <button type="button"
-                class="btn btn-warning js-update-sample"
+                class="mini ui yellow icon button js-update-sample"
                 data-url="{%  url 'samples_manager:sample_update' experiment.id sample_data.sample.id %}"
                 title='View or Edit sample'>
-              <span class="glyphicon glyphicon-pencil"></span>
+              <i class="pencil icon"></i>Edit
         </button>
         <button type="button"
-                class="btn btn-primary js-clone-sample"
+                class="mini ui blue icon button js-clone-sample"
                 data-url="{%url 'samples_manager:sample_clone' experiment.id sample_data.sample.id %}"
                 title='Clone sample'>
-          <span class="glyphicon glyphicon-duplicate"></span>
+          <i class="clone icon"></i>Clone
         </button>
-      <a href="{% url 'samples_manager:print_sample_view' experiment.id sample_data.sample.id  %}">
         <button type="button"
-              class="btn btn-info"
-              title='Print'>
-        <span class="glyphicon glyphicon-print"></span>
-      </button>
-      </a>
-        <button type="button"
-              class="btn js-print-sample-label"
-              data-url="{% url 'samples_manager:print_sample_label_view' experiment.id sample_data.sample.id %}"
-              title='Assign Sample ID and print Label'>
-        <span class="glyphicon glyphicon glyphicon-barcode"></span>
-      </button>
-      <button type="button"
-                class="btn btn-danger js-delete-sample"
-                title='Delete'
-                data-url="{% url 'samples_manager:sample_delete' experiment.id sample_data.sample.id %}">
-          <span class="glyphicon glyphicon-trash"></span>
+                  class="mini ui grey icon dropdown link button"
+                  title='More options'>
+                 <i class="ellipsis vertical icon"></i>More
+                 <div class="menu">
+                      <a  href="{% url 'samples_manager:print_sample_view' experiment.id sample_data.sample.id  %}" class="item"><b>Print</b></a>
+                      <a data-url="{% url 'samples_manager:print_sample_label_view' experiment.id sample_data.sample.id %}" class="js-print-sample-label item"><b>Print Label</b></a>
+                      <a data-url="{% url 'samples_manager:sample_delete' experiment.id sample_data.sample.id %}" class="item js-delete-sample"><b>Delete</b></a>
+                  </div>
         </button>
     </td>
   </tr>

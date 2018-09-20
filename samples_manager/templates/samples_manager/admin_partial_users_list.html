@@ -2,24 +2,23 @@
   <tr>
     <td>{{ user_data.row }}</td>
     <td>{{ user_data.user.last_login|date:"d/m/Y"}}</td>
-    <td>{{ user_data.user.name }}</td>
-    <td>{{ user_data.user.surname }}</td>
+    <td>{{ user_data.user.name }}<br>{{ user_data.user.surname }}</td>
     <td>{{ user_data.user.email }}</td>
-    <td>{{ user_data.user.telephone }}/{{ user_data.user.mobile }}</td>
+    <td>{{ user_data.user.telephone }}<br>{{ user_data.user.mobile }}</td>
     <td>{{ user_data.user.department }}</td>
     <td>{{ user_data.user.home_institute }}</td>
     <td>{{ user_data.user.role }}</td>
     <td><a style="text-decoration: underline" href="{% url 'samples_manager:admin_experiments_user_view' user_data.user.id  %}">{{ user_data.experiments_number }}</a></td>
     <td>
       <button type="button"
-              class="btn btn-warning btn-sm js-update-user"
+              class="mini ui yellow icon button js-update-user"
               data-url="{% url 'samples_manager:admin_user_update' user_data.user.id %}">
-        <span class="glyphicon glyphicon-pencil"></span>
+        <i class="pencil icon"></i>Edit
       </button>
       <button type="button"
-              class="btn btn-danger btn-sm js-delete-user"
+              class="mini ui negative icon button js-delete-user"
               data-url="{% url 'samples_manager:admin_user_delete' user_data.user.id %}">
-        <span class="glyphicon glyphicon-trash"></span>
+        <i class="trash icon"></i>Remove
       </button>
     </td>
   </tr>

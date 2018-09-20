@@ -8,17 +8,20 @@ var loadForm = function () {
       type: 'get',
       dataType: 'json',
       beforeSend: function () {
-        $("#modal-user").modal("show");
-        console.log("show");
+        $("#modal-user").modal({
+          closable:false,
+          onApprove : function() {
+			    return false;
+			  }
+        }).modal("show");
       },
       success: function (data) {
         console.log("success");
-        $("#modal-user .modal-content").html(data.html_form);
+        $("#modal-user .scrolling.content").html(data.html_form);
         console.log(data.html_form);
       }
     });
   };
-
   var saveForm = function () {
     var form = $(this);
     console.log("Inside save form");

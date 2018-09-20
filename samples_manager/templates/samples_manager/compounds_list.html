@@ -1,31 +1,26 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
  <!-- THE MODAL WE WILL BE USING -->
-<div class="modal" id="admin-modal-compound">
-    <div class="modal-dialog">
-      <div class="modal-content">
+<div class="ui modal" id="admin-modal-compound">
+      <i class="close icon"></i>
+      <div class="scrolling content">
       </div>
-    </div>
 </div>
-<div class='panel panel-default' id="main_panel">        
-    <div class="row"  style="margin-bottom: 20px "> 
-        <div class="col-sm-12">
-            <h3><span style="font-size: 150%; text-decoration: underline">Compounds</span></h3>
-        </div>
-    </div> 
-    <div class="row">
-        <div class="col-sm-12" style="text-align: right">
-                <button type="button"
-                        class="btn btn-primary js-create-admin-compound"
-                        title="Register new compound"
-                        data-url="{% url 'samples_manager:admin_compound_new' %}">
-                        <span class="glyphicon glyphicon-plus"></span>New compound
-                </button> 
-        </div>
-    </div>
-    <div class="panel-body">
-        <div class="row">
-                <table id="compound-table" class="col-sm-12 table-responsive sortable col-sm-12 ">
+
+<div class= "ui center aligned segment">
+    <h2>Compounds</h2>
+    <div class= "ui aligned segment">
+            <button type="button"
+                    id = "new_compound"
+                    data-target = "#modal-compound"
+                    class="ui blue button js-create-admin-compound"
+                    title='Register new compound'
+                    data-url="{% url 'samples_manager:admin_compound_new' %}">
+                    <i class="plus icon"></i>New compound
+            </button> 
+      </div> 
+
+     <table id="compound-table" class="ui center aligned sortable celled table">
                     <thead>
                         <tr>
                         <th>Name</th>
@@ -37,13 +32,7 @@
                     <tbody>
                         {% include 'samples_manager/partial_compounds_list.html' %}
                     </tbody>
-                </table>
-        </div>
-    </div>
-</div>
-
-
-
+    </table>
 </div>
 
 {% endblock %}

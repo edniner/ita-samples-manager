@@ -2,19 +2,24 @@ console.log("in the compound");
 $(function () {
 console.log("inside");
 var loadFormCompound = function () {
-  console.log("loading form");
+  console.log("loading form compound");
     var btn = $(this);
     $.ajax({
       url: btn.attr("data-url"),
       type: 'get',
       dataType: 'json',
       beforeSend: function () {
-        $("#modal-compound").modal("show");
-        console.log("show");
+        $("#modal-compound").modal({
+          closable:false,
+          allowMultiple: true,
+          onApprove : function() {
+			    return false;
+			  }
+        }).modal("show");
       },
       success: function (data) {
         console.log("success");
-        $("#modal-compound .modal-content").html(data.html_form);
+        $("#modal-compound .scrolling.content").html(data.html_form);
       }
     });
   };
@@ -27,12 +32,16 @@ var loadFormCompound = function () {
       type: 'get',
       dataType: 'json',
       beforeSend: function () {
-        $("#admin-modal-compound").modal("show");
-        console.log("show");
+        $("#admin-modal-compound").modal({
+          closable:false,
+          onApprove : function() {
+			    return false;
+			  }
+        }).modal("show");
       },
       success: function (data) {
         console.log("success");
-        $("#admin-modal-compound .modal-content").html(data.html_form);
+        $("#admin-modal-compound .scrolling.content").html(data.html_form);
       }
     });
   };
@@ -47,7 +56,6 @@ var form = $(this);
       dataType: 'json',
       success: function (data) {
         if (data.form_is_valid) {
-          $("#compound-table tbody").html(data.html_compound_list);  // <-- Replace the table body
           $("#modal-compound").modal("hide");  // <-- Close the modal
           $('.select_element').append($('<option>', {
               value: data['compound_id'],
@@ -56,7 +64,7 @@ var form = $(this);
         }
         else {
           //alert("Something went wrong! Please check your data"); 
-          $("#modal-compound .modal-content").html(data.html_form);
+          $("#modal-compound .scrolling.content").html(data.html_form);
         }
       }
     });

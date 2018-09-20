@@ -1,27 +1,22 @@
-
 {% load widget_tweaks %}
-
-<form method="post" action="{% url 'samples_manager:admin_user_new'%}" class="js-user-create-form">
+<form method="post" action="{% url 'samples_manager:admin_user_new'%}" class="ui form js-user-create-form">
   {% csrf_token %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <h4 class="modal-title"> New user </h4>
-  </div>
-  <div class="modal-body">
-  {% for field in form %}
-    <div class="form-group{% if field.errors %} has-error{% endif %}">
-      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-  {% render_field field class="form-control" %}
-  {% for error in field.errors %}
-      <p class="help-block">{{ error }}</p>
-  {% endfor %}
-    </div>
-  {% endfor %}
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-lg pull-left back"  data-dismiss="modal"  type="button"><span class="glyphicon glyphicon-remove"></span>Cancel</button>
-    <button class="btn btn-success btn-lg pull-right" type="submit">Save <span class="glyphicon glyphicon-save"></span></button>
+   <div class="ui center aligned segment container">
+      <div class="ui centered header">
+            <h3>New User</h3>
+      </div>
+      {% for field in form %}
+        <div class="field form-group{% if field.errors %} has-error{% endif %}">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {% render_field field class="form-control" %}
+      {% for error in field.errors %}
+          <p class="ui red basic label">{{ error }}</p>
+      {% endfor %}
+        </div>
+      {% endfor %}
+       <div class="two ui buttons actions">
+              <button  type="button"  class="ui deny medium button">Cancel</button>
+              <button  type="submit" class="ui positive medium button submit">Submit</button>
+        </div>
   </div>
 </form>

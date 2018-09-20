@@ -2,142 +2,129 @@
 {% load staticfiles %}
 {% load widget_tweaks %}
 <script src="{% static 'js/compounds.js' %}"></script>
-<form method="post" action="{% url 'samples_manager:sample_update' experiment.id form1.instance.pk %}" class="js-sample-update-form" novalidate>
-  {% csrf_token %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <div class="stepwizard">
-      <div class="stepwizard-row setup-panel">
-          <div class="stepwizard-step">
-              <a href="#step-1" type="button" class="btn btn-primary btn-circle">1</a>
-              <p>Sample details</p>
-          </div>
-          <div class="stepwizard-step">
-              <a href="#step-2" type="button" class="btn btn-default btn-circle" disabled="disabled">2</a>
-              <p>Sample layers details</p>
-          </div>
-          <div class="stepwizard-step">
-              <a href="#step-3" type="button" class="btn btn-default btn-circle" disabled="disabled">3</a>
-              <p>Irradiation details</p>
-          </div>
+<form method="post" action="{% url 'samples_manager:sample_update' experiment.id form1.instance.pk %}" class="ui form js-sample-update-form" novalidate>
+ {% csrf_token %}
+<div class="ui centered grid container">
+    <div class="ui text container">
+      <div class="three ui buttons center aligned grid container" style="margin:20px;">
+        <div class=" ui  big basic blue button" id="step1S">
+          <div class="content ">Sample details</div>
+        </div>
+        <button class=" ui  big disabled blue basic button" id="step2S">
+             <div class="content">Sample layers details</div>
+             </button>
+        <button class=" disabled ui big blue basic button" id="step3S">
+             <div class="content">Irradiation details</div>
+             </button>
       </div>
-  </div>
-  </div>
-  <div class="modal-body">
-    <div class="row setup-content" id="step-1">
-            <div class="col-md-12">
-                <h3> Sample details</h3>
-                {% for field in form1 %}
-                    <div class="form-group{% if field.errors %} has-error{% endif %}">
+    <div id="step1">
+        <div class="ui center aligned segment container ">
+          <div class="ui centered header">
+            <h3>Sample details</h3>
+          </div>
+          {% for field in form1 %}
+                    <div class="field form-group{% if field.errors %} has-error{% endif %}">
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {% render_field field class="form-control" %}
                 {% for error in field.errors %}
-                    <span class="help-block">{{error }}</span>
+                    <span class="ui red basic label">{{error }}</span>
                 {% endfor %}
                     </div>
                 {% endfor %}
-                <button class="btn btn-lg pull-left back"  data-dismiss="modal"  type="button"><span class="glyphicon glyphicon-remove"></span>Cancel</button>
-                <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next<span class="glyphicon glyphicon-chevron-right"></span></button>
+            <div class="two ui buttons actions">
+              <button  type="button"  class="ui deny medium button">Cancel</button>
+              <button type="button" class="ui  inverted blue medium button next1">Next</button>
             </div>
-    </div>
-    <div class="row setup-content" id="step-2">
-        <div class="col-xs-12">
-            <div class="col-md-12">
-              <h3>Sample layers details</h3>
-              <div class="row">
-                <div class="col-md-2" ></div>
-                <div class="col-md-8" >
-                    <br>
-                    <img src={% static 'images/layers.png' %} alt="Layer" width="100%">
-                </div>
-                <div class="col-md-2" ></div>
-              </div>
-           <div class="row"> 
-                <div class="col-md-12">
-                    {% for field in form2 %}
-                        <div class="form-group{% if field.errors %} has-error{% endif %}">
+        </div>
+      </div>
+      <div id="step2">
+        <div class="ui center aligned segment container ">
+          <div class="ui centered header">
+            <h3>Sample dimensions</h3>
+          </div>
+          <div class="image content">
+            <div class="ui medium image">
+                <img src={% static 'images/layers.png' %} alt="Layer" width="100%">
+            </div>
+          </div>
+            {% for field in form2 %}
+                        <div class="field form-group{% if field.errors %} has-error{% endif %}">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {% render_field field class="form-control" %}
                     {% for error in field.errors %}
-                        <span class="help-block">{{error }}</span>
+                        <span class="ui red basic label">{{error }}</span>
                     {% endfor %}
                         </div>
-                    {% endfor %}
-                </div>
-            </div>
-            <br>
-            <div class="row" style="text-align: right">
-                 <button type="button"
+            {% endfor %}
+            <button type="button"
                         id = "new_compound"
-                        class="btn-xs btn-primary js-create-compound"
+                        class="ui blue button js-create-compound"
                         data-url="{% url 'samples_manager:compound_new' experiment.id%}">
-                        <span class="glyphicon glyphicon-plus"></span>New Compound
-                </button>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <table id='layers_table' class="table formset_table">
-                                {{ layers_formset.management_form }}
-                                {% for form in layers_formset.forms %}
-                                    {% if forloop.first %}
-                                        <thead class="row">
-                                        <tr class="row">
-                                            <th class="col-md-2">Name *</th>
-                                            <th class="col-md-2">Length (mm) *</th>
-                                            <th class="col-md-3">Element/<br>Compound</th>
-                                            <th class="col-md-2">Delete</th>
-                                        </tr>
-                                        </thead>
-                                    {% endif %}
-                                    <tr class="{% cycle row1 row2 %} formset_row row">
-                                        {% for field in form.visible_fields %}
-                                            <td class="col-md-3">
-                                                {# Include the hidden fields in the form #}
-                                                {% if forloop.first %}
-                                                    {% for hidden in form.hidden_fields %}
-                                                        {{ hidden }}
-                                                    {% endfor %}
-                                                {% endif %}
-                                                <div class="form-group{% if field.errors %} has-error{% endif %}">
-                                                {{ field }}
-                                                {% for error in field.errors %}
-                                                    <span style="font-size: 70%" class="help-block">{{error }}</span>
-                                                {% endfor %}
-                                            </td>
+                        <i class="plus icon"></i>Add new compound
+            </button>
+            <table  id='layers_table' class="ui celled table formset_table">
+                        {{ layers_formset.management_form }}
+                        {% for form in layers_formset.forms %}
+                            {% if forloop.first %}
+                            <thead>
+                                <tr class="row">
+                                    <th class="col-md-2">Name *</th>
+                                    <th class="col-md-2">Length (mm) *</th>
+                                    <th class="col-md-3">Element/<br>Compound</th>
+                                    <th class="col-md-2">Delete</th>
+                                </tr>
+                            </thead>
+                            {% endif %}
+                            <tr class="{% cycle row1 row2 %} formset_row">
+                                {% for field in form.visible_fields %}
+                                    <td>
+                                        {# Include the hidden fields in the form #}
+                                        {% if forloop.first %}
+                                            {% for hidden in form.hidden_fields %}
+                                                {{ hidden }}
+                                            {% endfor %}
+                                        {% endif %}
+                                        <div class="form-group{% if field.errors %} has-error{% endif %}">
+                                        {{ field }}
+                                        {% for error in field.errors %}
+                                            <span class="ui red basic label">{{error}}</span>
                                         {% endfor %}
-                                    </tr>
+                                    </td>
                                 {% endfor %}
-                            </table>
-                 </div>
-              </div>
-                <button class="btn prevBtn btn-lg pull-left back" type="button"><span class="glyphicon glyphicon-chevron-left"></span>Back</button>
-                <button class="btn btn-primary nextBtn btn-lg pull-right" type="button">Next<span class="glyphicon glyphicon-chevron-right"></span></button>
-              </div>
+                            </tr>
+                        {% endfor %}
+                </table>
+        <div class="two ui buttons actions">
+              <button  type="button" class="ui  inverted blue  medium button prev1">Previous</button>
+              <button  type="button"  class="ui  inverted blue  medium button next2">Next</button>
+            </div>
         </div>
-    </div>
-    <div class="row setup-content" id="step-3">
-        <div class="col-xs-12">
-            <div class="col-md-12">
-              <h3>Samples details</h3>
-              {% for field in form3 %}
-                      <div class="form-group{% if field.errors %} has-error{% endif %}">
+      </div>
+      <div id="step3">
+        <div class="ui center aligned  segment container ">
+          <div class="ui centered header">
+            <h3>Irradiation details</h3>
+          </div>
+          {% for field in form3 %}
+                      <div class="field form-group{% if field.errors %} has-error{% endif %}">
                       <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                   {% render_field field class="form-control" %}
                   {% for error in field.errors %}
-                      <span class="help-block">{{error }}</span>
+                      <span class="ui red basic label">{{error }}</span>
                   {% endfor %}
                       </div>
                   {% endfor %}
-                    <button class="btn prevBtn btn-lg pull-left back" type="button"><span class="glyphicon glyphicon-chevron-left"></span>Back</button>
-                    <button class="btn btn-success btn-lg pull-right" type="submit">Save <span class="glyphicon glyphicon-save"></span></button>
-              </div>
+            <div class="two ui buttons actions">
+              <button  type="button" class="ui inverted blue medium button prev2">Previous</button>
+              <button  type="submit" class="ui positive medium button submit">Submit</button>
+            </div>
         </div>
+      </div>
     </div>
-</div> 
+  </div>
 </form>
-<script src="{% static 'js/widget.js' %}"></script>
+<script src="{% static 'js/jquery.formset.js' %}"></script>
+<script src="{% static 'js/steps.js' %}"></script>
 <script type="text/javascript">
         $('.formset_row').formset({
             addText: 'Add Layer',
@@ -147,4 +134,6 @@
         $("#id_set_id").click(function() {
             alert("Please, make sure you already have an assigned SET-ID from IRRAD or TREC.")
         });
+        
 </script>
+

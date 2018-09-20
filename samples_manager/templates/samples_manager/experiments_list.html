@@ -1,57 +1,23 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
  <!-- THE MODAL WE WILL BE USING -->
-  <div class="modal"  data-backdrop="static" data-keyboard="false" id="modal-experiment">
-    <div class="modal-dialog">
-      <div class="modal-content">
+  <div class="ui modal" id="modal-experiment">
+     <i class="close icon"></i>
+     <div class="scrolling content">
       </div>
-    </div>
   </div>
-  <div class="modal"  data-backdrop="static" data-keyboard="false" id="modal-user">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div>
-    </div>
-  </div>
-  
-<div class='panel panel-default' id="main_panel">
-    <div class="row"  style="margin-bottom: 20px "> 
-        <div class="col-sm-12">
-            <h3><span style="font-size: 150%; text-decoration: underline">Irradiation Experiments </span></h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-4" style="text-align: left">
-             {%if request.path|slice:":23" == '/samples_manager/search' %}
-                <a  href="{% url 'samples_manager:experiments_list'  %}" type="button" class="btn back" title='Back'>
-            {%else %}
-                <a  href="{% url 'samples_manager:index' %}" type="button" class="btn back" title='Back'>
-            {%endif%}
-                <span class="glyphicon glyphicon-chevron-left"></span>Back
-            </a>
-        </div>
-        <form style="text-align: center"  class="col-sm-4" name="search_form" method="GET" action="{% url 'samples_manager:search_experiments_user'%}"> 
-                <input title="Search irradiation title or status" id="search_box" type="text" name="search_box"  placeholder="Search..." >
-                <button  class="btn-sm btn-warning" id="search_submit" title="Search irradiation title or status" type="submit"><span class="glyphicon glyphicon-search line_height"></span></button>
-        </form>
-        <div class="col-sm-4" style="text-align: right">
-                <button type="button"
-                        class="btn btn-primary js-create-experiment"
-                        title='Register new irradiation experiment'
-                        data-url="{% url 'samples_manager:experiment_new' %}">
-                        <span class="glyphicon glyphicon-plus"></span>New Experiment
-                </button> 
-        </div>
-        <!--<div class="col-sm-2">
-                    <button type="button"
-                        class="btn btn-primary soap">
-                        <span class="glyphicon glyphicon-plus"></span>Soap Request
-                    </button>
-        </div>-->
-    </div>
-    <div class="panel-body">
-        <div class="row">
-            <table class="col-sm-12 table-responsive sortable" id="experiment-table">
+
+<div class= "ui center aligned segment">
+     <h2 >Irradiation Experiments</h2>
+     <button type="button"
+                  data-target = "#modal-experiment"
+                  class="ui blue button js-create-experiment"
+                  title='Register new irradiation experiment'
+                  data-url="{% url 'samples_manager:experiment_new' %}">
+                  <i class="plus icon"></i> New Experiment
+        </button>  
+
+     <table class="ui center aligned sortable celled table" id="experiment-table">
                 <thead>
                     <tr>
                     <th>Last update </th>
@@ -60,14 +26,13 @@
                     <th>No. samples</th>
                     <th>No. users</th>
                     <th>Status</th>
-                    <th class="sorttable_nosort">Actions</th>
+                    <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% include 'samples_manager/partial_experiments_list.html' %}
                 </tbody>
             </table>
-        </div>
-    </div>
 </div>
+
 {% endblock %}

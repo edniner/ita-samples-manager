@@ -15,26 +15,29 @@
     {% endif %}
     <td>{{ dosimeter.status }}</td>
      <td>
+
       <button type="button"
-              class="btn btn-warning js-update-dosimeter"
-              data-url="{% url 'samples_manager:dosimeter_update' dosimeter.id %}">
-              <span class="glyphicon glyphicon-pencil"></span>
+              class="mini ui yellow icon button js-update-dosimeter"
+              data-url="{% url 'samples_manager:dosimeter_update' dosimeter.id %}"
+              title='View or Edit sample'>
+              <i class="pencil icon"></i>Edit
       </button>
       <button type="button"
-              class="btn btn-primary js-clone-dosimeter"
-              data-url="{% url 'samples_manager:dosimeter_clone' dosimeter.id %}">
-        <span class="glyphicon glyphicon-duplicate"></span>
+              class="mini ui blue icon button js-clone-dosimeter"
+              data-url="{% url 'samples_manager:dosimeter_clone' dosimeter.id %}"
+              title='Clone dosimeter'>
+       <i class="clone icon"></i>Clone
       </button>
        <button type="button"
-              class="btn js-print-dosimeter-label"
+              class="mini ui purple icon button js-print-dosimeter-label"
               data-url="{% url 'samples_manager:print_dosimeter_label_view' dosimeter.id %}"
               title='Print Label'>
-        <span class="glyphicon glyphicon glyphicon-barcode"></span>
+        <i class="barcode icon"></i>Print label
       </button>
       <button type="button"
-              class="btn btn-danger js-delete-dosimeter"
+              class="mini ui negative icon button js-delete-dosimeter"
               data-url="{% url 'samples_manager:dosimeter_delete' dosimeter.id %}">
-        <span class="glyphicon glyphicon-trash"></span>
+       <i class="trash icon"></i> Delete
       </button>
     </td>
   </tr>

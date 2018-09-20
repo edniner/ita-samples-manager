@@ -1,84 +1,41 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
  <!-- THE MODAL WE WILL BE USING -->
-  <div class="modal"  data-backdrop="static" data-keyboard="false" id="modal-experiment">
-    <div class="modal-dialog">
-      <div class="modal-content">
+  <div class="ui modal" id="modal-experiment">
+     <i class="close icon"></i>
+     <div class="scrolling content">
       </div>
-    </div>
-  </div>
-  <div class="modal"  data-backdrop="static" data-keyboard="false" id="modal-user">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div>
-    </div>
   </div>
   
-<div class='panel panel-default' id="main_panel">
-    <div class="row"  style="margin-bottom: 20px "> 
-        <div class="col-sm-12">
-            <h3><span style="font-size: 150%; text-decoration: underline">Irradiation Experiments </span></h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-4" style="text-align: left">
-             {%if request.path|slice:":23" == '/samples_manager/search' %}
-                <a  href="{% url 'samples_manager:experiments_list'  %}" type="button" class="btn back" title='Back'>
-            {%else %}
-                <a  href="{% url 'samples_manager:index' %}" type="button" class="btn back" title='Back'>
-            {%endif%}
-                <span class="glyphicon glyphicon-chevron-left"></span>Back
-            </a>
-        </div>
-        <form style="text-align: center"  class="col-sm-4" name="search_form" method="GET" action="{% url 'samples_manager:search_experiments_admin'%}"> 
-                <input title="Search irradiation title or status"   id="search_box" type="text" name="search_box"  placeholder="Search..." >
-                <button title="Search irradiation title or status" class="btn-sm btn-warning" id="search_submit" type="submit"><span class="glyphicon glyphicon-search line_height"></span></button>
-        </form>
-        <div class="col-sm-4" style="text-align: right">
-                <button type="button"
-                        class="btn btn-primary js-create-experiment"
-                        title='Register new irradiation experiment'
-                        data-url="{% url 'samples_manager:experiment_new' %}">
-                        <span class="glyphicon glyphicon-plus"></span>New Experiment
-                </button> 
-        </div>
-        <!--<div class="col-sm-2">
-                    <button type="button"
-                        class="btn btn-primary soap">
-                        <span class="glyphicon glyphicon-plus"></span>Soap Request
-                    </button>
-        </div> -->
-    </div>
-    <div class="panel-body">
-        <div class="row">
-            <table class="col-sm-12 table-responsive sortable" id="experiment-table">
+<div class= "ui center aligned segment">
+     <h2 >Irradiation Experiments</h2>
+     <button type="button"
+                  data-target = "#modal-experiment"
+                  class="ui blue button js-create-experiment"
+                  title='Register new irradiation experiment'
+                  data-url="{% url 'samples_manager:experiment_new' %}">
+                  <i class="plus icon"></i> New Experiment
+        </button> 
+            <table class="ui center aligned sortable celled table" id="experiment-table">
                 <thead>
                     <tr>
-                        <th></th>
-                        <th>Row</th>
-                        <th>Last update</th>
-                        <th>Irradiation title</th>
+                        <th>Irradiation<br>title</th>
                         <th>Availability</th>
-                        <th>No. registered samples/<br>declared samples</th>
-                        <th>Radiation / Nu. Coll. / Nu. Int.<br>Length Occupancy (%)</th>
-                        <th>No. users</th>
-                        <th>Responsible person</th>
-                        <th>Last updated by</th>
+                        <th>No. registered/<br>declared<br>samples</th>
+                        <th>Radiation <br>/ Nu. Coll. / Nu. Int.<br>Length Occupancy (%)</th>
+                        <th>Responsible<br>person</th>
                         <th>Status</th>
-                        <th class="sorttable_nosort">Actions</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-                <tfoot>
-                    <tr><td></td><td></td><td></td><td></td><td></td><td><b>{{experiment_data.total_registered_samples}}/{{experiment_data.total_declared_samples}}</b></td>
-                    <td><b>{{experiment_data.total_experiments_radiation_length_occupancy}}</b></td>
-                    <td><b>{{experiment_data.total_experiments_nu_coll_length_occupancy}}</b></td>
-                    <td><b>{{experiment_data.total_experiments_int_length_occupancy}}</b></td>
-                    <td></td><td></td><td></td><td></td><td></td></tr>
-                </tfoot>
                 <tbody>
                     {% include 'samples_manager/partial_admin_experiments_list.html' %}
                 </tbody>
+                <tfoot>
+                    <tr><td></td><td></td><td><b>{{experiment_data.total_registered_samples}}/{{experiment_data.total_declared_samples}}</b></td>
+                    <td><b>{{experiment_data.total_experiments_radiation_length_occupancy}}</b> / <b>{{experiment_data.total_experiments_nu_coll_length_occupancy}}</b> / <b>{{experiment_data.total_experiments_int_length_occupancy}}</b></td>
+                    <td></td><td></td><td></td></tr>
+                </tfoot>
             </table>
-        </div>
     </div>
 {% endblock %}

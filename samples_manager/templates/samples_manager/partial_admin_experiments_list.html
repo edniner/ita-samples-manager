@@ -1,74 +1,47 @@
 {% for experiment in experiment_data.experiments %}
-   <tr>
-    {%if experiment.experiment.irradiation_type == 'Protons'%}
-    <td>
-      <div title="Protons" class="circle red"><i>p</i></div>
-    </td>
-    {%elif experiment.experiment.irradiation_type == 'Heavy ions'%}
-    <td>
-      <div title="Heavy Ions" class="circle blue"><i>HI</i></div>
-    </td>
-    {%else%}
-    <td>
-      <div title="Pions" class="circle green"><i>Pi</i></div>
-    </td>
-    {%endif%}
-    <td>{{experiment.row}}</td>
-    <td>{{ experiment.experiment.updated_at|date:"d/m/Y"}}</td>
     <td>{{ experiment.experiment.title }}</td>
     <td>{{ experiment.experiment.availability|date:"d/m/Y"}}</td>
     <td>{{ experiment.number_samples}}/{{ experiment.experiment.number_samples }}</td>
     <td>{{ experiment.total_radiation_length_occupancy}} / {{ experiment.total_nu_coll_length_occupancy}} / {{ experiment.total_nu_int_length_occupancy}}</td>
-    <td>{{ experiment.experiment.users.count }}</td>
     {%if experiment.experiment.responsible.surname %}
       <td>{{experiment.experiment.responsible.name}} {{experiment.experiment.responsible.surname}}</td>
     {%else%}
       <td>{{experiment.experiment.responsible}} </td>
     {%endif%}
-    {%if experiment.experiment.updated_by.surname%}
-      <td>{{experiment.experiment.updated_by.name}} {{experiment.experiment.updated_by.surname}}</td>
-    {%else%}
-      <td>{{experiment.experiment.updated_by}}</td>
-    {%endif%}
     <td>{{ experiment.experiment.status }}</td>
     <td>
       <button type="button"
-              class="btn btn-success btn js-update-experiment"
+              class="mini ui positive icon button js-update-experiment"
               title='Check and validate'
               data-url="{% url 'samples_manager:experiment_validate' experiment.experiment.id %}">
-             <span class="glyphicon glyphicon-ok"></span>
+              <i class="check icon"></i>Validate
       </button>
-        <a href="{% url 'samples_manager:experiment_users_list' experiment.experiment.id  %}">
-            <button type="button"
-                  class="btn btn-info "
-                  title='See and add users'>
-                <span class="glyphicon glyphicon-user"></span>
-          </button>
-        </a>
-          <a href="{% url 'samples_manager:experiment_samples_list' experiment.experiment.id  %}">     
-            <button type="button"
-                  class="btn btn-danger"
-                  title='Add samples'>
-                  <span class="glyphicon glyphicon-oil"></span>
-            </button>
-          </a>
-        <div class="dropdown">
+      <a href="{% url 'samples_manager:experiment_users_list' experiment.experiment.id  %}">
           <button type="button"
-                  class="btn dropdown-toggle"
-                  id="dropdownMenu1" data-toggle="dropdown" 
-                  aria-haspopup="true" aria-expanded="true"
-                  title='More options'>
-                <span class="glyphicon glyphicon-menu-hamburger"></span>
+                class="mini ui teal icon button"
+                title='See and add users'>
+                <i class="user outline icon"></i>Users
+        </button>
+      </a>
+      <a href="{% url 'samples_manager:experiment_samples_list' experiment.experiment.id  %}">     
+          <button type="button"
+                  class="mini ui orange icon button"
+                  title='Add samples'>
+                  <i class="microchip icon"></i>Samples
           </button>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li><button type="button" class="btn-default js-assign-dosimeters" data-url="{% url 'samples_manager:assign_dosimeters' experiment.experiment.id %}">Assign dosimeters</button></li>
-            <li><button type="button" class="btn-default js-update-experiment" title='Edit experiment' data-url="{% url 'samples_manager:experiment_update' experiment.experiment.id %}">Edit</button></li>
-            <li><button type="button" class="btn-default js-clone-experiment" data-url="{% url 'samples_manager:experiment_clone' experiment.experiment.id %}">Clone</button></li>
-            <li><div><a  href="{% url 'samples_manager:print_experiment_view' experiment.experiment.id  %}"><button type="button" class="btn-default">Print</button></a></div></li>
-            <li><button type="button" class="btn-default js-update-experiment" title='Change status' data-url="{% url 'samples_manager:experiment_status_update' experiment.experiment.id %}">Change Status</button></li>
-            <li><button class="btn-default js-delete-experiment" title='Delete' data-url="{% url 'samples_manager:experiment_delete' experiment.experiment.id %}">Delete</button></li>
-          </ul>
-        </div>
+      </a>
+      <button type="button"
+                  class="mini ui grey icon dropdown link button"
+                  title='More options'>
+                 <i class="ellipsis vertical icon"></i>More
+                 <div class="menu">
+                      <a data-url="{% url 'samples_manager:experiment_status_update' experiment.experiment.id %}" class="btn-default js-update-experiment item"><b>Change Status</b></a>
+                      <a data-url="{% url 'samples_manager:experiment_update' experiment.experiment.id %}" class="js-update-experiment item"><b>Edit</b></a>
+                      <a data-url="{% url 'samples_manager:experiment_clone' experiment.experiment.id %}" class="js-clone-experiment item"><b>Clone</b></a>
+                      <a href="{% url 'samples_manager:print_experiment_view' experiment.experiment.id  %}" class="item"><b>Print</b></a>
+                      <a title='Delete' data-url="{% url 'samples_manager:experiment_delete' experiment.experiment.id %}" class="js-delete-experiment item"><b>Delete</b></a>
+                  </div>
+        </button>
       </td>
     </tr>
   {% empty %}

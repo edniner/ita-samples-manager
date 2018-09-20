@@ -81,10 +81,16 @@ var loadForm = function () {
       type: 'get',
       dataType: 'json',
       beforeSend: function () {
-        $("#modal-sample").modal("show");
+        $("#modal-sample").modal({
+          closable:false,
+          allowMultiple: true,
+          onApprove : function() {
+			    return false;
+			  }
+        }).modal("show");
       },
       success: function (data) {
-        $("#modal-sample .modal-content").html(data.html_form);
+        $("#modal-sample .scrolling.content").html(data.html_form);
       }
     });
   };
@@ -125,6 +131,7 @@ var loadForm = function () {
   };
 
     var printLabel = function (){
+          console.log("print label");
           var form = $(this);
           $.ajax({
             url: form.attr("action"),

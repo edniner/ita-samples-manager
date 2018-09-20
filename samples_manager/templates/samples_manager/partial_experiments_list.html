@@ -9,41 +9,37 @@
     <td>{{ experiment.status }}</td>
     <td>
       <button type="button"
-              class="btn btn-warning  js-update-experiment"
+              class="mini ui yellow icon button js-update-experiment"
               title='View or Edit'
               data-url="{% url 'samples_manager:experiment_update' experiment.id %}">
-             <span class="glyphicon glyphicon-pencil"></span>
+              <i class="pencil icon"></i>Edit
       </button>
       {% if experiment.status != "Registered" %}
       <a href="{% url 'samples_manager:experiment_users_list' experiment.id  %}">
           <button type="button"
-                class="btn btn-info "
+                class="mini ui teal icon button"
                 title='See and add users'>
-              <span class="glyphicon glyphicon-user"></span>
+                <i class="user outline icon"></i>Users
         </button>
       </a>
         <a href="{% url 'samples_manager:experiment_samples_list' experiment.id  %}">     
           <button type="button"
-                  class="btn btn-danger"
+                  class="mini ui orange icon button"
                   title='Add samples'>
-                  <span class="glyphicon glyphicon-oil"></span>
+                  <i class="microchip icon"></i>Samples
           </button>
         </a>
         {%endif%}
-        <div class="dropdown">
-          <button type="button"
-                  class="btn dropdown-toggle"
-                  id="dropdownMenu1" data-toggle="dropdown" 
-                  aria-haspopup="true" aria-expanded="true"
+        <button type="button"
+                  class="mini ui grey icon dropdown link button"
                   title='More options'>
-                <span class="glyphicon glyphicon-menu-hamburger"></span>
-          </button>
-          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            <li><button type="button" class="btn-default js-clone-experiment" data-url="{% url 'samples_manager:experiment_clone' experiment.id %}">Clone</button></li>
-            <li><div><a  href="{% url 'samples_manager:print_experiment_view' experiment.id  %}"><button type="button" class="btn-default">Print</button></a></div></li>
-            <li><button class="btn-default js-delete-experiment" title='Delete' data-url="{% url 'samples_manager:experiment_delete' experiment.id %}">Delete</button></li>
-          </ul>
-        </div>
+                 <i class="ellipsis vertical icon"></i>More
+                 <div class="menu">
+                      <a data-url="{% url 'samples_manager:experiment_clone' experiment.id %}" class="js-clone-experiment item">Clone</a>
+                      <a href="{% url 'samples_manager:print_experiment_view' experiment.id  %}" class="item"><b>Print</b></a>
+                      <a title='Delete' data-url="{% url 'samples_manager:experiment_delete' experiment.id %}" class="js-delete-experiment item">Delete</a>
+                  </div>
+        </button>
     </td>
   </tr>
 {% empty %}

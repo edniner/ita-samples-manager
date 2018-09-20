@@ -4,110 +4,38 @@
 {% load widget_tweaks %}
 
 <!-- THE MODAL WE WILL BE USING -->
-<div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-irradiation">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div>
+<div class="ui modal" id="modal-irradiation">
+    <i class="close icon"></i>
+    <div class="scrolling content">
     </div>
 </div>
 
-<div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-sample">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div>
+<div class="ui modal" id="modal-sample">
+    <i class="close icon"></i>
+    <div class="scrolling content">
     </div>
 </div>
 
-<!-- THE MODAL WE WILL BE USING -->
-<div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-compound">
-        <div class="modal-dialog">
-                <div class="modal-content">
-                </div>
-        </div>
+<div class="ui modal" id="modal-compound" data-object="trigger">
+    <i class="close icon"></i>
+    <div class="scrolling content">
+    </div>
 </div>
-<form method="post" id='move_samples' class="col-sm-12"  action="{% url 'samples_manager:experiment_samples_list' experiment.id%}">
-{% csrf_token %} 
-<div class='panel panel-default' id="main_panel">
-        <div class="row">
-            <div class="col-sm-2">
-                <button  type="submit"
-                                id = "assign_ids"
-                                class="btn btn-warning"
-                                data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}"
-                                style="color:white;display:none">
-                                <span class="glyphicon glyphicon-tags"></span> Assign SET ID
-                </button> 
-            </div>
-            <div class="col-sm-2">
-                <button  type="submit"
-                                id = "print_samples"
-                                class="btn"
-                                style="color:white;display:none">
-                                <span class="glyphicon glyphicon-barcode"></span> Print labels
-                </button>   
-            </div>
-            <div class="col-sm-2">
-                <button  type="button"
-                                id = "new_group_irradiation"
-                                class="btn btn-danger"
-                                data-url="{% url 'samples_manager:new_group_irradiation' experiment.id %}"
-                                style="color:white;display:none">
-                                <span class="glyphicon glyphicon-flash"></span> New irradiation
-                </button>   
-            </div>        
-            <div class="col-sm-4">
-                <div class="row">
-                        <div class="btn col-sm-10">
-                            <select class="form-control" id="id_experiments" name="new_experiment" style="display:none;">
-                                <option value="" selected="selected">Move samples to another experiment</option>
-                                {% for experiment in experiments %}
-                                    <option value="{{experiment.id}}">{{experiment.title}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                            <button type="submit"
-                                id = "change_experiment"
-                                data-url="{% url 'samples_manager:move_samples' experiment.id %}"
-                                class="btn btn-success col-sm-2"
-                                style="color:white;display:none">
-                                <span class="glyphicon glyphicon-ok"></span>
-                            </button>
-                </div>
-            </div>
-        </div>
-        <div class="row" style="margin-bottom: 20px ">
-            <div class="col-sm-12">
-                <h3><span style="font-size: 150%; text-decoration: underline">{{experiment.title}} samples </span></h3>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4" style="text-align: left">
-                {%if request.path|slice:":23" == '/samples_manager/search' %}
-                    <a  href="{%  url 'samples_manager:experiment_samples_list' experiment.id  %}" type="button" class="btn back" title='Back'>
-                {%else %}
-                    <a  href="{% url 'samples_manager:experiments_list' %}" type="button" class="btn back" title='Back'>
-                {%endif%}
-                    <span class="glyphicon glyphicon-chevron-left"></span>Back
-                </a>
-            </div>
-            <div class="col-sm-4">
-                <form style="text-align: center" id="search_samples" class="col-sm-4" name="search_form" method="GET" action="{% url 'samples_manager:search_samples' experiment.id %}"> 
-                    <input title="Search by sample ID, name or category" id="search_box" type="text" name="search_box"  placeholder="Search..." >
-                    <button title="Search by sample ID, name or category" class="btn-sm btn-warning" id="search_submit" type="submit"><span class="glyphicon glyphicon-search line_height"></span></button>
-                </form>
-            </div>
-            <div class="col-sm-4" style="text-align: right">
-                <button type="button"
-                        id = "new_sample"
-                        class="btn btn-primary js-create-sample"
-                        data-url="{% url 'samples_manager:sample_new' experiment.id %}">
-                        <span class="glyphicon glyphicon-plus"></span>New Sample
-                </button> 
-            </div>
-        </div>
-        <div class="panel-body">
-                <div class="row">
-                      <table class="col-sm-12 table-responsive sortable" id="sample-table">
+
+<div class= "ui center aligned segment">
+    <h2>{{experiment.title}} samples</h2>
+    <div class= "ui aligned segment">
+        <button type="button"
+                    id = "new_sample"
+                    data-target = "#modal-sample"
+                    class="ui blue button js-create-sample"
+                    title='Register new sample'
+                    data-url="{% url 'samples_manager:sample_new' experiment.id %}">
+                    <i class="plus icon"></i> New Sample
+            </button>  
+    </div>
+
+        <table class="ui center aligned sortable celled table" id="sample-table">
                             <thead>
                                 <tr>
                                 <th class="sorttable_nosort"><input name="select_all" value="1" id="samples-select-all" type="checkbox"/></th>
@@ -125,13 +53,8 @@
                                 {% include 'samples_manager/partial_samples_list.html' %}
                             </tbody>
                         </table>
-                </div>
-                <div class="row" style="text-align: right">
-                    <p><a href="{% url 'samples_manager:archive_experiment_samples' experiment.id%}">Archive</a></p>
-                </div>
-        </div>   
-</div>
-</form>
+                </table>
+                <p><a href="{% url 'samples_manager:archive_experiment_samples' experiment.id%}">Archive</a></p>
+    </div>
 {% endblock %}
-
 

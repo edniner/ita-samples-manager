@@ -4,16 +4,17 @@
     <td>{{ compound_data.compound.density }}</td>
     <td>{{ compound_data.samples_sum}}</td>
     <td>
-      <button type="button"
-              class="btn btn-warning btn-sm js-update-compound"
-              data-url="{% url 'samples_manager:admin_compound_update' compound_data.compound.id %}">
-        <span class="glyphicon glyphicon-pencil"></span>
-      </button>
+    <button type="button"
+                class="mini ui yellow icon button js-update-compound"
+                data-url="{% url 'samples_manager:admin_compound_update' compound_data.compound.id %}"
+                title='View or Edit compound'>
+              <i class="pencil icon"></i>Edit
+        </button>
       {%if compound_data.samples_sum == 0 %}
         <button type="button"
-                class="btn btn-danger btn-sm js-delete-compound"
+                class="mini ui negative icon button js-delete-compound"
                 data-url="{% url 'samples_manager:admin_compound_delete' compound_data.compound.id %}">
-          <span class="glyphicon glyphicon-trash"></span>
+          <i class="trash icon"></i>Delete
         </button>
       {%endif%}
     </td>

@@ -12,6 +12,7 @@
 ;(function($) {
     $.fn.formset = function(opts)
     {
+        console.log("I'm here")
         var options = $.extend({}, $.fn.formset.defaults, opts),
             flatExtraClasses = options.extraClasses.join(' '),
             totalForms = $('#id_' + options.prefix + '-TOTAL_FORMS'),
@@ -28,7 +29,6 @@
             },
 
             updateElementIndex = function(elem, prefix, ndx) {
-
                 var idRegex = new RegExp(prefix + '-(\\d+|__prefix__)-'),
                     replacement = prefix + '-' + ndx + '-';
                     class_name = prefix;
