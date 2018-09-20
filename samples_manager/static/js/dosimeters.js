@@ -68,10 +68,15 @@ var  generate_ids = function () {
       type: 'get',
       dataType: 'json',
       beforeSend: function () {
-        $("#modal-dosimeter").modal("show");
+        $("#modal-dosimeter").modal({
+          closable:false,
+          onApprove : function() {
+			    return false;
+			  }
+        }).modal("show");
       },
       success: function (data) {
-        $("#modal-dosimeter .modal-content").html(data.html_form);
+        $("#modal-dosimeter .scrolling.content").html(data.html_form);
       }
     });
   };
@@ -83,10 +88,15 @@ var loadForm = function () {
       type: 'get',
       dataType: 'json',
       beforeSend: function () {
-        $("#modal-dosimeter").modal("show");
+        $("#modal-dosimeter").modal({
+          closable:false,
+          onApprove : function() {
+			    return false;
+			  }
+        }).modal("show");
       },
       success: function (data) {
-        $("#modal-dosimeter .modal-content").html(data.html_form);
+        $("#modal-dosimeter .scrolling.content").html(data.html_form);
       }
     });
   };

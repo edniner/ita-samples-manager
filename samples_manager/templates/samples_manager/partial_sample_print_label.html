@@ -5,11 +5,12 @@
   {% csrf_token %}
    <div class="ui center aligned segment container">
       <div class="ui centered header">
-    <h3> Confirm SET-ID allocation</h3>
-  </div>
-  <p>Allocating a SET-ID means that the sample is <b>ready to be irradiated</b>. Are you sure you want already to allocate a SET-ID to the sample <strong>{{ sample.name }}</strong>? </p>
-  <div class="two ui buttons actions">
-        <button  type="button"  class="ui deny medium button">Cancel</button>
-        <button  type="submit"  class="ui orange medium button submit">Print</button>
-  </div>
+        <h3> Confirm SET-ID allocation</h3>
+      </div>
+      <p>Allocating a SET-ID means that the sample is <b>ready to be irradiated</b>. Are you sure you want already to allocate a SET-ID to the sample <strong>{{ sample.name }}</strong>? </p>
+      <div class="two ui buttons actions">
+            <button  type="button"  class="ui deny medium button">Cancel</button>
+            <button  type="submit"  class="ui orange medium button submit">Print label</button>
+      </div>
+   </div>
 </form>
