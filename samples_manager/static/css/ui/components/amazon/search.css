@@ -1,9 +1,8 @@
 /*!
- * # Semantic UI x.x - Search
+ * # Semantic UI 2.3.3 - Search
  * http://github.com/semantic-org/semantic-ui/
  *
  *
- * Copyright 2015 Contributors
  * Released under the MIT license
  * http://opensource.org/licenses/MIT
  *
@@ -25,15 +24,18 @@
   text-shadow: none;
   font-style: normal;
   font-weight: normal;
-  line-height: 1.2142em;
-  padding: 0.73905385em 1.07692308em;
+  line-height: 1.21428571em;
+  padding: 0.73901099em 1.07692308em;
   font-size: 1em;
-  background: #ffffff;
+  background: #FFFFFF;
   border: 1px solid rgba(0, 0, 0, 0.13);
   color: rgba(0, 0, 0, 0.87);
-  box-shadow: 0em 0em 0em 0em transparent inset;
-  -webkit-transition: background-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
-          transition: background-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+  -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
+          box-shadow: 0em 0em 0em 0em transparent inset;
+  -webkit-transition: background-color 0.1s ease, color 0.1s ease, border-color 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: background-color 0.1s ease, color 0.1s ease, border-color 0.1s ease, -webkit-box-shadow 0.1s ease;
+  transition: background-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+  transition: background-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease, -webkit-box-shadow 0.1s ease;
 }
 .ui.search .prompt {
   border-radius: 500rem;
@@ -57,14 +59,15 @@
   top: 100%;
   left: 0%;
   -webkit-transform-origin: center top;
-      -ms-transform-origin: center top;
           transform-origin: center top;
-  background: #ffffff;
+  white-space: normal;
+  background: #FFFFFF;
   margin-top: 0.5em;
   width: 18em;
   border-radius: 0.30769em;
-  box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.08);
-  border: 1px solid #dddddd;
+  -webkit-box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);
+          box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);
+  border: 1px solid #DDDDDD;
   z-index: 998;
 }
 .ui.search > .results > :first-child {
@@ -115,7 +118,7 @@
   margin: 0em 6em 0em 0em;
 }
 .ui.search > .results .result .title {
-  margin: -0.14285em 0em 0em;
+  margin: -0.14285714em 0em 0em;
   font-family: 'Arial', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-weight: bold;
   font-size: 1em;
@@ -128,7 +131,7 @@
 }
 .ui.search > .results .result .price {
   float: right;
-  color: #60b044;
+  color: #60B044;
 }
 
 /*--------------
@@ -154,7 +157,7 @@
 .ui.search > .results > .action {
   display: block;
   border-top: none;
-  background: #f3f4f5;
+  background: #F3F4F5;
   padding: 0.92307692em 1em;
   color: rgba(0, 0, 0, 0.87);
   font-weight: bold;
@@ -172,8 +175,8 @@
 ---------------------*/
 
 .ui.search > .prompt:focus {
-  border-color: #51a7e8;
-  background: #ffffff;
+  border-color: #51A7E8;
+  background: #FFFFFF;
   color: rgba(0, 0, 0, 0.95);
 }
 
@@ -208,7 +211,8 @@
   border-color: #767676 transparent transparent;
   border-style: solid;
   border-width: 0.2em;
-  box-shadow: 0px 0px 0px 1px transparent;
+  -webkit-box-shadow: 0px 0px 0px 1px transparent;
+          box-shadow: 0px 0px 0px 1px transparent;
 }
 
 /*--------------
@@ -217,10 +221,10 @@
 
 .ui.search > .results .result:hover,
 .ui.category.search > .results .category .result:hover {
-  background: #f9fafb;
+  background: #F9FAFB;
 }
 .ui.search .action:hover {
-  background: #e0e0e0;
+  background: #E0E0E0;
 }
 
 /*--------------
@@ -228,7 +232,7 @@
 ---------------*/
 
 .ui.category.search > .results .category.active {
-  background: #f3f4f5;
+  background: #F3F4F5;
 }
 .ui.category.search > .results .category.active > .name {
   color: rgba(0, 0, 0, 0.87);
@@ -237,14 +241,27 @@
 .ui.category.search > .results .category .result.active {
   position: relative;
   border-left-color: rgba(0, 0, 0, 0.06);
-  background: #f3f4f5;
-  box-shadow: none;
+  background: #F3F4F5;
+  -webkit-box-shadow: none;
+          box-shadow: none;
 }
 .ui.search > .results .result.active .title {
   color: rgba(0, 0, 0, 0.85);
 }
 .ui.search > .results .result.active .description {
   color: rgba(0, 0, 0, 0.85);
+}
+
+/*--------------------
+        Disabled
+----------------------*/
+
+
+/* Disabled */
+.ui.disabled.search {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.3;
 }
 
 
@@ -254,20 +271,58 @@
 
 
 /*--------------
-    Categories
+    Selection
+---------------*/
+
+.ui.search.selection .prompt {
+  border-radius: 0.30769em;
+}
+
+/* Remove input */
+.ui.search.selection > .icon.input > .remove.icon {
+  pointer-events: none;
+  position: absolute;
+  left: auto;
+  opacity: 0;
+  color: '';
+  top: 0em;
+  right: 0em;
+  -webkit-transition: color 0.1s ease, opacity 0.1s ease;
+  transition: color 0.1s ease, opacity 0.1s ease;
+}
+.ui.search.selection > .icon.input > .active.remove.icon {
+  cursor: pointer;
+  opacity: 0.8;
+  pointer-events: auto;
+}
+.ui.search.selection > .icon.input:not([class*="left icon"]) > .icon ~ .remove.icon {
+  right: 1.85714em;
+}
+.ui.search.selection > .icon.input > .remove.icon:hover {
+  opacity: 1;
+  color: #DB2828;
+}
+
+/*--------------
+    Category
 ---------------*/
 
 .ui.category.search .results {
   width: 28em;
 }
+.ui.category.search .results.animating,
+.ui.category.search .results.visible {
+  display: table;
+}
 
 /* Category */
 .ui.category.search > .results .category {
-  background: #f3f4f5;
-  box-shadow: none;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  display: table-row;
+  background: #F3F4F5;
+  -webkit-box-shadow: none;
+          box-shadow: none;
   -webkit-transition: background 0.1s ease, border-color 0.1s ease;
-          transition: background 0.1s ease, border-color 0.1s ease;
+  transition: background 0.1s ease, border-color 0.1s ease;
 }
 
 /* Last Category */
@@ -283,31 +338,33 @@
   border-radius: 0em 0em 0.30769em 0em;
 }
 
-/* Category Result */
-.ui.category.search > .results .category .result {
-  background: #ffffff;
-  margin-left: 100px;
-  border-left: 1px solid rgba(0, 0, 0, 0.13);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  -webkit-transition: background 0.1s ease, border-color 0.1s ease;
-          transition: background 0.1s ease, border-color 0.1s ease;
-  padding: 0.84615385em 1.15384615em;
-}
-.ui.category.search > .results .category:last-child .result:last-child {
-  border-bottom: none;
-}
-
 /* Category Result Name */
 .ui.category.search > .results .category > .name {
+  display: table-cell;
+  text-overflow: ellipsis;
   width: 100px;
+  white-space: nowrap;
   background: transparent;
   font-family: 'Arial', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 1em;
-  float: 1em;
-  float: left;
   padding: 0.4em 1em;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Category Result */
+.ui.category.search > .results .category .results {
+  display: table-cell;
+  background: #FFFFFF;
+  border-left: 1px solid rgba(0, 0, 0, 0.13);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.ui.category.search > .results .category .result {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  -webkit-transition: background 0.1s ease, border-color 0.1s ease;
+  transition: background 0.1s ease, border-color 0.1s ease;
+  padding: 0.84615385em 1.15384615em;
 }
 
 
@@ -342,7 +399,7 @@
 ---------------*/
 
 .ui.mini.search {
-  font-size: 0.69230769em;
+  font-size: 0.76923077em;
 }
 .ui.small.search {
   font-size: 0.92307692em;
@@ -363,8 +420,18 @@
   font-size: 1.69230769em;
 }
 
+/*--------------
+      Mobile
+---------------*/
+
+@media only screen and (max-width: 1048px) {
+  .ui.search .results {
+    max-width: calc(100vw - 2rem);
+  }
+}
+
 
 /*******************************
-         Theme Overrides
+         Site Overrides
 *******************************/
 

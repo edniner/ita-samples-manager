@@ -1,9 +1,8 @@
 /*!
- * # Semantic UI x.x - Site
+ * # Semantic UI 2.3.3 - Site
  * http://github.com/semantic-org/semantic-ui/
  *
  *
- * Copyright 2015 Contributors
  * Released under the MIT license
  * http://opensource.org/licenses/MIT
  *
@@ -26,7 +25,7 @@ body {
   padding: 0px;
   overflow-x: visible;
   min-width: 1049px;
-  background: #ffffff;
+  background: #FFFFFF;
   font-family: 'Arial', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 13px;
   line-height: 1.4285em;
@@ -45,8 +44,8 @@ h3,
 h4,
 h5 {
   font-family: 'Arial', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  line-height: 1.2857em;
-  margin: calc(2rem -  0.14285em ) 0em 1rem;
+  line-height: 1.28571429em;
+  margin: calc(2rem -  0.14285714em ) 0em 1rem;
   font-weight: bold;
   padding: 0em;
 }
@@ -55,13 +54,13 @@ h1 {
   font-size: 2.25em;
 }
 h2 {
-  font-size: 1.714rem;
+  font-size: 1.71428571rem;
 }
 h3 {
-  font-size: 1.28rem;
+  font-size: 1.28571429rem;
 }
 h4 {
-  font-size: 1.071rem;
+  font-size: 1.07142857rem;
 }
 h5 {
   font-size: 1rem;
@@ -102,13 +101,19 @@ p:last-child {
 --------------------*/
 
 a {
-  color: #0066c0;
+  color: #0066C0;
   text-decoration: none;
 }
 a:hover {
-  color: #c45500;
+  color: #C45500;
   text-decoration: underline;
 }
+
+
+/*******************************
+         Scrollbars
+*******************************/
+
 
 
 /*******************************
@@ -118,15 +123,15 @@ a:hover {
 
 /* Site */
 ::-webkit-selection {
-  background-color: #cce2ff;
+  background-color: #CCE2FF;
   color: rgba(0, 0, 0, 0.87);
 }
 ::-moz-selection {
-  background-color: #cce2ff;
+  background-color: #CCE2FF;
   color: rgba(0, 0, 0, 0.87);
 }
 ::selection {
-  background-color: #cce2ff;
+  background-color: #CCE2FF;
   color: rgba(0, 0, 0, 0.87);
 }
 
@@ -146,3 +151,47 @@ input::selection {
   background-color: rgba(100, 100, 100, 0.4);
   color: rgba(0, 0, 0, 0.87);
 }
+
+/* Force Simple Scrollbars */
+body ::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 10px;
+}
+body ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0px;
+}
+body ::-webkit-scrollbar-thumb {
+  cursor: pointer;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.25);
+  -webkit-transition: color 0.2s ease;
+  transition: color 0.2s ease;
+}
+body ::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(0, 0, 0, 0.15);
+}
+body ::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 135, 139, 0.8);
+}
+
+/* Inverted UI */
+body .ui.inverted::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+body .ui.inverted::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+}
+body .ui.inverted::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(255, 255, 255, 0.15);
+}
+body .ui.inverted::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+
+/*******************************
+         Site Overrides
+*******************************/
+

@@ -1,9 +1,8 @@
 /*!
- * # Semantic UI 2.1.8 - Loader
+ * # Semantic UI 2.3.3 - Loader
  * http://github.com/semantic-org/semantic-ui/
  *
  *
- * Copyright 2015 Contributors
  * Released under the MIT license
  * http://opensource.org/licenses/MIT
  *
@@ -56,7 +55,8 @@
   border-color: #767676 transparent transparent;
   border-style: solid;
   border-width: 0.2em;
-  box-shadow: 0px 0px 0px 1px transparent;
+  -webkit-box-shadow: 0px 0px 0px 1px transparent;
+          box-shadow: 0px 0px 0px 1px transparent;
 }
 
 /* Active Animation */
@@ -82,29 +82,53 @@
 }
 
 /* Sizes */
-.ui.loader:before,
-.ui.loader:after {
-  width: 2.2585em;
-  height: 2.2585em;
-  margin: 0em 0em 0em -1.12925em;
-}
 .ui.mini.loader:before,
 .ui.mini.loader:after {
-  width: 1.2857em;
-  height: 1.2857em;
-  margin: 0em 0em 0em -0.64285em;
+  width: 1.07692308rem;
+  height: 1.07692308rem;
+  margin: 0em 0em 0em -0.53846154rem;
+}
+.ui.tiny.loader:before,
+.ui.tiny.loader:after {
+  width: 1.23076923rem;
+  height: 1.23076923rem;
+  margin: 0em 0em 0em -0.61538462rem;
 }
 .ui.small.loader:before,
 .ui.small.loader:after {
-  width: 1.7142em;
-  height: 1.7142em;
-  margin: 0em 0em 0em -0.8571em;
+  width: 1.84615385rem;
+  height: 1.84615385rem;
+  margin: 0em 0em 0em -0.92307692rem;
+}
+.ui.loader:before,
+.ui.loader:after {
+  width: 2.46153846rem;
+  height: 2.46153846rem;
+  margin: 0em 0em 0em -1.23076923rem;
 }
 .ui.large.loader:before,
 .ui.large.loader:after {
-  width: 4.5714em;
-  height: 4.5714em;
-  margin: 0em 0em 0em -2.2857em;
+  width: 3.69230769rem;
+  height: 3.69230769rem;
+  margin: 0em 0em 0em -1.84615385rem;
+}
+.ui.big.loader:before,
+.ui.big.loader:after {
+  width: 4rem;
+  height: 4rem;
+  margin: 0em 0em 0em -2rem;
+}
+.ui.huge.loader:before,
+.ui.huge.loader:after {
+  width: 4.46153846rem;
+  height: 4.46153846rem;
+  margin: 0em 0em 0em -2.23076923rem;
+}
+.ui.massive.loader:before,
+.ui.massive.loader:after {
+  width: 4.92307692rem;
+  height: 4.92307692rem;
+  margin: 0em 0em 0em -2.46153846rem;
 }
 
 /*-------------------
@@ -162,8 +186,7 @@
 *******************************/
 
 .ui.indeterminate.loader:after {
-  -webkit-animation-direction: reverse;
-          animation-direction: reverse;
+  animation-direction: reverse;
   -webkit-animation-duration: 1.2s;
           animation-duration: 1.2s;
 }
@@ -190,45 +213,85 @@
 /* Loader */
 .ui.inverted.dimmer .ui.mini.loader,
 .ui.mini.loader {
-  width: 1.2857em;
-  height: 1.2857em;
-  font-size: 0.71428571em;
+  width: 1.07692308rem;
+  height: 1.07692308rem;
+  font-size: 0.76923077em;
+}
+.ui.inverted.dimmer .ui.tiny.loader,
+.ui.tiny.loader {
+  width: 1.23076923rem;
+  height: 1.23076923rem;
+  font-size: 0.84615385em;
 }
 .ui.inverted.dimmer .ui.small.loader,
 .ui.small.loader {
-  width: 1.7142em;
-  height: 1.7142em;
-  font-size: 0.92857143em;
+  width: 1.84615385rem;
+  height: 1.84615385rem;
+  font-size: 0.92307692em;
 }
 .ui.inverted.dimmer .ui.loader,
 .ui.loader {
-  width: 2.2585em;
-  height: 2.2585em;
+  width: 2.46153846rem;
+  height: 2.46153846rem;
   font-size: 1em;
 }
-.ui.inverted.dimmer .ui.loader.large,
-.ui.loader.large {
-  width: 4.5714em;
-  height: 4.5714em;
-  font-size: 1.14285714em;
+.ui.inverted.dimmer .ui.large.loader,
+.ui.large.loader {
+  width: 3.69230769rem;
+  height: 3.69230769rem;
+  font-size: 1.15384615em;
+}
+.ui.inverted.dimmer .ui.big.loader,
+.ui.big.loader {
+  width: 4rem;
+  height: 4rem;
+  font-size: 1.30769231em;
+}
+.ui.inverted.dimmer .ui.huge.loader,
+.ui.huge.loader {
+  width: 4.46153846rem;
+  height: 4.46153846rem;
+  font-size: 1.46153846em;
+}
+.ui.inverted.dimmer .ui.massive.loader,
+.ui.massive.loader {
+  width: 4.92307692rem;
+  height: 4.92307692rem;
+  font-size: 1.69230769em;
 }
 
 /* Text Loader */
 .ui.mini.text.loader {
-  min-width: 1.2857em;
-  padding-top: 1.99998571em;
+  min-width: 1.07692308rem;
+  padding-top: 1.84615385rem;
+}
+.ui.tiny.text.loader {
+  min-width: 1.23076923rem;
+  padding-top: 2rem;
 }
 .ui.small.text.loader {
-  min-width: 1.7142em;
-  padding-top: 2.42848571em;
+  min-width: 1.84615385rem;
+  padding-top: 2.61538462rem;
 }
 .ui.text.loader {
-  min-width: 2.2585em;
-  padding-top: 2.97278571em;
+  min-width: 2.46153846rem;
+  padding-top: 3.23076923rem;
 }
 .ui.large.text.loader {
-  min-width: 4.5714em;
-  padding-top: 5.28568571em;
+  min-width: 3.69230769rem;
+  padding-top: 4.46153846rem;
+}
+.ui.big.text.loader {
+  min-width: 4rem;
+  padding-top: 4.76923077rem;
+}
+.ui.huge.text.loader {
+  min-width: 4.46153846rem;
+  padding-top: 5.23076923rem;
+}
+.ui.massive.text.loader {
+  min-width: 4.92307692rem;
+  padding-top: 5.69230769rem;
 }
 
 /*-------------------
@@ -270,12 +333,6 @@
   margin-left: auto;
   margin-right: auto;
 }
-
-
-/*******************************
-         Theme Overrides
-*******************************/
-
 
 
 /*******************************

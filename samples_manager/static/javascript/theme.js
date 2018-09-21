@@ -141,6 +141,7 @@ $(document)
     $themeDropdown
       .dropdown({
         onChange: function(theme) {
+          console.log(theme);
           var
             type = $(this).attr('name') || false
           ;
@@ -155,7 +156,7 @@ $(document)
           });
           // make other dropdown match
           if(type == 'global') {
-            "I'm here!!!"
+            console.log("I'm here!!!");
             $themeDropdown.dropdown('set value', theme);
           }
         }
