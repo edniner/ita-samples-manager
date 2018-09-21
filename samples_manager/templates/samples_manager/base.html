@@ -3,6 +3,8 @@
 <html>
     <head>
         <title>IRRAD Data Manager</title>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.0/dist/semantic.min.css">
         <link rel="stylesheet" href="{% static 'css/ui/semantic.min.css' %}">
         <link rel="stylesheet" href="{% static 'css/style2.css' %}">
         <link rel="stylesheet" href="{% static 'css/widget.css' %}">
@@ -104,7 +106,7 @@
                                 <a target='_blank' href="https://ps-irrad.web.cern.ch/" class="item">
                                 <b>IRRAD</b>
                                 </a>
-                                <div class="ui dropdown link item">
+                                <div class="ui dropdown link item allowed_dropdown">
                                     <span class="text"><b>INFO</b></span>
                                     <i class="dropdown icon"></i>
                                     <div class="menu">
@@ -113,7 +115,7 @@
                                     </div>
                                 </div>
                                 {% if logged_user.role == 'Admin'%}
-                                <div class="ui dropdown link item">
+                                <div class="ui dropdown link item allowed_dropdown">
                                     <span class="text"><b>ADMIN</b></span>
                                     <i class="dropdown icon"></i>
                                     <div class="menu">
@@ -154,9 +156,10 @@
             </div>
         </div>
     </div>
+
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> 
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script src="{% static 'js/samples.js' %}"></script>
         <script src="{% static 'js/experiments.js' %}"></script>
         <script src="{% static 'js/users.js' %}"></script>
@@ -167,11 +170,15 @@
         <script src="{% static 'js/soap.js' %}"></script>   
         <script src="{% static 'js/number-polyfill.js' %}"></script>
         <script src="{% static 'js/sorttable.js' %}"></script>
-        <script src="{% static 'javascript/library/jquery.min.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.0/dist/semantic.min.js"></script>
         <script src="{% static 'javascript/home.js' %}"></script>
         <script src="{% static 'javascript/theme.js' %}"></script>     
         <script src="{% static 'js/DYMO.Label.Framework.2.0.2.js' %}"></script>
+        <script>
+            $('.allowed_dropdown')
+            .dropdown();
+    </script>
+        
     </body>
 </html>
         {% block javascript %}

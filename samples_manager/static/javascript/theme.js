@@ -161,7 +161,7 @@ $(document)
           }
         }
       })
-      .dropdown('set selected', 'github')
+      .dropdown('set selected', 'default')
     ;
 
 
