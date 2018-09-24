@@ -16,7 +16,6 @@
 @font-face {
   font-family: 'Icons';
   src: '';
-  src: url("../themes/default/assets/fonts/octicons.eot?#iefix") format('embedded-opentype'), url("../themes/default/assets/fonts/octicons.woff2") format('woff2'), url("../themes/default/assets/fonts/octicons.woff") format('woff'), url("../themes/default/assets/fonts/octicons.ttf") format('truetype'), url("../themes/default/assets/fonts/octicons.svg#icons") format('svg');
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
