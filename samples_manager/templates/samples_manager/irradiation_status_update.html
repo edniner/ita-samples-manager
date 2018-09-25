@@ -1,27 +1,24 @@
 <meta charset="UTF-8"> 
 {% load staticfiles %}
 {% load widget_tweaks %}
-<form method="post" action="{% url 'samples_manager:irradiation_status_update' form.instance.pk %}" class="js-irradiation-update-form">
+<form method="post" action="{% url 'samples_manager:irradiation_status_update' form.instance.pk %}" class="ui form js-irradiation-update-form">
   {% csrf_token %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <h4 class="modal-title">Update Status</h4>
-  </div>
-  <div class="modal-body">
-     {% for field in form %}
-        <div class="form-group{% if field.errors %} has-error{% endif %}">
+  <div class="ui center aligned segment container">
+      <div class="ui centered header">
+            <h3>Change status</h3>
+      </div>
+      {% for field in form %}
+        <div class="field form-group{% if field.errors %} has-error{% endif %}">
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-    {% render_field field class="form-control" %}
-    {% for error in field.errors %}
-            <p class="help-block">{{ error }}</p>
-    {% endfor %}
-        </div>
-    {% endfor %}
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-    <button type="submit" class="btn btn-success">Save</button>
+      {% render_field field class="form-control" %}
+      {% for error in field.errors %}
+              <p class="help-block">{{ error }}</p>
+      {% endfor %}
+          </div>
+      {% endfor %}
+     <div class="two ui buttons actions">
+              <button  type="button"  class="ui deny medium button">Cancel</button>
+              <button  type="submit" class="ui positive medium button submit">Save</button>
+     </div>
   </div>
 </form>

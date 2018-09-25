@@ -131,7 +131,13 @@ class ExperimentStatus(forms.ModelForm):
         model = Experiments
         fields = ['status']
 
-
+class IrradiationStatus(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(IrradiationStatus, self).__init__(*args, **kwargs)
+        self.fields['status'].label = "Choose status:"
+    class Meta:
+        model = Irradiation
+        fields = ['status']
 
 def get_fluences(experiment_id):
     fluences = ReqFluences.objects.filter( experiment = experiment_id)    

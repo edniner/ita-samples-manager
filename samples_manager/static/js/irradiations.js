@@ -33,10 +33,16 @@ var loadForm = function () {
       type: 'get',
       dataType: 'json',
       beforeSend: function () {
-        $("#modal-irradiation").modal("show");
+        $("#modal-irradiation").modal({
+          closable:false,
+          allowMultiple: true,
+          onApprove : function() {
+			    return false;
+			  }
+        }).modal("show");
       },
       success: function (data) {
-        $("#modal-irradiation .modal-content").html(data.html_form);
+        $("#modal-irradiation .scrolling.content").html(data.html_form);
       }
     });
   };
@@ -51,13 +57,13 @@ var loadForm = function () {
       success: function (data) {
         if (data.form_is_valid) {
           $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
-          $("#modal-irradiation").modal("hide");  // <-- Close the modal
-          window.location.href =  form.attr("data-url");
+          $("#modal-irradiation").modal("hide");  // <-- Close the modals
+          //window.location.href =  form.attr("data-url");
             /*if(data.experiment_id != -1)
             samplesloadForm(data.experiment_id);*/
         }
         else {
-          $("#modal-irradiation .modal-content").html(data.html_form);
+          $("#modal-irradiation .scrolling.content").html(data.html_form);
           alert("Please, check the form and fill all the required fields!");
         }
       }
@@ -73,4 +79,12 @@ var loadForm = function () {
 // Update irradiation
   $("#irradiation-table").on("click", ".js-update-irradiation", loadForm);
   $("#modal-irradiation").on("submit", ".js-irradiation-update-form",saveForm);
+
+// delete irradiation
+  $("#irradiation-table").on("click", ".js-delete-irradiation", loadForm);
+  $("#modal-irradiation").on("submit", ".js-irradiation-delete-form", saveForm);
+
+  //update irradiation status
+  $("#irradiation-table").on("click", ".js-change-irradiation-status", loadForm);
+  $("#modal-irradiation").on("submit", ".js-irradiation-update-form", saveForm);
 });

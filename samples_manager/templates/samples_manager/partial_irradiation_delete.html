@@ -1,0 +1,13 @@
+<form method="post" action="{% url 'samples_manager:irradiation_delete' irradiation.id %}" class="ui form js-irradiation-delete-form">
+  {% csrf_token %}
+ <div class="ui center aligned segment container">
+      <div class="ui centered header">
+            <h3>Confirm removing irradiation</h3>
+      </div>
+      <p>Are you sure you want to delete this irradiation?</strong></p>
+      <div class="two ui buttons actions">
+        <button  type="button"  class="ui deny medium button">Cancel</button>
+        <button  type="submit"  class="ui negative medium button submit">Delete</button>
+      </div>
+ </div>
+</form>

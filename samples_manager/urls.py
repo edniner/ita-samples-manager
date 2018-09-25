@@ -61,4 +61,6 @@ urlpatterns = [
     url(r'^experiment/(?P<experiment_id>\d+)/new/irradiation/$', views.new_group_irradiation, name='new_group_irradiation'),
     url(r'^irradiation/new/$', views.irradiation_new, name='irradiation_new'),
     url(r'^irradiation/(?P<pk>\d+)/update/$', views.irradiation_update, name='irradiation_update'),
+    url(r'^irradiation/(?P<pk>\d+)/delete/$', views.irradiation_delete, name='irradiation_delete'),
+    url(r'^irradiation/(?P<pk>\d+)/status/update/$', views.irradiation_status_update, name='irradiation_status_update'),
     ]

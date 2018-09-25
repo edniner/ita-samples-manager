@@ -44,6 +44,30 @@
     top: 3%;
 }
 
+span.circle_span {
+    margin-bottom: 5px;
+    padding-top: 4px;
+    width: 50px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 14px;
+    color: #fff;
+    line-height: 14px;
+    text-align: center;
+}
+
 .ui.modal .scrolling.content{
     max-height: calc(100vh);
+}
+
+.red_icon{ 
+    background: rgb(196,51,47);
+}
+
+.blue{
+    background: rgb(40,95,143);
+}
+
+.green{
+    background: #008000;
 }

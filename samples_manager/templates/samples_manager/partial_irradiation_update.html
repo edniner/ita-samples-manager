@@ -1,17 +1,12 @@
-<meta charset="UTF-8"> 
-{% load staticfiles %}
 {% load widget_tweaks %}
-<form method="post"  action="{% url 'samples_manager:irradiation_update'%}" class="js-irradiation-update-form">
+<form method="post"  action="{% url 'samples_manager:irradiation_update'%}" class="ui form js-irradiation-update-form">
   {% csrf_token %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <h4 class="modal-title"> Edit irradiation data </h4>
-  </div>
-  <div class="modal-body">
+  <div class="ui center aligned segment container">
+      <div class="ui centered header">
+            <h3>Edit irradiation data</h3>
+      </div>
   {% for field in form %}
-    <div class="form-group{% if field.errors %} has-error{% endif %}">
+    <div class="field form-group{% if field.errors %} has-error{% endif %}">
       <label for="{{ field.id_for_label }}">{{ field.label }}</label>
   {% render_field field class="form-control" %}
   {% for error in field.errors %}
@@ -19,16 +14,9 @@
   {% endfor %}
     </div>
   {% endfor %}
-
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-lg pull-left back"  data-dismiss="modal"  type="button"><span class="glyphicon glyphicon-remove"></span>Cancel</button>
-    <button class="btn btn-success btn-lg pull-right" type="submit">Save <span class="glyphicon glyphicon-save"></span></button>
+  <div class="two ui buttons actions">
+              <button  type="button"  class="ui deny medium button">Cancel</button>
+              <button  type="submit" class="ui positive medium button submit">Save</button>
+        </div>
   </div>
 </form>
-
-<script type="text/javascript">
-    $( function() {
-        $( "#id_date_in" ).datepicker({ dateFormat: 'dd/mm/yy' });
-    } );
-</script>

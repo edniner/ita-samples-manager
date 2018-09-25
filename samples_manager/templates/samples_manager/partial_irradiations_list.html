@@ -11,22 +11,23 @@
     <td>{{ irradiation.status}}</td>
     <td>
       <button type="button"
-                class="btn btn-warning js-update-irradiation"
+                class="mini ui yellow icon button js-update-irradiation"
                 data-url="{%  url 'samples_manager:irradiation_update' irradiation.id %}"
-                title='View or Edit Irradiation'>
-              <span class="glyphicon glyphicon-pencil"></span>
+                title='View or Edit irradiation'>
+                <i class="pencil icon"></i>Edit
       </button>
+      
       <button type="button"
-              class="btn btn-info js-change-irradiation-status"
-              data-url=""
+              class="mini ui violet icon button js-change-irradiation-status"
+              data-url="{%  url 'samples_manager:irradiation_status_update' irradiation.id %}"
               title='Change status'>
-        <span class="glyphicon glyphicon glyphicon-record"></span>
+        <i class="hourglass half icon"></i>Status
       </button>
       <button type="button"
-                class="btn btn-danger js-delete-sample"
+                class="mini ui negative icon button js-delete-irradiation"
                 title='Delete'
-                data-url="">
-          <span class="glyphicon glyphicon-trash"></span>
+                data-url="{%  url 'samples_manager:irradiation_delete' irradiation.id %}">
+          <i class="trash icon"></i>Delete
       </button>
     </td>
     </tr>

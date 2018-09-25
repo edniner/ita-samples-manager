@@ -1,19 +1,15 @@
 var activate_hidden_buttons = function() {
-        $('#new_sample').hide();
-        $('#print_samples').show();
-        $('#assign_ids').show();
+        $('#unchecked_segment').hide();
+        $('#checked_segment').show();
         $('#assign_dosimeters').show();
         $('#id_experiments').show();
-        $('#change_experiment').show();
         $('#new_group_irradiation').show();
   }
 var disactivate_hidden_buttons = function(){
-        $('#new_sample').show();
-        $('#print_samples').hide();
-        $('#assign_ids').hide();
+        $('#unchecked_segment').show();
+        $('#checked_segment').hide();
         $('#assign_dosimeters').hide();
         $('#id_experiments').hide();
-        $('#change_experiment').hide();
         $('#new_group_irradiation').hide();
   }
 
@@ -117,7 +113,7 @@ var loadForm = function () {
             samplesloadForm(data.experiment_id);*/
         }
         else {
-          $("#modal-sample .modal-content").html(data.html_form);
+          $("#modal-sample .scrolling.content").html(data.html_form);
           if(data['state']=='not unique')
             alert("This name already exists! Please, choose a different name.");
           else if (data['state']=='layers missing')
@@ -271,9 +267,8 @@ var assignids = function () {
             $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
             $('.chkbox:checked').removeAttr('checked');
             checked_sample_values = 0;
-            $('#new_sample').show();
-            $('#print_samples').hide();
-            $('#assign_ids').hide();
+            $('#unchecked_segment').show();
+            $('#checked_segment').hide();
             load_values();
           }
           else {
@@ -285,9 +280,8 @@ var assignids = function () {
     else{
         $('.chkbox:checked').removeAttr('checked');
         checked_sample_values = 0;
-        $('#new_sample').show();
-        $('#print_samples').hide();
-        $('#assign_ids').hide();
+        $('#unchecked_segment').show();
+        $('#checked_segment').hide();
         load_values();
     }
     return false;
@@ -308,10 +302,8 @@ var assignids = function () {
           if (data.form_is_valid) {
             $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
             $('.chkbox:checked').removeAttr('checked');
-            checked_sample_values = 0;
-            $('#new_sample').show();
-            $('#print_samples').hide();
-            $('#assign_ids').hide();
+            $('#unchecked_segment').show();
+            $('#checked_segment').hide();
             load_values();
           }
           else {
@@ -323,9 +315,8 @@ var assignids = function () {
     else{
         $('.chkbox:checked').removeAttr('checked');
         checked_sample_values = 0;
-        $('#new_sample').show();
-        $('#print_samples').hide();
-        $('#assign_ids').hide();
+        $('#unchecked_segment').show();
+        $('#checked_segment').hide();
         load_values();
     }
     return false;

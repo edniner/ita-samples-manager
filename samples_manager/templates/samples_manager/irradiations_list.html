@@ -2,46 +2,32 @@
 {% block content %}
  <!-- THE MODAL WE WILL BE USING -->
  
-<div class="modal" data-backdrop="static" data-keyboard="false"  id="modal-irradiation">
-    <div class="modal-dialog">
-      <div class="modal-content">
+<div class="ui modal"  id="modal-irradiation">
+    <i class="close icon"></i>
+      <div class="scrolling content">
       </div>
-    </div>
 </div>
 
-<div class='panel panel-default' id="main_panel">
-    <div class="row"  style="margin-bottom: 20px "> 
-        <div class="col-sm-12">
-            <h3><span style="font-size: 150%; text-decoration: underline">Irradiations</span></h3>
+<div class= "ui center aligned raised segment">
+    <h2>Irradiation Status</h2>
+    <div class= "ui grid segment">
+        <div class="three wide column">
+                <button type="button" class="ui left floated grey button"  onclick="goBack()" title='Back'>
+                            <i class="angle left icon"></i>Back
+                </button>
+        </div>
+        <div class="ten wide column">
+            <button type="button"
+                        id = "irradiation_new"
+                        data-target = "#modal-irradiation"
+                        class="ui blue button js-create-sample"
+                        title='New irradition'
+                        data-url="{% url 'samples_manager:irradiation_new'%}">
+                        <i class="plus icon"></i> New Irradiation
+            </button>   
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-4" style="text-align: left">
-             {%if request.path|slice:":23" == '/samples_manager/search' %}
-                <a  href="{% url 'samples_manager:irradiations'  %}" type="button" class="btn back" title='Back'>
-            {%else %}
-                <a  href="{% url 'samples_manager:index' %}" type="button" class="btn back" title='Back'>
-            {%endif%}
-                <span class="glyphicon glyphicon-chevron-left"></span>Back
-            </a>
-        </div>
-        <form  style="text-align: center"  class="col-sm-4" method="GET" action="{% url 'samples_manager:search_irradiations' %}"> 
-                <input   id="search_box" type="text" name="search_box"  placeholder="Search..." >
-                <button  class="btn-sm btn-warning" id="search_submit" type="submit"><span class="glyphicon glyphicon-search line_height"></span></button>
-        </form>
-                <div class="col-sm-4" style="text-align: right">
-                        <button type="button"
-                                id = "irradiation_new"
-                                class="btn btn-danger"
-                                data-url="{% url 'samples_manager:irradiation_new'%}"
-                                title="New irradiations">
-                                <span class="glyphicon glyphicon-flash"></span>New Irradiation
-                        </button> 
-                </div> 
-    </div>
-    <div class="panel-body">
-        <div class="row">
-            <table class="col-sm-12 table-responsive sortable" id="irradiation-table">
+    <table class="ui center aligned sortable celled table" id="irradiation-table">
                 <thead>
                     <tr>
                         <th>Updated at</th>
@@ -61,6 +47,4 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
 {% endblock %}

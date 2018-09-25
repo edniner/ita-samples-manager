@@ -7,15 +7,33 @@
       </div>
   </div>
 
+
 <div class= "ui center aligned raised segment">
      <h2 >Irradiation Experiments</h2>
-     <button type="button"
-                  data-target = "#modal-experiment"
-                  class="ui blue button js-create-experiment"
-                  title='Register new irradiation experiment'
-                  data-url="{% url 'samples_manager:experiment_new' %}">
-                  <i class="plus icon"></i> New Experiment
-        </button>  
+     <div class= "ui grid segment">
+        <div class="three wide column">
+                    <button type="button" class="ui left floated grey button" onclick="goBack()" title='Back'>
+                        <i class="angle left icon"></i>Back
+                    </button>
+        </div>
+        <div class="ten wide column">
+            <form style="text-align: center; display: block" name="search_form" method="GET" action="{% url 'samples_manager:search_experiments_admin'%}"> 
+                <div class="ui right action input">
+                    <input title="Search irradiation title or status"   id="search_box" type="text" name="search_box"  placeholder="Search..." >
+                    <button title="Search irradiation title or status" class="ui icon green button" id="search_submit" type="submit"><i class="search icon"></i></button>
+                </div>
+            </form>
+        </div>
+        <div class="three wide column">
+            <button type="button"
+                        data-target = "#modal-experiment"
+                        class="ui blue right floated button js-create-experiment"
+                        title='Register new irradiation experiment'
+                        data-url="{% url 'samples_manager:experiment_new' %}">
+                        <i class="plus icon"></i>New Experiment
+            </button> 
+        </div>
+    </div>
 
      <table class="ui center aligned sortable celled table" id="experiment-table">
                 <thead>

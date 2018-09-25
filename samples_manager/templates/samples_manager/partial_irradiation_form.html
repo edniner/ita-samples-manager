@@ -1,19 +1,12 @@
-<meta charset="UTF-8"> 
-{% load staticfiles %}
 {% load widget_tweaks %}
-
-
-<form method="post" data-url="{% url 'samples_manager:irradiations'%}"  action="{% url 'samples_manager:irradiation_new'%}" class="js-irradiation-form">
+<form method="post" data-url="{% url 'samples_manager:irradiations'%}"  action="{% url 'samples_manager:irradiation_new'%}" class="ui form js-irradiation-form">
   {% csrf_token %}
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <h4 class="modal-title"> Assign dosimeter </h4>
-  </div>
-  <div class="modal-body">
+  <div class="ui center aligned segment container">
+      <div class="ui centered header">
+            <h3>Assign dosimeter</h3>
+      </div>
   {% for field in form %}
-    <div class="form-group{% if field.errors %} has-error{% endif %}">
+    <div class="field form-group{% if field.errors %} has-error{% endif %}">
       <label for="{{ field.id_for_label }}">{{ field.label }}</label>
   {% render_field field class="form-control" %}
   {% for error in field.errors %}
@@ -21,10 +14,9 @@
   {% endfor %}
     </div>
   {% endfor %}
-
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-lg pull-left back"  data-dismiss="modal"  type="button"><span class="glyphicon glyphicon-remove"></span>Cancel</button>
-    <button class="btn btn-success btn-lg pull-right" type="submit">Save <span class="glyphicon glyphicon-save"></span></button>
+       <div class="two ui buttons actions">
+              <button  type="button"  class="ui deny medium button">Cancel</button>
+              <button  type="submit" class="ui positive medium button submit">Save</button>
+        </div>
   </div>
 </form>

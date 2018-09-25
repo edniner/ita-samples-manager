@@ -354,7 +354,7 @@ span.glyphicon.glyphicon-search.line_height {
 }
 
 
-div.circle {
+div.circle_div {
     margin-bottom: 5px;
     padding-top: 4px;
     width: 22px;
@@ -366,7 +366,7 @@ div.circle {
     text-align: center;
 }
 
-.red{ 
+.red_icon{ 
     background: rgb(196,51,47);
 }
 

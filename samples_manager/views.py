@@ -56,7 +56,7 @@ def get_logged_user(request):
     
     email =  email.lower()
     users = Users.objects.all()
-    emails =[]
+    emails = []
     for item in users:
         emails.append(item.email)
     if not email in emails:
@@ -326,6 +326,25 @@ def irradiation_update(request, pk):
                     request=request,
                 )
     return JsonResponse(data)
+
+def irradiation_delete(request ,pk):
+    irradiation = get_object_or_404(Irradiation, pk=pk)
+    logged_user = get_logged_user(request)
+    data = dict()
+    if request.method == 'POST':
+        irradiation.delete()
+        data['form_is_valid'] = True 
+        irradiations = Irradiation.objects.all()
+        data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',
+        {'irradiations': irradiations, 'logged_user': logged_user})
+    else:
+        context = {'irradiation': irradiation,}
+        data['html_form'] = render_to_string('samples_manager/partial_irradiation_delete.html',
+            context,
+            request=request,
+        )
+    return JsonResponse(data)
+
 
 def new_group_irradiation(request, experiment_id):
     data = dict()
@@ -1232,34 +1251,20 @@ def irradiation_status_update(request, pk):
     logged_user = get_logged_user(request)
     irradiation = get_object_or_404(Irradiation, pk=pk)
     if request.method == 'POST':
-        form =  ExperimentStatus(request.POST,instance=experiment)
+        form =  IrradiationStatus(request.POST,instance=irradiation)
         if form.is_valid():
-            form.save()
-            updated_experiment = Experiments.objects.get(id = experiment.id)
-            if  updated_experiment.status == 'Completed':
-                message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was completed.\nTwo weeks time is still needed for the cool down. Please, contact us after that period.\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
-                exp_users= updated_experiment.users.values()
-                for user in exp_users:
-                    pass
-                    #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
+            updated_irradiation =  form.save()
             data['form_is_valid'] = True
-            if logged_user.role == 'Admin':
-                    experiments = Experiments.objects.all().order_by('-updated_at')
-                    experiment_data = get_registered_samples_number(experiments)
-                    template_data = {'experiment_data': experiment_data}
-                    output_template = 'samples_manager/partial_admin_experiments_list.html'
-            else: 
-                    experiments = authorised_experiments(logged_user)
-                    template_data = {'experiments': experiments}
-                    output_template = 'samples_manager/partial_experiments_list.html'
-            data['html_experiment_list'] = render_to_string(output_template, template_data)
+            irradiations = Irradiation.objects.all()
+            template_data = {'irradiations': irradiations}
+            output_template = 'samples_manager/partial_irradiations_list.html'
+            data['html_irradiation_list'] = render_to_string(output_template, template_data)
         else:
             print("form is not valid")
     else:
-        form = ExperimentStatus(instance=experiment)
-    context = {'form': form, 'experiment': experiment}
-    data['html_form'] = render_to_string('samples_manager/experiment_status_update.html',
+        form = IrradiationStatus(instance=irradiation)
+    context = {'form': form, 'irradiation': irradiation}
+    data['html_form'] = render_to_string('samples_manager/irradiation_status_update.html',
         context,
         request=request,
     )
@@ -1734,7 +1739,7 @@ def admin_user_delete(request ,pk):
     data = dict()
     if request.method == 'POST':
         user.delete()
-        data['form_is_valid'] = True  # This is just to play along with the existing code
+        data['form_is_valid'] = True 
         users = Users.objects.all()
         row = 0 
         for user in users:

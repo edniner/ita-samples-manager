@@ -141,23 +141,17 @@ $(document)
     $themeDropdown
       .dropdown({
         onChange: function(theme) {
-          console.log(theme);
           var
             type = $(this).attr('name') || false
           ;
           $.each($css, function() {
-            console.log("each");
             var
               currentHREF = $(this).attr('href'),
               newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
             ;
-            console.log("currentHREF: ",currentHREF);
-            console.log("newHREF: ",newHREF);
             if(type == 'global' || currentHREF.search(type) !== -1) {
               $(this).attr('href', newHREF);
-              console.log("this");
             }
-            console.log("here");
           });
           // make other dropdown match
           if(type == 'global') {

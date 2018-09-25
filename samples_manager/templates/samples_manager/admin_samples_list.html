@@ -24,16 +24,76 @@
 
 <div class= "ui center aligned raised segment">
     <h2>{{experiment.title}} samples</h2>
-    <div class= "ui aligned segment">
-        <button type="button"
-                    id = "new_sample"
-                    data-target = "#modal-sample"
-                    class="ui blue button js-create-sample"
-                    title='Register new sample'
-                    data-url="{% url 'samples_manager:sample_new' experiment.id %}">
-                    <i class="plus icon"></i> New Sample
+        <div class= "ui grid segment" id= "checked_segment" style = "display: none">
+        <div class="three wide column">
+            <button  type="submit"
+                        id = "assign_ids"
+                        class="ui violet button"
+                        data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}">
+                        <i class="tags icon"></i> Assign SET ID
+            </button>
+        </div>
+        <div class="three wide column">
+            <button  type="submit"
+                    id = "print_samples"
+                    class="ui orange button">
+                    <i class="barcode icon"></i> Print labels
             </button>  
+        </div>
+        <div class="three wide column">
+                <button  type="button"
+                    id = "new_group_irradiation"
+                    class="ui negative button"
+                    data-url="{% url 'samples_manager:new_group_irradiation' experiment.id %}">
+                    <i class="bolt icon"></i> New irradiation 
+                </button>   
+        </div>
+        <div class="seven wide column">
+            <div class="ui right action input">
+                <select class="form-control" id="id_experiments" name="new_experiment">
+                                    <option value="" selected="selected">Move samples to another experiment</option>
+                                    {% for experiment in experiments %}
+                                        <option value="{{experiment.id}}">{{experiment.title}}</option>
+                                    {% endfor %}
+                </select>
+                <button type="submit"
+                                    id = "change_experiment"
+                                    data-url="{% url 'samples_manager:move_samples' experiment.id %}"
+                                    class="ui positive button">
+                                    <i class="check icon"></i>
+                </button>
+            </div>
+        </div>
     </div>
+
+
+
+    <div class= "ui grid segment"  id= "unchecked_segment">
+        <div class="three wide column">
+                    <button type="button" class="ui left floated grey button"  onclick="goBack()" title='Back'>
+                        <i class="angle left icon"></i>Back
+                    </button>
+        </div>
+        <div class="ten wide column">
+            <form style="text-align: center; display: block" name="search_form" method="GET" action="{% url 'samples_manager:search_samples' experiment.id%}"> 
+                <div class="ui right action input">
+                    <input title="Search irradiation title or status"   id="search_box" type="text" name="search_box"  placeholder="Search..." >
+                    <button title="Search irradiation title or status" class="ui icon green button" id="search_submit" type="submit"><i class="search icon"></i></button>
+                </div>
+            </form>
+        </div>
+        <div class="three wide column">
+            <button type="button"
+                        id = "new_sample"
+                        data-target = "#modal-sample"
+                        class="ui blue button js-create-sample"
+                        title='Register new sample'
+                        data-url="{% url 'samples_manager:sample_new' experiment.id %}">
+                        <i class="plus icon"></i> New Sample
+                </button>  
+        </div>
+    </div>
+     
 
         <table class="ui center aligned sortable celled table" id="sample-table">
                             <thead>

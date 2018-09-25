@@ -7,16 +7,14 @@ var load_values = function() {
   $('input.chk').change(function() {
     if (this.checked){
         checked_values = checked_values + 1;
-        $('#new_dos').hide();
-        $('#print_dos').show();
-        $('#generate_dos').hide();
+        $('#unchecked_segment').hide();
+        $('#checked_segment').show();
       } 
     else{
       checked_values = checked_values - 1;
       if (checked_values == 0){
-        $('#new_dos').show();
-        $('#print_dos').hide();
-        $('#generate_dos').show();
+        $('#unchecked_segment').show();
+        $('#checked_segment').hide();
       }
     }
   });  
@@ -25,16 +23,14 @@ $("#dosimeters-select-all").click(function(){
     $('.chk').not(this).prop('checked', this.checked);
     if (this.checked){
               checked_values = checked_values + 1;
-              $('#new_dos').hide();
-              $('#print_dos').show();
-              $('#generate_dos').hide();
+              $('#unchecked_segment').hide();
+              $('#checked_segment').show();
             } 
           else{
             checked_values = checked_values - 1;
             if (checked_values == 0){
-              $('#new_dos').show();
-              $('#print_dos').hide();
-              $('#generate_dos').show();
+              $('#unchecked_segment').show();
+              $('#checked_segment').hide();
             }
           }  
 });
@@ -46,16 +42,14 @@ $("#dosimeters-select-all").click(function(){
     $('.chk').not(this).prop('checked', this.checked);
     if (this.checked){
               checked_values = checked_values + 1;
-              $('#new_dos').hide();
-              $('#print_dos').show();
-              $('#generate_dos').hide();
+              $('#unchecked_segment').hide();
+              $('#checked_segment').show();
             } 
           else{
             checked_values = checked_values - 1;
             if (checked_values == 0){
-              $('#new_dos').show();
-              $('#print_dos').hide();
-              $('#generate_dos').show();
+              $('#unchecked_segment').show();
+              $('#checked_segment').hide();
             }
           }  
 }); 
@@ -177,9 +171,8 @@ var loadForm = function () {
                         alert('No Dymo printer connected!')
                 }
                 $('.chk:checked').removeAttr('checked');
-                $('#new_dos').show();
-                $('#print_dos').hide();
-                $('#generate_dos').show();
+                $('#unchecked_segment').show();
+                $('#checked_segment').hide();
                 checked_values = 0;
                 load_values();    
             }
@@ -202,9 +195,8 @@ var loadForm = function () {
           $("#dosimeter-table tbody").html(data.html_dosimeter_list);  // <-- Replace the table body
           $("#modal-dosimeter").modal("hide");  // <-- Close the modal
           checked_values = 0;
-          $('#new_dos').show();
-          $('#print_dos').hide();
-          $('#generate_dos').show();
+          $('#unchecked_segment').show();
+          $('#checked_segment').hide();
         }
         else {
           alert("Something went wrong!"); 
