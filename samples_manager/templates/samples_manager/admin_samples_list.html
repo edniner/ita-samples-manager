@@ -16,12 +16,13 @@
     </div>
 </div>
 
-<div class="ui modal" id="modal-compound" data-object="trigger">
+<div class="ui modal" id="modal-compound">
     <i class="close icon"></i>
     <div class="scrolling content">
     </div>
 </div>
-
+<form method="post" id='move_samples'  action="">
+{% csrf_token %}  
 <div class= "ui center aligned raised segment">
     <h2>{{experiment.title}} samples</h2>
         <div class= "ui grid segment" id= "checked_segment" style = "display: none">
@@ -116,5 +117,6 @@
                 </table>
                 <p><a href="{% url 'samples_manager:archive_experiment_samples' experiment.id%}">Archive</a></p>
     </div>
+</form>
 {% endblock %}
 

@@ -225,9 +225,8 @@ var dymoPrintSamples = function(){
 
                 $('.chkbox:checked').removeAttr('checked');
                 checked_sample_values = 0;
-                $('#new_sample').show();
-                $('#print_samples').hide();
-                $('#assign_ids').hide();
+                $('#unchecked_segment').show();
+                $('#checked_segment').hide();
                 load_values();
             }
             catch(e)
@@ -251,42 +250,6 @@ var dymoPrintSamples = function(){
       }
     });
   };
-
-var assignids = function () {
-    var r = confirm("Allocating SET-ID means that your samples are ready to be irradiated. Please, proceed only if you are sure.")
-    if(r == true) {
-      var btn = $(this);
-      var form = $('#assign_samples_dosimeter');
-      $.ajax({
-        url: btn.attr("data-url"),
-        data:  form.serialize(),
-        type: form.attr("method"),
-        dataType: 'json',
-        success: function (data) {
-          if (data.form_is_valid) {
-            $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
-            $('.chkbox:checked').removeAttr('checked');
-            checked_sample_values = 0;
-            $('#unchecked_segment').show();
-            $('#checked_segment').hide();
-            load_values();
-          }
-          else {
-            alert("We are sorry. Something went wrong.")
-          }
-        }
-      });
-    }
-    else{
-        $('.chkbox:checked').removeAttr('checked');
-        checked_sample_values = 0;
-        $('#unchecked_segment').show();
-        $('#checked_segment').hide();
-        load_values();
-    }
-    return false;
-  };
-
 
     var assignids = function () {
     var r = confirm("Allocating SET-ID means that your samples are ready to be irradiated. Please, proceed only if you are sure.")

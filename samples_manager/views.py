@@ -1817,6 +1817,7 @@ def sample_new(request, experiment_id):
 
 
 def assign_set_ids(request, experiment_id): 
+    print("assigning set ids")
     experiment = Experiments.objects.get(pk = experiment_id)
     logged_user = get_logged_user(request)
     data = dict()
