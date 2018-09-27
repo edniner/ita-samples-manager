@@ -39,43 +39,12 @@
     </head>
     <body id="home" class="pushable">
         <div class="ui theme left push sidebar">
-            <div class="ui form">
-            <h3 class="ui dividing header">Theme</h3>
-            <div class="field">
-                <label>Global Theme</label>
-                <select class="ui theme dropdown" name="global">
-                <option value="default" selected>Default</option>
-                <option value="amazon">Amazon</option>
-                <option value="github">GitHub</option>
-                <option value="material" selected>Material</option>
-                <option value="colored" selected>Colored</option>
-                <option value="bookish" selected>Bookish</option>
-                <option value="round" selected>Round</option>
-                <option value="flat" selected>Flat</option>
-                </select>
-            </div>
-            <div class="field">
-                <label>Button</label>
-                <select class="ui theme dropdown" name="button">
-                <option value="default" selected>Default</option>
-                <option value="amazon">Amazon</option>
-                <option value="chubby">Chubby</option>
-                <option value="github" >GitHub</option>
-                <option value="material">Material</option>
-                <option value="twitter">Twitter</option>
-                </select>
-            </div>
-            <div class="field">
-                <label>Menu</label>
-                <select class="ui theme dropdown" name="menu">
-                <option value="default" selected>Default</option>
-                <option value="chubby">Chubby</option>
-                <option value="github" >GitHub</option>
-                </select>
-            </div>
-            </div>
+            <form method="post" class="ui form" id = "preferences_form" action="{% url 'samples_manager:register_preferences'%}">
+                {% csrf_token %}
+                <h3 class="ui dividing header">Theme</h3>
+                {{form}}
+            </form>
         </div>
-
                <div class="pusher">
             <div class="page header">
                 <div class="ui container">

@@ -26,6 +26,7 @@ $(document)
       previousClass,
       regExp = /(\/components\/).*(\/[a-z]*.css)/
     ;
+    console.log($themeDropdown);
 
 
     $sidebar
@@ -135,12 +136,12 @@ $(document)
         }
       })
     ;
-
-
-
+    theme_value = String(document.getElementById("id_global_theme").options[document.getElementById("id_global_theme").selectedIndex].value);
+    console.log('theme valuee!!:',theme_value);
     $themeDropdown
       .dropdown({
         onChange: function(theme) {
+          console.log('on change!!');
           var
             type = $(this).attr('name') || false
           ;
@@ -149,18 +150,32 @@ $(document)
               currentHREF = $(this).attr('href'),
               newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
             ;
-            if(type == 'global' || currentHREF.search(type) !== -1) {
+            form = $('#preferences_form');
+
+            if(type == 'global_theme' || currentHREF.search(type) !== -1) {
               $(this).attr('href', newHREF);
             }
           });
           // make other dropdown match
-          if(type == 'global') {
+          if(type == 'global_theme') {
             $themeDropdown.dropdown('set value', theme);
           }
+            $.ajax({
+              url: form.attr("action"),
+              data: form.serialize(),
+              type: form.attr("method"),
+              dataType: 'json',
+              success: function (data) {
+                  console.log("success!!");
+              }
+            });
         }
-      })
-      .dropdown('set selected', 'default')
-    ;
+      });
+      console.log("1");
+      $themeDropdown.dropdown('set selected',theme_value);
+      console.log("2");
+  
+
 
 
   })

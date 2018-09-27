@@ -506,6 +506,20 @@ class CompoundForm(ModelForm):
         widgets = {}
         exclude = ('compound',)
 
+THEME_CHOICES = (
+    ('round', 'Round'),
+    ('github', 'GitHub'),
+    ('default', 'Default'),
+    ('amazon', 'Amazon'),
+    ('material', 'Material'),
+    ('colored', 'Colored'),
+    ('bookish', 'Bookish'),
+    ('flat', 'Flat'),
+)
+
+class PreferencesForm(forms.Form):
+    global_theme = forms.ChoiceField(choices=THEME_CHOICES, widget = forms.Select(attrs={'name': 'global', 'class': 'ui theme dropdown'}))
+    
 
 
 

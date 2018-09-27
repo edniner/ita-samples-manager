@@ -207,14 +207,27 @@ def irradiations(request):
      return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
 
 def experiments_list(request):
+    preference = request.session.get('registered_preferences', 'amazon')
+    print("selected ",preference)
     logged_user = get_logged_user(request)
+    form = PreferencesForm(initial={'global_theme':'amazon' })
+    print(form)
     if logged_user.role == 'Admin':
         experiments = authorised_experiments(logged_user)
         experiment_data = get_registered_samples_number(experiments)
-        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user})
+        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user, 'form': form})
     else:
         experiments = authorised_experiments(logged_user)
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
+
+def register_preferences(request):
+    print("registered preferences!!")
+    preference = request.POST.get('global_theme')
+    request.session['registered_preferences'] = preference
+    data = dict()
+    data['option'] = preference
+    return JsonResponse(data)
+
 
 def admin_experiments_user_view(request, pk):
         logged_user = get_logged_user(request)
