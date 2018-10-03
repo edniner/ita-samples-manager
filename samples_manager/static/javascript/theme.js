@@ -22,6 +22,7 @@ $(document)
       $blockToggle    = $sidebar.find('.fourth.checkbox'),
       $ribbonToggle   = $sidebar.find('.fifth.checkbox'),
       $themeDropdown  = $sidebar.find('.theme.dropdown'),
+      $buttonDropdown  = $sidebar.find('.theme.dropdown.secondary'),
 
       previousClass,
       regExp = /(\/components\/).*(\/[a-z]*.css)/
@@ -136,47 +137,83 @@ $(document)
         }
       })
     ;
-    theme_value = String(document.getElementById("id_global_theme").options[document.getElementById("id_global_theme").selectedIndex].value);
-    console.log('theme valuee!!:',theme_value);
+
     $themeDropdown
       .dropdown({
         onChange: function(theme) {
-          console.log('on change!!');
-          var
-            type = $(this).attr('name') || false
-          ;
-          $.each($css, function() {
-            var
-              currentHREF = $(this).attr('href'),
-              newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
-            ;
-            form = $('#preferences_form');
-
-            if(type == 'global_theme' || currentHREF.search(type) !== -1) {
-              $(this).attr('href', newHREF);
-            }
-          });
-          // make other dropdown match
-          if(type == 'global_theme') {
-            $themeDropdown.dropdown('set value', theme);
-          }
-            $.ajax({
+          form = $('#preferences_form');
+          $.ajax({
               url: form.attr("action"),
               data: form.serialize(),
               type: form.attr("method"),
               dataType: 'json',
               success: function (data) {
-                  console.log("success!!");
+                 console.log(data['option'])
+                 document.getElementById("prefered_theme").value = data['option']
               }
             });
+          console.log('on change!!');
+          var
+            type = $(this).attr('name') || false;
+          $.each($css, function() {
+            var
+              currentHREF = $(this).attr('href'),
+              newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
+            ;
+            console.log('each');
+            if(type == 'global_theme' || currentHREF.search(type) !== -1) {
+              console.log("global!!!")
+              $(this).attr('href', newHREF);
+            }
+          });
+          // make other dropdown match
+          if(type == 'global_theme') {
+            console.log('global theme match');
+            $themeDropdown.dropdown('set value', theme);
+          }
         }
-      });
-      console.log("1");
-      $themeDropdown.dropdown('set selected',theme_value);
-      console.log("2");
-  
+      })
+      theme_value = String(document.getElementById("prefered_theme").value);
+      console.log('theme valuee!!:',theme_value);
+      $themeDropdown.dropdown('set selected', theme_value);
 
-
-
+      $buttonDropdown
+      .dropdown({
+        onChange: function(theme) {
+          form = $('#preferences_form');
+          $.ajax({
+              url: form.attr("action"),
+              data: form.serialize(),
+              type: form.attr("method"),
+              dataType: 'json',
+              success: function (data) {
+                 console.log(data['option'])
+                 document.getElementById("prefered_theme").value = data['option']
+              }
+            });
+          console.log('on change!!');
+          var
+            type = $(this).attr('name') || false;
+          $.each($css, function() {
+            var
+              currentHREF = $(this).attr('href'),
+              newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
+            ;
+            console.log('each');
+            if(type == 'global_theme' || currentHREF.search(type) !== -1) {
+              console.log("global!!!")
+              $(this).attr('href', newHREF);
+            }
+          });
+          // make other dropdown match
+          if(type == 'global_theme') {
+            console.log('global theme match');
+            $buttonDropdown.dropdown('set value', theme);
+          }
+        }
+      })
+      button_theme = String(document.getElementById("prefered_button").value);
+      console.log('button_theme!!:',button_theme);
+      $buttonDropdown.dropdown('set selected', button_theme);
   })
 ;

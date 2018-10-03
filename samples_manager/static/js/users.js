@@ -24,7 +24,6 @@ var loadForm = function () {
   };
   var saveForm = function () {
     var form = $(this);
-    console.log("Inside save form");
     $.ajax({
       url: form.attr("action"),
       data: form.serialize(),

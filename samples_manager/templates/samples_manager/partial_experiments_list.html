@@ -1,4 +1,3 @@
-<meta charset="UTF-8"> 
 {% for experiment in experiments %}
   <tr>
     <td>{{ experiment.updated_at|date:"d/m/Y"}}</td>
@@ -47,3 +46,11 @@
     <td colspan="10">There are no experiments</td>
   </tr>
 {% endfor %}
+
+ <script>
+            $('.allowed_dropdown')
+            .dropdown();
+            function goBack() {
+                window.history.back();
+            }
+    </script>

@@ -2,12 +2,6 @@
 {% block content %}
  <!-- THE MODAL WE WILL BE USING -->
  
-<div class="ui modal"  id="modal-irradiation">
-    <i class="close icon"></i>
-      <div class="scrolling content">
-      </div>
-</div>
-
 <div class= "ui center aligned raised segment">
     <h2>Irradiation Status</h2>
     <div class= "ui grid segment">
@@ -26,8 +20,22 @@
                         <i class="plus icon"></i> New Irradiation
             </button>   
         </div>
+        <div class="three wide column">
+            <form method="post" id="sec_form" action="{% url 'samples_manager:get_sec'%}">
+                {% csrf_token %}
+                <input type="hidden" id="start_timestamp" name="start_timestamp" value="">
+                <button type="button"
+                            id = "get_sec"
+                            class="ui orange button"
+                            title='Get SEC'
+                            data-url="{% url 'samples_manager:get_sec'%}">
+                            Get SEC
+                </button>   
+            </form>
+        </div>
     </div>
-    <table class="ui center aligned sortable celled table" id="irradiation-table">
+    <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
+            <table class="ui center aligned sortable celled table very compact striped" id="irradiation-table">
                 <thead>
                     <tr>
                         <th>Updated at</th>
@@ -46,5 +54,12 @@
                     {% include 'samples_manager/partial_irradiations_list.html' %}
                 </tbody>
             </table>
-        </div>
+    </div>
+</div>
 {% endblock %}
+
+<div class="ui modal"  id="modal-irradiation">
+    <i class="close icon"></i>
+      <div class="scrolling content">
+      </div>
+</div>

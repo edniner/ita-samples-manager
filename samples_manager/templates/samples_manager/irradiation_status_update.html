@@ -12,7 +12,7 @@
             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
       {% render_field field class="form-control" %}
       {% for error in field.errors %}
-              <p class="help-block">{{ error }}</p>
+              <span class="ui  pointing  basic label">{{ error }}</span>
       {% endfor %}
           </div>
       {% endfor %}

@@ -16,7 +16,7 @@ var newGroupIrradiation = function (){
             //disactivate_hidden_buttons();
             //load_values();
             $("#modal-irradiation").modal("show");
-            $("#modal-irradiation .modal-content").html(data.html_form);
+            $("#modal-irradiation .scrolling.content").html(data.html_form);
           }
           else {
             alert("We are sorry. Something went wrong.")
@@ -58,7 +58,8 @@ var loadForm = function () {
         if (data.form_is_valid) {
           $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
           $("#modal-irradiation").modal("hide");  // <-- Close the modals
-          //window.location.href =  form.attr("data-url");
+          console.log(form.attr("data-url"));
+          window.location.href =  form.attr("data-url");
             /*if(data.experiment_id != -1)
             samplesloadForm(data.experiment_id);*/
         }
@@ -70,6 +71,53 @@ var loadForm = function () {
     });
     return false;
   };
+
+  var get_sec = function(timestamp) {
+      console.log("get sec",timestamp);
+      var form = $("#sec_form");
+      $.ajax({
+      url: form.attr("action"),
+      data:  form.serialize(),
+      type: 'post',
+      dataType: 'json',
+      success: function (data) {
+        if (data.form_is_valid) {
+            $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+        }
+        else {
+         alert("data is not correct");
+        }
+      }
+    });
+  }
+
+function getFormattedDate() {
+    var date = new Date();
+    var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+
+    return str;
+}
+
+var starting_sec = function(){
+  // the task stops after refreshing to be thought!
+  var nIntervId;
+  if (document.getElementById("get_sec").value=="Get SEC"){
+      document.getElementById("get_sec").value = "Stop SEC";
+      timestamp = getFormattedDate();
+      document.getElementById("start_timestamp").value = timestamp;
+      nIntervId = setInterval(get_sec, 5000, timestamp);
+      document.getElementById("get_sec").classList.add('red');
+      document.getElementById("get_sec").classList.remove('orange');
+      
+   }
+  else{ 
+     document.getElementById("get_sec").value = "Get SEC";
+     document.getElementById("get_sec").classList.add('orange');
+     document.getElementById("get_sec").classList.remove('red');
+     clearInterval(nIntervId);
+   }
+
+ }
 
 //New irradiation
   $("#new_group_irradiation").on("click",newGroupIrradiation);
@@ -87,4 +135,7 @@ var loadForm = function () {
   //update irradiation status
   $("#irradiation-table").on("click", ".js-change-irradiation-status", loadForm);
   $("#modal-irradiation").on("submit", ".js-irradiation-update-form", saveForm);
+
+  // get sec
+  $("#get_sec").on("click",starting_sec);
 });

@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.admin import widgets   
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,DateTimeInput,Textarea
-from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,Compound,CompoundElements, Layers,Dosimeters, Irradiation
+from .models import Experiments,Users, ReqFluences,Materials,PassiveStandardCategories,PassiveCustomCategories,ActiveCategories,Samples,Compound,CompoundElements, Layers,Dosimeters, Irradiation, UserPreferences
 from django.forms.models import inlineformset_factory
 from samples_manager.fields import ListTextWidget
 from django.utils.safestring import mark_safe
@@ -518,7 +518,16 @@ THEME_CHOICES = (
 )
 
 class PreferencesForm(forms.Form):
-    global_theme = forms.ChoiceField(choices=THEME_CHOICES, widget = forms.Select(attrs={'name': 'global', 'class': 'ui theme dropdown'}))
+    def __init__(self, *args, **kwargs):
+        super(PreferencesForm, self).__init__(*args, **kwargs)
+        self.fields['global_theme'] = forms.ChoiceField(choices=THEME_CHOICES, widget = forms.Select(attrs={'name': 'global', 'class': 'ui theme dropdown'}))
+        self.fields['button_theme'] = forms.ChoiceField(choices=THEME_CHOICES, widget = forms.Select(attrs={'name': 'global', 'class': 'ui theme dropdown secondary'}))
+
+    class Meta:
+        model = UserPreferences
+        fields = ['global_theme','button_theme',]
+        widgets = {}
+        exclude = ('user',)
     
 
 

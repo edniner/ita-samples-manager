@@ -71,3 +71,6 @@ span.circle_span {
 .green{
     background: #008000;
 }
+div.ui.container{
+    width:96%;
+}

@@ -29,19 +29,19 @@
     <div class= "ui grid segment" id= "checked_segment" style = "display: none">
         <div class="five wide column">
             <button  type="submit"
-                    id = "print_samples"
-                    class="ui orange button"
-                    data-url="">
-                    <i class="barcode icon"></i> Print labels
-            </button>  
-        </div>
-        <div class="five wide column">
-            <button  type="submit"
                         id = "assign_ids"
                         class="ui violet button"
                         data-url="{% url 'samples_manager:assign_set_ids' experiment.id %}">
                         <i class="tags icon"></i> Assign SET ID
             </button>
+        </div>
+        <div class="five wide column">
+            <button  type="submit"
+                    id = "print_samples"
+                    class="ui orange button"
+                    data-url="">
+                    <i class="barcode icon"></i> Print labels
+            </button>  
         </div>
         <div class="six wide column">
             <div class="ui right action input">
@@ -86,8 +86,7 @@
                 </button>  
         </div>
     </div>
-     
-
+    <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
         <table class="ui center aligned sortable celled table" id="sample-table">
                             <thead>
                                 <tr>
@@ -108,5 +107,6 @@
                         </table>
                         <p><a href="{% url 'samples_manager:archive_experiment_samples' experiment.id%}">Archive</a></p>
     </div>
+</div>
 </form>                  
 {% endblock %}

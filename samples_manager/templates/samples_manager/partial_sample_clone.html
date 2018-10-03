@@ -27,7 +27,7 @@
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {% render_field field class="form-control" %}
                 {% for error in field.errors %}
-                    <span class="ui red basic label">{{error }}</span>
+                    <span class="ui  pointing  basic label">{{error }}</span>
                 {% endfor %}
                     </div>
                 {% endfor %}
@@ -52,7 +52,7 @@
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {% render_field field class="form-control" %}
                     {% for error in field.errors %}
-                        <span class="ui red basic label">{{error }}</span>
+                        <span class="ui  pointing  basic label">{{error }}</span>
                     {% endfor %}
                         </div>
             {% endfor %}
@@ -87,7 +87,7 @@
                                         <div class="form-group{% if field.errors %} has-error{% endif %}">
                                         {{ field }}
                                         {% for error in field.errors %}
-                                            <span class="ui red basic label">{{error}}</span>
+                                            <span class="ui  pointing  basic label">{{error}}</span>
                                         {% endfor %}
                                     </td>
                                 {% endfor %}
@@ -110,7 +110,7 @@
                       <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                   {% render_field field class="form-control" %}
                   {% for error in field.errors %}
-                      <span class="ui red basic label">{{error }}</span>
+                      <span class="ui  pointing  basic label">{{error }}</span>
                   {% endfor %}
                       </div>
                   {% endfor %}

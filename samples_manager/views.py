@@ -24,8 +24,15 @@ from django.utils.safestring import mark_safe
 import logging 
 from django.db.models import Q
 from django.utils import timezone
+from django.db import connection
 import re
-
+from datetime import date
+from apscheduler.schedulers.background import BackgroundScheduler
+from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
+from datetime import date
+import random
+import time
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 def send_mail_notification(title,message,from_mail,to_mail):
@@ -35,16 +42,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -52,7 +59,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
     
     email =  email.lower()
     users = Users.objects.all()
@@ -98,6 +105,29 @@ def index(request):
     return render(request, 'samples_manager/index.html', context)
 
 
+def authorised_samples(logged_user):
+    samples = []
+    if logged_user.role == 'Admin':
+        experiments = Experiments.objects.order_by('-updated_at')
+    else:
+         experiment_values = Experiments.objects.filter(Q(users=logged_user)|Q(responsible=logged_user)).values('title').distinct()
+         experiments = []
+         for value in experiment_values:
+             experiment = Experiments.objects.get(title = value['title'])
+             experiments.append(experiment)
+    for experiment in experiments: 
+        experiment_samples = Samples.objects.filter(experiment = experiment)
+        for sample in experiment_samples:
+            samples.append(sample)
+    return samples
+
+#!!! to be continued
+def users_samples(request):
+    logged_user = get_logged_user(request)
+    samples = authorised_samples(logged_user)
+    print(samples)
+    return render(request, 'samples_manager/samples_list.html', {'samples': samples,'logged_user': logged_user})
+    
 def view_user(request):
     #only in production
     logged_user = get_logged_user(request)
@@ -206,24 +236,40 @@ def irradiations(request):
         irradiations = Irradiation.objects.all()
      return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
 
-def experiments_list(request):
-    preference = request.session.get('registered_preferences', 'amazon')
-    print("selected ",preference)
+def define_preferences(request):
+    # we can maybe return a dictionary with all the themes
     logged_user = get_logged_user(request)
-    form = PreferencesForm(initial={'global_theme':'amazon' })
-    print(form)
+    try:
+        userpreference = get_object_or_404(UserPreferences, user = logged_user)
+        preference = userpreference.global_theme
+    except:
+        preference = request.session.get('prefered_theme', 'amazon')
+    return preference
+
+
+def experiments_list(request):
+    preference = define_preferences(request)
+    logged_user = get_logged_user(request)
     if logged_user.role == 'Admin':
         experiments = authorised_experiments(logged_user)
         experiment_data = get_registered_samples_number(experiments)
-        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user, 'form': form})
+        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user, 'prefered_theme':preference})
     else:
         experiments = authorised_experiments(logged_user)
-        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user})
+        print(experiments)
+        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,'prefered_theme':preference})
 
 def register_preferences(request):
     print("registered preferences!!")
     preference = request.POST.get('global_theme')
-    request.session['registered_preferences'] = preference
+    logged_user = get_logged_user(request)
+    try:
+        userpreference = get_object_or_404(UserPreferences, user = logged_user)
+        userpreference.global_theme =  preference
+    except:
+        userpreference = UserPreferences(global_theme = preference, user = logged_user)
+    userpreference.save()
+    print("userpreference: ", userpreference.global_theme)
     data = dict()
     data['option'] = preference
     return JsonResponse(data)
@@ -244,6 +290,7 @@ def admin_experiments_list(request):
 
 def users_list(request):
     logged_user = get_logged_user(request)
+    preference = define_preferences(request)
     users = Users.objects.all()
     users_data = []
     row = 0
@@ -260,7 +307,7 @@ def users_list(request):
             "experiments_number":experiments_number,
             "row": row
         })
-    return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user})
+    return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user, 'prefered_theme':preference})
 
 
 def compound_samples_list(compound):
@@ -306,7 +353,7 @@ def irradiation_new(request):
             irradiation.save()
             irradiations = Irradiation.objects.all()
             data['form_is_valid'] = True
-            data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user})
+            data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user, 'sec':'0', 'start_timestamp': ''})
         else:
             data['form_is_valid'] = False
     else:
@@ -328,7 +375,7 @@ def irradiation_update(request, pk):
             form.save()
             irradiations = Irradiation.objects.all()
             data['form_is_valid'] = True
-            data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user})
+            data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user, 'sec': '0','start_timestamp':''})
         else:
             data['form_is_valid'] = False
     else:
@@ -349,7 +396,7 @@ def irradiation_delete(request ,pk):
         data['form_is_valid'] = True 
         irradiations = Irradiation.objects.all()
         data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',
-        {'irradiations': irradiations, 'logged_user': logged_user})
+        {'irradiations': irradiations, 'logged_user': logged_user, 'sec': '0', 'start_timestamp':''})
     else:
         context = {'irradiation': irradiation,}
         data['html_form'] = render_to_string('samples_manager/partial_irradiation_delete.html',
@@ -406,7 +453,7 @@ def assign_dosimeters(request, experiment_id):
                         irradiation.save()
             irradiations = Irradiation.objects.all()
             data['form_is_valid'] = True
-            data['html_irradiation_list'] = render_to_string('samples_manager/irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user})
+            data['html_irradiation_list'] = render_to_string('samples_manager/irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user, 'sec': '0','start_timestamp':''})
         else:
             print(form)
             data['form_is_valid'] = False
@@ -563,6 +610,7 @@ def experiment_samples_list(request, experiment_id):
     return render(request,template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
 
 def dosimeters_list(request):
+    define_preferences(request)
     logged_user = get_logged_user(request)
     dosimeters = Dosimeters.objects.order_by('dos_id')
     return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user})
@@ -1269,7 +1317,7 @@ def irradiation_status_update(request, pk):
             updated_irradiation =  form.save()
             data['form_is_valid'] = True
             irradiations = Irradiation.objects.all()
-            template_data = {'irradiations': irradiations}
+            template_data = {'irradiations': irradiations, 'logged_user':logged_user, 'sec': '0','start_timestamp':'' }
             output_template = 'samples_manager/partial_irradiations_list.html'
             data['html_irradiation_list'] = render_to_string(output_template, template_data)
         else:
@@ -2301,5 +2349,31 @@ def search_dosimeters(request):
             entry_query = get_query(query_string, ['dos_id', 'height', 'width', 'status'])
             dosimeters = Dosimeters.objects.filter(entry_query)
         return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user':logged_user})
+
+
+def get_sec(request):
+    timestamp = request.POST.get('start_timestamp', '2018-10-2 16:19:29')
+    irradiations = Irradiation.objects.all()
+    for irradiation in irradiations: 
+        irradiation.date_in = timestamp
+        irradiation.save()
+    print("I'm getting sec!")
+    data = dict()
+    cursor = connection.cursor()
+    cursor.execute("SELECT SEC_VALUE FROM SEC_DATA WHERE SEC_ID = 'SEC_01' AND TIMESTAMP>TO_DATE('"+timestamp+"', 'YYYY-MM-DD HH24:MI:SS')")
+    rows=cursor.fetchall()
+    sec_sum = 0
+    for row in rows:
+        sec_sum = sec_sum + row[0]
+    print(sec_sum)
+    irradiations = Irradiation.objects.all()
+    data['form_is_valid'] = True
+    print("form is valid")
+    data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'sec_sum': sec_sum},request=request)
+    print("Query executed!")
+    return JsonResponse(data)
+
+
+
 
 

@@ -26,20 +26,21 @@
             </button> 
       </div>
     </div> 
-
-     <table id="compound-table" class="ui center aligned sortable celled table">
-                    <thead>
-                        <tr>
-                        <th>Name</th>
-                        <th>Density  (g/cm³)</th>
-                        <th>No. associated samples</th>
-                        <th>Actions</th>
-                       </tr>
-                    </thead>
-                    <tbody>
-                        {% include 'samples_manager/partial_compounds_list.html' %}
-                    </tbody>
-    </table>
+    <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
+        <table id="compound-table" class="ui center aligned sortable celled table">
+                        <thead>
+                            <tr>
+                            <th>Name</th>
+                            <th>Density  (g/cm³)</th>
+                            <th>No. associated samples</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% include 'samples_manager/partial_compounds_list.html' %}
+                        </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}

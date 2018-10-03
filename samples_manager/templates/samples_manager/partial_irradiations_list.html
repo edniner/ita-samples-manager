@@ -6,7 +6,7 @@
     <td>{{ irradiation.date_in|date:"d/m/Y"}} {{ irradiation.date_in|time:"H:i"}} - {{ irradiation.date_out|date:"d/m/Y"}} {{ irradiation.updated_out|time:"H:i"}}</td>
     <td>{{ irradiation.irrad_table }}</td>
     <td> {{ irradiation.table_position }}</td>
-    <td>{{ irradiation.accumulated_fluence}}</td>
+    <td>{{ sec_sum }}</td>
     <td>{{ irradiation.updated_by}}</td>
     <td>{{ irradiation.status}}</td>
     <td>
@@ -36,4 +36,10 @@
       <td colspan="10">There are no irradiations</td>
     </tr>
   {% endfor %}
-  
+  <script>
+            $('.allowed_dropdown')
+            .dropdown();
+            function goBack() {
+                window.history.back();
+            }
+    </script>

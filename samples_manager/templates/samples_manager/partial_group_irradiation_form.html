@@ -6,14 +6,14 @@
   {% csrf_token %}
    <div class="ui center aligned segment container">
       <div class="ui centered header">
-            <h3>Assign dosimeter</h3>
+            <h3>New Irradiation</h3>
       </div>
       {% for field in form %}
-        <div class="form-group{% if field.errors %} has-error{% endif %}">
+        <div class="field form-group{% if field.errors %} has-error{% endif %}">
           <label for="{{ field.id_for_label }}">{{ field.label }}</label>
       {% render_field field class="form-control" %}
       {% for error in field.errors %}
-          <p class="help-block">{{ error }}</p>
+          <span class="ui  pointing  basic label">{{ error }}</span>
       {% endfor %}
         </div>
       {% endfor %}
