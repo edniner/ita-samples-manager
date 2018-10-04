@@ -5,7 +5,6 @@ from django.utils import timezone
 from django.forms import ModelForm,DateTimeInput,Textarea
 from django.contrib.admin import widgets
 from django.core.validators import MinValueValidator
-from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import date
 import time
 # Create your models here.

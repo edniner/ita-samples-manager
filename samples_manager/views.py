@@ -27,8 +27,6 @@ from django.utils import timezone
 from django.db import connection
 import re
 from datetime import date
-from apscheduler.schedulers.background import BackgroundScheduler
-from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
 from datetime import date
 import random
 import time
