@@ -42,16 +42,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -59,7 +59,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"
+    home_institute = "MINES ParisTech"'''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -230,48 +230,61 @@ def filtered_authorised_experiments(logged_user, experiments):
         return experiments 
 
 def irradiations(request):
+     preference = define_preferences(request)
      logged_user = get_logged_user(request)
      irradiations = []
      if logged_user.role == 'Admin':
         irradiations = Irradiation.objects.all()
-     return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user})
+     return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'] 
+})
 
 def define_preferences(request):
     # we can maybe return a dictionary with all the themes
+    data = dict()
+    print("define preference!!!")
     logged_user = get_logged_user(request)
     try:
         userpreference = get_object_or_404(UserPreferences, user = logged_user)
-        preference = userpreference.global_theme
+        data['global_theme'] = userpreference.global_theme
+        data['button_theme'] = userpreference.button_theme
+
     except:
-        preference = request.session.get('prefered_theme', 'amazon')
-    return preference
+        data['global_theme'] = request.session.get('prefered_theme', 'amazon')
+        data['button_theme'] = request.session.get('prefered_button', 'amazon')
+    return data
 
 
 def experiments_list(request):
+    #print("experiments list!!!")
     preference = define_preferences(request)
+    #print("-------------------------", preference)
     logged_user = get_logged_user(request)
     if logged_user.role == 'Admin':
         experiments = authorised_experiments(logged_user)
         experiment_data = get_registered_samples_number(experiments)
-        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user, 'prefered_theme':preference})
+        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'] })
     else:
         experiments = authorised_experiments(logged_user)
         print(experiments)
-        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,'prefered_theme':preference})
+        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme']})
 
 def register_preferences(request):
     print("registered preferences!!")
-    preference = request.POST.get('global_theme')
+    global_theme = request.POST.get('global_theme')
+    button_theme = request.POST.get('button_theme')
     logged_user = get_logged_user(request)
     try:
         userpreference = get_object_or_404(UserPreferences, user = logged_user)
-        userpreference.global_theme =  preference
+        userpreference.global_theme =  global_theme
+        userpreference.button_theme = button_theme
     except:
-        userpreference = UserPreferences(global_theme = preference, user = logged_user)
+        userpreference = UserPreferences(global_theme = global_theme, button_theme = button_theme,  user = logged_user)
     userpreference.save()
-    print("userpreference: ", userpreference.global_theme)
     data = dict()
-    data['option'] = preference
+    data['global_theme'] = global_theme
+    data['button_theme'] = button_theme
+    print(data['global_theme'])
+    print(data['button_theme'])
     return JsonResponse(data)
 
 
@@ -307,7 +320,8 @@ def users_list(request):
             "experiments_number":experiments_number,
             "row": row
         })
-    return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user, 'prefered_theme':preference})
+    
+    return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user, 'prefered_theme':preference['global_theme'], 'prefered_button':preference['button_theme']})
 
 
 def compound_samples_list(compound):
@@ -333,9 +347,10 @@ def get_compounds_data():
 
 
 def compounds_list(request):
+    preference = define_preferences(request)
     logged_user = get_logged_user(request)
     compounds_data = get_compounds_data()
-    return render(request, 'samples_manager/compounds_list.html',{'compounds_data': compounds_data,'logged_user': logged_user})
+    return render(request, 'samples_manager/compounds_list.html',{'compounds_data': compounds_data,'logged_user': logged_user, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'] })
 
 def user_details(request, user_id):
     user = get_object_or_404(Users, pk=user_id)
@@ -473,10 +488,11 @@ def assign_samples_dosimeters(request):
     return JsonResponse(data)
 
 def experiment_users_list(request, experiment_id):
+    preference = define_preferences(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     users= experiment.users.values()
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user})
+    return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'] })
 
 def save_occupancies(sample, status):
     print("save_occupancies")
@@ -596,7 +612,7 @@ def move_samples(request, experiment_id):
                 return render(request, 'samples_manager/samples_list.html', {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
 
 def experiment_samples_list(request, experiment_id):
-    print("experiment samples list")
+    preference = define_preferences(request)
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
@@ -607,13 +623,13 @@ def experiment_samples_list(request, experiment_id):
         template_url = 'samples_manager/admin_samples_list.html'
     else:
          template_url = 'samples_manager/samples_list.html'
-    return render(request,template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
+    return render(request,template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme']})
 
 def dosimeters_list(request):
-    define_preferences(request)
+    preference = define_preferences(request)
     logged_user = get_logged_user(request)
     dosimeters = Dosimeters.objects.order_by('dos_id')
-    return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user})
+    return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme']})
 
 def experiment_details(request, experiment_id):
     experiment = get_object_or_404(Experiments, pk=experiment_id)

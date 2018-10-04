@@ -22,7 +22,7 @@ $(document)
       $blockToggle    = $sidebar.find('.fourth.checkbox'),
       $ribbonToggle   = $sidebar.find('.fifth.checkbox'),
       $themeDropdown  = $sidebar.find('.theme.dropdown'),
-      $buttonDropdown  = $sidebar.find('.theme.dropdown.secondary'),
+      $buttonDropdown  = $sidebar.find('.secondary.dropdown'),
 
       previousClass,
       regExp = /(\/components\/).*(\/[a-z]*.css)/
@@ -142,17 +142,19 @@ $(document)
       .dropdown({
         onChange: function(theme) {
           form = $('#preferences_form');
+          console.log("theme global:", theme);
           $.ajax({
               url: form.attr("action"),
               data: form.serialize(),
               type: form.attr("method"),
               dataType: 'json',
               success: function (data) {
-                 console.log(data['option'])
-                 document.getElementById("prefered_theme").value = data['option']
+                 console.log("global_theme: ", data['global_theme']);
+                 theme = data['global_theme'];
+                 document.getElementById("prefered_theme").value = data['global_theme'];
               }
             });
-          console.log('on change!!');
+          
           var
             type = $(this).attr('name') || false;
           $.each($css, function() {
@@ -160,17 +162,15 @@ $(document)
               currentHREF = $(this).attr('href'),
               newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
             ;
-            console.log('each');
             if(type == 'global_theme' || currentHREF.search(type) !== -1) {
               console.log("global!!!")
               $(this).attr('href', newHREF);
             }
           });
           // make other dropdown match
-          if(type == 'global_theme') {
-            console.log('global theme match');
+          /*if(type == 'global_theme') {
             $themeDropdown.dropdown('set value', theme);
-          }
+          }*/
         }
       })
       theme_value = String(document.getElementById("prefered_theme").value);
@@ -181,39 +181,40 @@ $(document)
       .dropdown({
         onChange: function(theme) {
           form = $('#preferences_form');
+          console.log("theme button:", theme);
           $.ajax({
               url: form.attr("action"),
               data: form.serialize(),
               type: form.attr("method"),
               dataType: 'json',
               success: function (data) {
-                 console.log(data['option'])
-                 document.getElementById("prefered_theme").value = data['option']
+                 console.log("button_theme:::::::::::: ", data['button_theme']);
+                 theme = data['button_theme'];
+                 document.getElementById("prefered_button").value = data['button_theme'];
+                 console.log("the end");
+                 var type = $(this).attr('name') || false;
+                  $.each($css, function() {
+                    
+                    var
+                      currentHREF = $(this).attr('href'),
+                      newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
+                    ;
+                    console.log("currentHREF", currentHREF);
+                    console.log("newHREF", newHREF);
+                    if(type == 'global_theme' || currentHREF.search(type) !== -1) {
+                      $(this).attr('href', newHREF);
+                    }
+                  });
+                  // make other dropdown match
+                  if(type == 'global_theme') {
+                    $buttonDropdown.dropdown('set value', theme);
+                  }
               }
             });
-          console.log('on change!!');
-          var
-            type = $(this).attr('name') || false;
-          $.each($css, function() {
-            var
-              currentHREF = $(this).attr('href'),
-              newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
-            ;
-            console.log('each');
-            if(type == 'global_theme' || currentHREF.search(type) !== -1) {
-              console.log("global!!!")
-              $(this).attr('href', newHREF);
-            }
-          });
-          // make other dropdown match
-          if(type == 'global_theme') {
-            console.log('global theme match');
-            $buttonDropdown.dropdown('set value', theme);
-          }
         }
       })
       button_theme = String(document.getElementById("prefered_button").value);
-      console.log('button_theme!!:',button_theme);
+      console.log('button_theme-->>!!:',button_theme);
       $buttonDropdown.dropdown('set selected', button_theme);
   })
 ;

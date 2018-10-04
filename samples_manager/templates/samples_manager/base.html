@@ -84,10 +84,11 @@
                     <option value="colored">Colored</option>
                     <option value="bookish">Bookish</option>
                     <option value="flat">Flat</option>
-                </select></td></tr>
-                <tr>
-                    <th><label for="id_global_theme">Button:</label></th>
-                    <td><select class="ui theme dropdown secondary" id="id_button" name="button">
+                </select></td>
+                </tr>
+                <!--<tr>
+                 <th><label for="id_global_theme">Button:</label></th>
+                    <td><select class="ui secondary dropdown" id="id_button" name="button_theme">
                     <option value="round">Round</option>
                     <option value="github">GitHub</option>
                     <option value="default">Default</option>
@@ -96,10 +97,10 @@
                     <option value="colored">Colored</option>
                     <option value="bookish">Bookish</option>
                     <option value="flat">Flat</option>
-                    </select></td></tr>
-                </tr>
+                    </select></td>
+                </tr>-->
                 <input type="hidden" id="prefered_theme" name="prefered_theme" value="{{prefered_theme}}">
-                <input type="hidden" id="prefered_button" name="prefered_button" value="amazon">
+                <input type="hidden" id="prefered_button" name="prefered_button" value="'{{prefered_button}}'">
             </form>
         </div>
         <div class="pusher">
