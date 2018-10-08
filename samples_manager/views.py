@@ -56,8 +56,8 @@ def get_logged_user(request):
     #email =  "Blerina.Gkotse@telecom-bretagne.eu"
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
-    department = "EP/DT"'''
-    home_institute = "MINES ParisTech"
+    department = "EP/DT"
+    home_institute = "MINES ParisTech"'''
     
     email =  email.lower()
     users = Users.objects.all()
