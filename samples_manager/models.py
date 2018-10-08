@@ -366,6 +366,8 @@ class ArchiveExperimentSample(models.Model):
 class UserPreferences(models.Model):
     global_theme = models.CharField(max_length=50, null = True)
     button_theme = models.CharField(max_length=50, null = True)
+    menu_theme = models.CharField(max_length=50, null = True)
+    table_theme = models.CharField(max_length=50, null = True)
     user = models.ForeignKey(Users, null = True)
 
 

@@ -76,31 +76,114 @@
                 <h3 class="ui dividing header">Theme</h3>
                 <tr><th><label for="id_global_theme">Global theme:</label></th>
                 <td><select class="ui theme dropdown" id="id_global_theme" name="global_theme">
+                    <option value="default">Default</option>  
+                    <option value="basic">Basic</option>                  
                     <option value="round">Round</option>
                     <option value="github">GitHub</option>
-                    <option value="default">Default</option>
                     <option value="amazon">Amazon</option>
                     <option value="material">Material</option>
                     <option value="colored">Colored</option>
                     <option value="bookish">Bookish</option>
                     <option value="flat">Flat</option>
+                    <option value="chubby">Chubby</option>
+                    <option value="chubby">Twitter</option>
+                    <option value="bootstrap3">Bootstrap</option>
+                    <option value="classic">Classic</option>
+                    <option value="fixed-width">Fixed-width</option>
+                    <option value="gmail">Gmail</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="pulsar">Pulsar</option>
+                    <option value="raised">Raised</option>
+                    <option value="rtl">Rtl</option>
+                    <option value="striped">Striped</option>
+                    <option value="timeline">Timeline</option>
                 </select></td>
                 </tr>
-                <!--<tr>
-                 <th><label for="id_global_theme">Button:</label></th>
-                    <td><select class="ui secondary dropdown" id="id_button" name="button_theme">
-                    <option value="round">Round</option>
-                    <option value="github">GitHub</option>
-                    <option value="default">Default</option>
-                    <option value="amazon">Amazon</option>
-                    <option value="material">Material</option>
-                    <option value="colored">Colored</option>
-                    <option value="bookish">Bookish</option>
-                    <option value="flat">Flat</option>
-                    </select></td>
-                </tr>-->
+                <br><br>
+                <tr><th><label for="id_button_theme">Button:</label></th>
+                    <td><select class="ui secondary dropdown" id="id_button_theme" name="button">
+                        <option value="default">Default</option>
+                        <option value="basic">Basic</option>    
+                        <option value="round">Round</option>
+                        <option value="github">GitHub</option>
+                        <option value="amazon">Amazon</option>
+                        <option value="material">Material</option>
+                        <option value="colored">Colored</option>
+                        <option value="bookish">Bookish</option>
+                        <option value="flat">Flat</option>
+                        <option value="chubby">Chubby</option>
+                        <option value="chubby">Twitter</option>
+                        <option value="bootstrap3">Bootstrap</option>
+                        <option value="classic">Classic</option>
+                        <option value="fixed-width">Fixed-width</option>
+                        <option value="gmail">Gmail</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="pulsar">Pulsar</option>
+                        <option value="raised">Raised</option>
+                        <option value="rtl">Rtl</option>
+                        <option value="striped">Striped</option>
+                        <option value="timeline">Timeline</option>
+                        </select>
+                    </td>
+                </tr>
+                <br><br>
+                <tr><th><label for="id_menu_theme">Menu:</label></th>
+                    <td><select class="ui third dropdown" id="id_menu_theme" name="menu">
+                        <option value="default">Default</option>
+                        <option value="basic">Basic</option>    
+                        <option value="round">Round</option>
+                        <option value="github">GitHub</option>
+                        <option value="amazon">Amazon</option>
+                        <option value="material">Material</option>
+                        <option value="colored">Colored</option>
+                        <option value="bookish">Bookish</option>
+                        <option value="flat">Flat</option>
+                        <option value="chubby">Chubby</option>
+                        <option value="chubby">Twitter</option>
+                        <option value="bootstrap3">Bootstrap</option>
+                        <option value="classic">Classic</option>
+                        <option value="fixed-width">Fixed-width</option>
+                        <option value="gmail">Gmail</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="pulsar">Pulsar</option>
+                        <option value="raised">Raised</option>
+                        <option value="rtl">Rtl</option>
+                        <option value="striped">Striped</option>
+                        <option value="timeline">Timeline</option>
+                        </select>
+                    </td>
+                </tr>
+                <br><br>
+                <tr><th><label for="id_table_theme">Table:</label></th>
+                    <td><select class="ui fourth dropdown" id="id_table_theme" name="table">
+                        <option value="default">Default</option>
+                        <option value="basic">Basic</option>    
+                        <option value="round">Round</option>
+                        <option value="github">GitHub</option>
+                        <option value="amazon">Amazon</option>
+                        <option value="material">Material</option>
+                        <option value="colored">Colored</option>
+                        <option value="bookish">Bookish</option>
+                        <option value="flat">Flat</option>
+                        <option value="chubby">Chubby</option>
+                        <option value="chubby">Twitter</option>
+                        <option value="bootstrap3">Bootstrap</option>
+                        <option value="classic">Classic</option>
+                        <option value="fixed-width">Fixed-width</option>
+                        <option value="gmail">Gmail</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="pulsar">Pulsar</option>
+                        <option value="raised">Raised</option>
+                        <option value="rtl">Rtl</option>
+                        <option value="striped">Striped</option>
+                        <option value="timeline">Timeline</option>
+                        </select>
+                    </td>
+                </tr>
                 <input type="hidden" id="prefered_theme" name="prefered_theme" value="{{prefered_theme}}">
-                <input type="hidden" id="prefered_button" name="prefered_button" value="'{{prefered_button}}'">
+                <input type="hidden" id="prefered_button" name="prefered_button" value="{{prefered_button}}">
+                <input type="hidden" id="prefered_menu" name="prefered_menu" value="{{prefered_menu}}">
+                <input type="hidden" id="prefered_table" name="prefered_table" value="{{prefered_table}}">
             </form>
         </div>
         <div class="pusher">
@@ -153,10 +236,10 @@
                                         
                                     </div>
                                 </div>
-                                <a class="launch icon item" data-content="Select a theme">
-                                    <i class="cogs icon"></i>Preferences
-                                </a>
                                 {% endif %}
+                                <a class="launch icon item" data-content="Select a theme" onclick="alert('Please, choose your display preferences. Your choise will be saved and used for optimising and customising your view.');this.onclick='';">
+                                   <b class="yellow"><i class="yellow cogs icon"></i><span style = 'color: rgb(251, 189, 7); text-decoration: underline'>PREFERENCES</span></b>
+                                </a>
                         </div>
                         <div class = "ui right floated item">
                             <a href="https://ps-irrad.web.cern.ch/" class="ui small image">
