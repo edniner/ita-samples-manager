@@ -75,6 +75,7 @@
                 </div>
             </form>
         </div>
+        {% if experiment.status != 'Completed'%}
         <div class="three wide column">
             <button type="button"
                         id = "new_sample"
@@ -85,6 +86,7 @@
                         <i class="plus icon"></i> New Sample
                 </button>  
         </div>
+        {% endif %}
     </div>
     <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
         <table class="ui center aligned sortable celled table" id="sample-table">
