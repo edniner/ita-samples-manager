@@ -58,7 +58,7 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"'''
-    
+
     email =  email.lower()
     users = Users.objects.all()
     emails = []
@@ -244,19 +244,13 @@ def irradiations(request):
 def define_preferences(request):
     data = dict()
     logged_user = get_logged_user(request)
-    #print("-------------define preferences-------------")
     try:
         userpreference = get_object_or_404(UserPreferences, user = logged_user)
-        '''print("global_theme: ",userpreference.global_theme)
-        print("button_theme: ",userpreference.button_theme)
-        print("menu_theme: ",userpreference.menu_theme)
-        print("table_theme: ",userpreference.table_theme)'''
         data['global_theme'] = userpreference.global_theme
         data['button_theme'] = userpreference.button_theme
         data['menu_theme'] = userpreference.menu_theme
         data['table_theme'] = userpreference.table_theme
     except:
-        print("exception!!!")
         data['global_theme'] = request.session.get('prefered_theme', 'default')
         data['button_theme'] = request.session.get('prefered_button', 'default')
         data['menu_theme'] = request.session.get('prefered_menu', 'default')
@@ -265,9 +259,7 @@ def define_preferences(request):
 
 
 def experiments_list(request):
-    #print("experiments list!!!")
     preference = define_preferences(request)
-    #print("-------------------------", preference)
     logged_user = get_logged_user(request)
     if logged_user.role == 'Admin':
         experiments = authorised_experiments(logged_user)
@@ -275,19 +267,14 @@ def experiments_list(request):
         return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
     else:
         experiments = authorised_experiments(logged_user)
-        print(experiments)
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def register_preferences(request):
-    #print("registered preferences!!")
-    global_theme = request.POST.get('global_theme')
-    button_theme = request.POST.get('button')
-    menu_theme = request.POST.get('menu')
-    table_theme = request.POST.get('table')
-    '''print('global_theme',global_theme)
-    print('button_theme',button_theme)
-    print('menu_theme',menu_theme)
-    print('table_theme',table_theme)'''
+    request.POST['number_ids']
+    global_theme = request.POST['global_theme']
+    button_theme = request.POST['button']
+    menu_theme = request.POST['menu']
+    table_theme = request.POST['table']
     logged_user = get_logged_user(request)
     try:
         userpreference = get_object_or_404(UserPreferences, user = logged_user)
@@ -307,6 +294,7 @@ def register_preferences(request):
 
 
 def admin_experiments_user_view(request, pk):
+        #print("admin_experiments_user_view")
         preference = define_preferences(request)
         logged_user = get_logged_user(request)
         user = Users.objects.get(id = pk)
@@ -315,13 +303,15 @@ def admin_experiments_user_view(request, pk):
 
 
 def admin_experiments_list(request):
+    #print("admin_experiments_list")
     preference = define_preferences(request)
     experiments = Experiments.objects.order_by('-updated_at')
     experiment_data = get_registered_samples_number(experiments)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data': experiment_data,'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+    return render(request, 'samples_manager/admin_experiments_list.html',{'experiment_data': experiment_data,'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def users_list(request):
+    #print("users list")
     logged_user = get_logged_user(request)
     preference = define_preferences(request)
     users = Users.objects.all()
@@ -443,7 +433,7 @@ def irradiation_delete(request ,pk):
 
 def new_group_irradiation(request, experiment_id):
     data = dict()
-    print("new_irradiation")
+    #print("new_irradiation")
     selected_samples = []
     if request.method == 'POST':
         checked_samples = request.POST.getlist('checks[]')
@@ -456,15 +446,15 @@ def new_group_irradiation(request, experiment_id):
     form = GroupIrradiationForm()
     request.session['selected_samples'] = selected_samples
     context = {'form': form, 'experiment_id': experiment_id,'selected_samples':selected_samples}    
-    print("before rendering")
+    #print("before rendering")
     data['html_form'] = render_to_string('samples_manager/partial_group_irradiation_form.html', context, request=request)
-    print("selected:",selected_samples)
+    #print("selected:",selected_samples)
     return JsonResponse(data)
 
 
 def assign_dosimeters(request, experiment_id):
     data = dict()
-    print("assign dosimeters")
+    #print("assign dosimeters")
     sample_names = request.session['selected_samples']
     logged_user = get_logged_user(request)
     samples = []
@@ -508,6 +498,7 @@ def assign_samples_dosimeters(request):
     return JsonResponse(data)
 
 def experiment_users_list(request, experiment_id):
+    #print("experiment users list")
     preference = define_preferences(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     users= experiment.users.values()
@@ -515,7 +506,7 @@ def experiment_users_list(request, experiment_id):
     return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme'] })
 
 def save_occupancies(sample, status):
-    print("save_occupancies")
+    #print("save_occupancies")
     layers = Layers.objects.filter(sample = sample)
     occupancies = []
     radiation_length_occupancy = 0
@@ -565,8 +556,8 @@ def save_occupancies(sample, status):
     sample_occupancy.nu_coll_length_occupancy = round(nu_coll_length_occupancy,3)
     sample_occupancy.nu_int_length_occupancy = round(nu_int_length_occupancy,3)     
     sample_occupancy.save()
-    print("sample_occupancy")
-    print(sample_occupancy)
+    #print("sample_occupancy")
+    #print(sample_occupancy)
 
 def get_samples_occupancies(samples):
     samples_data = []
@@ -594,7 +585,7 @@ def archive_experiment_samples(request,experiment_id):
     return render(request, 'samples_manager/archive_experiment_samples.html', {'archives': archives, 'logged_user':logged_user, 'experiment': experiment, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def move_samples(request, experiment_id):
-    print("move samples")
+    #print("move samples")
     data = dict()
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
@@ -614,7 +605,7 @@ def move_samples(request, experiment_id):
                     new_archive.experiment = old_experiment
                     new_archive.sample = sample_object
                     new_archive.save()
-                    print(new_archive)
+                    #print(new_archive)
         data['form_is_valid'] = True
         samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
         samples_data = get_samples_occupancies(samples)
@@ -633,6 +624,7 @@ def move_samples(request, experiment_id):
                 return render(request, 'samples_manager/samples_list.html', {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
 
 def experiment_samples_list(request, experiment_id):
+    #print('experiment_samples_list')
     preference = define_preferences(request)
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
@@ -768,9 +760,9 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
                     sample.updated_by = logged_user
                     sample.experiment = experiment
                     sample.save()
-                    print ("sample saved")
+                    #print ("sample saved")
                     if layers_formset.is_valid():
-                        print("layers valid")
+                        #print("layers valid")
                         if  not layers_formset.cleaned_data:
                             print("layers missing")
                             data['state'] = 'layers missing'
