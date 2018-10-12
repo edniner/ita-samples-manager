@@ -3,6 +3,7 @@
 <html>
     <head>
         <title>IRRAD Data Manager</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}"/>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.0/dist/semantic.min.css">
         <link rel="stylesheet" href="{% static 'css/style2.css' %}">
@@ -13,7 +14,7 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/ui/components/image.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/ui/components/transition.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/checkbox.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'css/ui/components/github/sidebar.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/sidebar.css' %}">
         <link rel="stylesheet" rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/form.css' %}">
         <link class="themable" rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/reset.css' %}">
         <link class="themable" rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/site.css' %}">
@@ -30,7 +31,7 @@
         <link class="themable" rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/message.css' %}">
         <link class="themable" rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/popup.css' %}">
         <link class="themable" rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/reveal.css' %}">
-        <link class="themable" rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/segment.css' %}">
+        <link class="themable" rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/segment.css' %}"> 
         <link class="themable" rel="stylesheet" type="text/css" href="{% static 'css/ui/components/default/table.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/layouts/theme.css' %}">
@@ -40,7 +41,7 @@
         <div class="ui theme left push sidebar">
             <form method="post" class="ui form" id = "preferences_form" action="{% url 'samples_manager:register_preferences'%}">
                 {% csrf_token %}
-                <h3 class="ui dividing header">Theme</h3>
+                <h3 class="ui dividing header">Display Preferences</h3>
                 <tr><th><label for="id_global_theme">Global theme:</label></th>
                 <td><select class="ui theme dropdown" id="id_global_theme" name="global_theme">
                     <option value="default">Default</option>  
@@ -91,10 +92,12 @@
                         </select>
                     </td>
                 </tr>
-                <input type="hidden" id="prefered_theme" name="prefered_theme" value="{{prefered_theme}}">
+                <div class="ui divider"></div>
+                <tr><input type="hidden" id="prefered_theme" name="prefered_theme" value="{{prefered_theme}}">
                 <input type="hidden" id="prefered_button" name="prefered_button" value="{{prefered_button}}">
                 <input type="hidden" id="prefered_menu" name="prefered_menu" value="{{prefered_menu}}">
-                <input type="hidden" id="prefered_table" name="prefered_table" value="{{prefered_table}}">
+                <input type="hidden" id="prefered_table" name="prefered_table" value="{{prefered_table}}"></tr>
+                <tr><th></th><td><button id =  "save_preferences"  type="submit" class="ui fluid positive medium button submit">Save</button></td></tr>
             </form>
         </div>
         <div class="pusher">
@@ -140,9 +143,10 @@
                                     <i class="dropdown icon"></i>
                                     <div class="menu">
                                         <a href="{% url 'samples_manager:users_list' %}"class="item"><b>USERS</b></a>
-                                        <a href="{% url 'samples_manager:irradiations' %}"class="item"><b>IRRADIATIONS</b></a>
-                                        <a href="{% url 'samples_manager:dosimeters_list' %}"class="item"><b>DOSIMETERS</b></a>
                                         <a href="{% url 'samples_manager:compounds_list' %}"class="item"><b>COMPOUNDS</b></a>
+                                        <a href="{% url 'samples_manager:dosimeters_list' %}"class="item"><b>DOSIMETERS</b></a>
+                                        <a href="{% url 'samples_manager:irradiations' %}"class="item"><b>IRRADIATIONS</b></a>
+                                        <a href="{% url 'samples_manager:admin_dosimetry_results' %}"class="item"><b>DOSIMETRY RESULTS</b></a>
                                         <a href="https://its.cern.ch/jira/projects/IRRAD/" class="item"><b>JIRA</b></a>
                                         
                                     </div>

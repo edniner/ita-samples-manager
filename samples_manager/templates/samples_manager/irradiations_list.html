@@ -1,7 +1,11 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
  <!-- THE MODAL WE WILL BE USING -->
- 
+ <div class="ui modal"  id="modal-irradiation">
+    <i class="close icon"></i>
+      <div class="scrolling content">
+      </div>
+</div>
 <div class= "ui center aligned raised segment">
     <h2>Irradiation Status</h2>
     <div class= "ui grid segment">
@@ -58,8 +62,3 @@
 </div>
 {% endblock %}
 
-<div class="ui modal"  id="modal-irradiation">
-    <i class="close icon"></i>
-      <div class="scrolling content">
-      </div>
-</div>

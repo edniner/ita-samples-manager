@@ -37,6 +37,7 @@
         <table class="ui center aligned sortable celled table" id="experiment-table">
                     <thead>
                         <tr>
+                            <th>ID</th>
                             <th>Irradiation<br>title</th>
                             <th>Availability</th>
                             <th>No.<br>registered/<br>declared<br>samples</th>
@@ -51,7 +52,7 @@
                         {% include 'samples_manager/partial_admin_experiments_list.html' %}
                     </tbody>
                     <tfoot>
-                        <tr><td></td><td></td><td><b>{{experiment_data.total_registered_samples}}/{{experiment_data.total_declared_samples}}</b></td>
+                        <tr><td></td><td></td><td></td><td><b>{{experiment_data.total_registered_samples}}/{{experiment_data.total_declared_samples}}</b></td>
                         <td><b>{{experiment_data.total_experiments_radiation_length_occupancy}}</b> / <b>{{experiment_data.total_experiments_nu_coll_length_occupancy}}</b> / <b>{{experiment_data.total_experiments_int_length_occupancy}}</b></td>
                         <td></td><td></td><td></td></tr>
                     </tfoot>

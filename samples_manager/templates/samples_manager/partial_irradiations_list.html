@@ -3,10 +3,11 @@
     <td>{{ irradiation.updated_at|date:"d/m/Y"}}</td>
     <td>{{ irradiation.sample.set_id}}</td>
     <td>{{ irradiation.dosimeter.dos_id }}</td>
-    <td>{{ irradiation.date_in|date:"d/m/Y"}} {{ irradiation.date_in|time:"H:i"}} - {{ irradiation.date_out|date:"d/m/Y"}} {{ irradiation.updated_out|time:"H:i"}}</td>
+    <td>{{ irradiation.date_in|date:"d/m/Y"}} {{ irradiation.date_in|time:"H:i"}} - {{ irradiation.date_out|date:"d/m/Y"}} {{ irradiation.date_out|time:"H:i"}}</td>
     <td>{{ irradiation.irrad_table }}</td>
     <td> {{ irradiation.table_position }}</td>
-    <td>{{ sec_sum }}</td>
+    <td> {{ irradiation.accumulated_fluence }}</td>
+    <!--<td>{{ sec_sum }}</td>-->
     <td>{{ irradiation.updated_by}}</td>
     <td>{{ irradiation.status}}</td>
     <td>

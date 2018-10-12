@@ -5,16 +5,15 @@ from django.utils import timezone
 from django.forms import ModelForm,DateTimeInput,Textarea
 from django.contrib.admin import widgets
 from django.core.validators import MinValueValidator
-from datetime import date
-import time
 # Create your models here.
+
 CERN_EXPERIMENTS=(('ATLAS','ATLAS'),('CMS','CMS'), ('ALICE', 'ALICE'),('LHCb', 'LHCb'), ('TOTEM', 'TOTEM'), ('Other','Other'))
 CATEGORIES=(('','Please,choose category'),('Passive Standard','Passive Standard'),('Passive Custom','Passive Custom'),('Active','Active'))
 STORAGE=(('Room temperature','Room temperature'),('Cold storage <20','Cold storage <20 °C'))
 STATUS=(('Registered','Registered'),('Updated','Updated'),('Approved','Approved'),('Ready','Ready'),('InBeam','In beam'),('OutBeam','Out of beam'),('CoolingDown','Cooling down'),('Completed','Completed'), ('InStorage','In Storage'),('OutOfIRRAD','Out of IRRAD'),('Waste','Waste'))
 EXPERIMENT_STATUS=(('Registered','Registered'),('Updated','Updated'),('Validated','Validated'),('On going','On going'),('Paused','Paused'),('Completed','Completed')) 
 DOSIMETER_CATEGORY=(('Aluminium','Aluminium'),('Film','Film'), ('Diamond','Diamond'), ('Other','Other'))
-CERN_EXPERIMENTS=(('ATLAS','ATLAS'),('CMS','CMS'), ('ALICE', 'ALICE'),('LHCb', 'LHCb'), ('TOTEM', 'TOTEM'), ('Other','Other'))
+
 IRRAD_POSITION=(
                 ('IRRAD1_Shuttle',(
                         ('IRRAD1','IRRAD1-Shuttle'),
@@ -333,13 +332,16 @@ class Irradiation(models.Model):
     date_in = models.DateTimeField(blank=True, null=True)
     date_out = models.DateTimeField(blank=True, null=True)
     table_position = models.CharField(max_length=50, null=True)
-    irrad_table = models.CharField(max_length=50)
+    irrad_table = models.CharField(max_length=50, null = True)
+    sec = models.PositiveIntegerField(null = True)
     accumulated_fluence =  models.DecimalField(max_digits=30,decimal_places=6, null=True)
+    fluence_error = models.DecimalField(max_digits=10,decimal_places=3, null=True)
     created_at = models.DateTimeField(editable=False,null=True)
     updated_at = models.DateTimeField(null=True)
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
     status = models.CharField(max_length=50, choices=STATUS)
+    comments =  models.TextField(null=True)
 
     def __str__(self):             # __str__ on Python 2
         return str(self.sample) + str(self.dosimeter)
@@ -361,8 +363,7 @@ class ArchiveExperimentSample(models.Model):
         if not self.id:
             self.timestamp= timezone.now()
         return super(ArchiveExperimentSample, self).save(*args, **kwargs)
-
-
+        
 class UserPreferences(models.Model):
     global_theme = models.CharField(max_length=50, null = True)
     button_theme = models.CharField(max_length=50, null = True)

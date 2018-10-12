@@ -1,7 +1,8 @@
 {% for experiment in experiment_data.experiments %}
    <tr>
+     <td>{{experiment.experiment.id}}</td>
     <td>
-    {{experiment.row}}. {{ experiment.experiment.title }}<br>(
+    {{experiment.experiment.title}}<br>(
       {%if experiment.experiment.irradiation_type == 'Protons'%}
         <span title="Protons" style = " color: red">p</span>
       {%elif experiment.experiment.irradiation_type == 'Heavy ions'%}

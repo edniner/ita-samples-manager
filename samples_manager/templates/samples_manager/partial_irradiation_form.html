@@ -1,3 +1,4 @@
+{% load staticfiles %}
 {% load widget_tweaks %}
 <form method="post" data-url="{% url 'samples_manager:irradiations'%}"  action="{% url 'samples_manager:irradiation_new'%}" class="ui form js-irradiation-form">
   {% csrf_token %}
@@ -20,3 +21,10 @@
         </div>
   </div>
 </form>
+<script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+<script>
+    $( function() {
+        jQuery('#id_date_in').datetimepicker();
+        jQuery('#id_date_out').datetimepicker();
+    } );
+  </script>

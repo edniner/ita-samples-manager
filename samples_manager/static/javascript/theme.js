@@ -141,19 +141,7 @@ $(document)
       .dropdown({
         onChange: function(theme) {
           form = $('#preferences_form');
-          $.ajax({
-              url: form.attr("action"),
-              data: form.serialize(),
-              type: form.attr("method"),
-              dataType: 'json',
-              success: function (data) {
-                 theme = data['global_theme'];
-                 document.getElementById("prefered_theme").value = data['global_theme'];
-              }
-            });
-          
-          var
-            type = $(this).attr('name') || false;
+          var type = $(this).attr('name') || false;
           $.each($css, function() {
             var
               currentHREF = $(this).attr('href'),
@@ -175,17 +163,6 @@ $(document)
       $buttonDropdown
       .dropdown({
         onChange: function(theme) {
-          form = $('#preferences_form');
-          $.ajax({
-              url: form.attr("action"),
-              data: form.serialize(),
-              type: form.attr("method"),
-              dataType: 'json',
-              success: function (data) {
-                 theme = data['button_theme'];
-                 document.getElementById("prefered_button").value = data['button_theme'];
-              }
-            });
              var type = $(this).attr('name') || false;
              $.each($css, function() {
                     var
@@ -204,16 +181,6 @@ $(document)
       .dropdown({
         onChange: function(theme) {
           form = $('#preferences_form');
-          $.ajax({
-              url: form.attr("action"),
-              data: form.serialize(),
-              type: form.attr("method"),
-              dataType: 'json',
-              success: function (data) {
-                 theme = data['menu_theme'];
-                 document.getElementById("prefered_menu").value = data['menu_theme'];
-              }
-            });
              var type = $(this).attr('name') || false;
              $.each($css, function() {
                     var
@@ -232,16 +199,6 @@ $(document)
       .dropdown({
         onChange: function(theme) {
           form = $('#preferences_form');
-          $.ajax({
-              url: form.attr("action"),
-              data: form.serialize(),
-              type: form.attr("method"),
-              dataType: 'json',
-              success: function (data) {
-                 theme = data['table_theme'];
-                 document.getElementById("prefered_table").value = data['table_theme'];
-              }
-            });
              var type = $(this).attr('name') || false;
              $.each($css, function() {
                     var
@@ -255,5 +212,24 @@ $(document)
       });
       table_theme = String(document.getElementById("prefered_table").value);
       $tableDropdown.dropdown('set selected', table_theme);
+
+      var savePreferences = function(){
+              $.ajax({
+              url: form.attr("action"),
+              data: form.serialize(),
+              type: form.attr("method"),
+              dataType: 'json',
+              success: function (data) {
+                 document.getElementById("prefered_theme").value = data['global_theme'];
+                 document.getElementById("prefered_button").value = data['button_theme'];
+                 document.getElementById("prefered_menu").value = data['menu_theme'];
+                 document.getElementById("prefered_table").value = data['table_theme'];
+              }
+            });
+            return false;
+      }
+
+      $("#save_preferences").on("click",savePreferences);
+
   })
 ;

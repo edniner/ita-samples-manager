@@ -26,6 +26,14 @@
                 title='Clone sample'>
           <i class="clone icon"></i>Clone
         </button>
+        {%else%}
+        <a href="{% url 'samples_manager:dosimetry_results' sample_data.sample.id  %}">  
+          <button type="button"
+                  class="mini ui green icon button"
+                  title='Dosimetry results'>
+            <i class="book icon"></i>Results
+          </button>
+        </a>
         {% endif %}
         <button type="button"
                   class="mini ui grey icon dropdown link button allowed_dropdown"

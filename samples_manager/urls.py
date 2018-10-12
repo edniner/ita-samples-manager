@@ -65,4 +65,6 @@ urlpatterns = [
     url(r'^irradiation/(?P<pk>\d+)/status/update/$', views.irradiation_status_update, name='irradiation_status_update'),
     url(r'^register/preferences/$', views.register_preferences, name='register_preferences'),
     url(r'^get/sec/$', views.get_sec, name='get_sec'),
+    url(r'^admin/dosimetry/results/$', views.admin_dosimetry_results, name='admin_dosimetry_results'),
+    url(r'^sample/(?P<sample_id>\d+)/dosimetry/results/$', views.dosimetry_results, name='dosimetry_results'),
     ]

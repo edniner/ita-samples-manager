@@ -40,16 +40,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -57,7 +57,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
 
     email =  email.lower()
     users = Users.objects.all()
@@ -270,11 +270,14 @@ def experiments_list(request):
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def register_preferences(request):
-    request.POST['number_ids']
     global_theme = request.POST['global_theme']
     button_theme = request.POST['button']
     menu_theme = request.POST['menu']
     table_theme = request.POST['table']
+    print("global_theme",global_theme)
+    print("button_theme", button_theme)
+    print("menu_theme", menu_theme)
+    print("table_theme", table_theme)
     logged_user = get_logged_user(request)
     try:
         userpreference = get_object_or_404(UserPreferences, user = logged_user)
@@ -366,12 +369,24 @@ def user_details(request, user_id):
     user = get_object_or_404(Users, pk=user_id)
     return render(request, 'samples_manager/user_details.html', {'user': user})
 
+def admin_dosimetry_results(request):
+    logged_user = get_logged_user(request)
+    results = Irradiation.objects.all()
+    return render(request, 'samples_manager/admin_dosimetry_results.html', {'results': results, 'logged_user':logged_user})
+
+def dosimetry_results(request, sample_id):
+    logged_user = get_logged_user(request)
+    results = Irradiation.objects.filter(sample = sample_id)
+    print(results)
+    return render(request, 'samples_manager/dosimetry_results.html', {'results': results, 'logged_user':logged_user})
 
 def irradiation_new(request):
     data = dict()
     logged_user = get_logged_user(request)
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
+        print(form)
+        print("form is valid: ", form.is_valid())
         if form.is_valid():
             irradiation = form.save()
             irradiation.status = "Registered"
@@ -395,7 +410,7 @@ def irradiation_update(request, pk):
     logged_user = get_logged_user(request)
     irradiation = get_object_or_404(Irradiation, pk=pk)
     if request.method == 'POST':
-        form = IrradiationFormEdit(request.POST, instance = irradiation)
+        form = IrradiationForm(request.POST, instance = irradiation)
         if form.is_valid():
             form.save()
             irradiations = Irradiation.objects.all()
@@ -404,7 +419,7 @@ def irradiation_update(request, pk):
         else:
             data['form_is_valid'] = False
     else:
-        form = IrradiationFormEdit(instance = irradiation)
+        form = IrradiationForm(instance = irradiation)
         context = {'form': form, 'logged_user': logged_user}
         data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html',
                     context,
@@ -1109,9 +1124,9 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     data['html_experiment_list'] = render_to_string(output_template, template_data)
                     data['state'] = "Created"
                     message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                    ##send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
+                    send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
                     message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
-                    #send_mail_notification('IRRAD Data Manager: New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+                    send_mail_notification('IRRAD Data Manager: New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
                 else:
                     data['form_is_valid'] = False
                     data['state'] = "not unique"
@@ -1187,7 +1202,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 text = updated_experiment_data(old_experiment,old_fluences,old_materials,old_category,experiment)
                 message2irrad=mark_safe("The user with e-mail: "+logged_user.email+" updated the experiment with title '"+experiment.title+"'.\n"
                 +"The updated fields are: \n"+text+"\nPlease, find all the experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
-                #send_mail_notification('IRRAD Data Manager: Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+                send_mail_notification('IRRAD Data Manager: Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
             else:
                 print("form1: ",form1.is_valid())
                 print("form2: ",form2.is_valid())
@@ -1246,9 +1261,9 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                             'experiment_data':  experiment_data, 'logged_user':logged_user 
                         })
                 message='Dear user,\nyour experiment with title "%s" was validated. \nYou can now add samples and additional users related to your irradiation experiment.\nPlease, find all your experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch'% experiment.title
-                #send_mail_notification('IRRAD Data Manager: Experiment  %s validation' % experiment.title,message,'irrad.ps@cern.ch',experiment.responsible.email)
+                send_mail_notification('IRRAD Data Manager: Experiment  %s validation' % experiment.title,message,'irrad.ps@cern.ch',experiment.responsible.email)
                 message2irrad='You validated the experiment with title: %s' % experiment.title
-                #send_mail_notification('IRRAD Data Manager: Experiment %s validation' % experiment.title,message2irrad,'irrad.ps@cern.ch','irrad.ps@cern.ch')
+                send_mail_notification('IRRAD Data Manager: Experiment %s validation' % experiment.title,message2irrad,'irrad.ps@cern.ch','irrad.ps@cern.ch')
             else:
                 print("form1: ",form1.is_valid())
                 print("form2: ",form2.is_valid())
@@ -1309,11 +1324,10 @@ def experiment_status_update(request, pk):
             updated_experiment = Experiments.objects.get(id = experiment.id)
             if  updated_experiment.status == 'Completed':
                 message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was completed.\nTwo weeks time is still needed for the cool down. Please, contact us after that period.\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
+                send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
                 exp_users= updated_experiment.users.values()
                 for user in exp_users:
-                    pass
-                    #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
+                    send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
             data['form_is_valid'] = True
             if logged_user.role == 'Admin':
                     experiments = Experiments.objects.all().order_by('-updated_at')
@@ -1552,9 +1566,9 @@ def experiment_delete(request, pk):
         data['html_experiment_list'] = render_to_string(output_template, template_data)
         data['state']='Deleted'
         message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was deleted by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-        #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
+        send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
         message2irrad=mark_safe("The user with the account: "+logged_user.email+" deleted the experiment with title '"+ experiment.title+"'.\n")
-        #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message2irrad,experiment.responsible.email, 'irrad.ps@cern.ch')
+        send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message2irrad,experiment.responsible.email, 'irrad.ps@cern.ch')
     else:
         context = {'experiment': experiment}
         data['html_form'] = render_to_string('samples_manager/partial_experiment_delete.html',
@@ -1591,7 +1605,7 @@ def save_user_form(request, form, experiment, template_name):
                         experiment.users.add(user)
                 print("here")
                 message=mark_safe('Dear user,\nyou were assigned as a user for the experiment '+experiment.title+' by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                #send_mail_notification('IRRAD Data Manager: Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
+                send_mail_notification('IRRAD Data Manager: Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
             data['form_is_valid'] = True
             users = experiment.users.all()
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {

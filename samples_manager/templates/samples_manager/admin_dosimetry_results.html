@@ -1,0 +1,54 @@
+{% extends 'samples_manager/base.html' %}
+{% block content %}
+ <!-- THE MODAL WE WILL BE USING -->
+<div class= "ui center aligned raised segment">
+    <h2>Dosimetry results</h2>
+    <div class= "ui grid segment">
+        <div class="three wide column">
+                <button type="button" class="ui left floated grey button"  onclick="goBack()" title='Back'>
+                            <i class="angle left icon"></i>Back
+                </button>
+        </div>
+        <div class="ten wide column">
+            <form style="text-align: center; display: block" name="search_form" method="GET" action="{% url 'samples_manager:search_experiments_admin'%}"> 
+                <div class="ui right action input">
+                    <input title="Search irradiation title or status"   id="search_box" type="text" name="search_box"  placeholder="Search..." >
+                    <button title="Search irradiation title or status" class="ui icon green button" id="search_submit" type="submit"><i class="search icon"></i></button>
+                </div>
+            </form>
+        </div>
+        <div class="three wide column">
+                <button type="button"
+                            id = "export_button"
+                            class="ui yellow right floated button"
+                            title='Print'
+                            data-url="">
+                            <i class="print icon"></i> Export
+                    </button>  
+        </div>
+    </div>
+    <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
+            <table class="ui center aligned sortable celled table very compact striped" id="irradiation-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>SET</th>
+                        <th>Dosimeter</th>
+                        <th>Date In</th>
+                        <th>Date Out</th>
+                        <th>IRRAD table</th>
+                        <th>Table position</th>
+                        <th>SEC</th>
+                        <th>Accumulated fluence</th>
+                        <th>Error(%)</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% include 'samples_manager/partial_admin_dosimetry_results.html' %}
+                </tbody>
+            </table>
+    </div>
+</div>
+{% endblock %}
+
