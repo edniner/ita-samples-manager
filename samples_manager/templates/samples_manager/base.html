@@ -36,6 +36,34 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/layouts/theme.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/layouts/home.css' %}">
+        <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css" />
+        <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
+        <script>
+        window.addEventListener("load", function(){
+        window.cookieconsent.initialise({
+        "palette": {
+            "popup": {
+            "background": "#000"
+            },
+            "button": {
+            "background": "#f1d600"
+            }
+        },
+        "position": "bottom",
+        "content": { 
+            "message": 'This web application uses cookies to ensure you get the best experience on our web application. Please, choose your display preferences.',
+        }
+    })
+    var $uisidebar        = $('.ui.sidebar');
+    $uisidebar.sidebar({
+        transition: 'push',
+        dimPage: false
+      })
+      .sidebar('attach events', $('.cc-btn.cc-dismiss'))
+    ;
+
+});
+        </script>
     </head>
     <body id="home" class="pushable">
         <div class="ui theme left push sidebar">
@@ -101,6 +129,7 @@
             </form>
         </div>
         <div class="pusher">
+            
             <div class="page header">
                 <div class="ui container">
                     <div class="blank-toolbar s4-notdlg"></div>
@@ -152,8 +181,8 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                <a class="launch icon item" data-content="Select a theme" onclick="alert('Please, choose your display preferences. Your choise will be saved and used for optimising and customising your view.');this.onclick='';">
-                                   <b class="yellow"><i class="yellow cogs icon"></i><span style = 'color: rgb(251, 189, 7); text-decoration: underline'>PREFERENCES</span></b>
+                                <a class="launch icon item" data-content="Select display preferences">
+                                   <b class="yellow"><i class="yellow cogs icon"></i>PREFERENCES</b>
                                 </a>
                         </div>
                         <div class = "ui right floated item">
@@ -199,10 +228,14 @@
         <script src="{% static 'javascript/theme.js' %}"></script>  
         <script src="{% static 'js/DYMO.Label.Framework.2.0.2.js' %}"></script>
         <script>
-            $('.allowed_dropdown').dropdown();
-            function goBack() {
-                window.history.back();
-            }
+            
+            $(document).ready(function() {
+
+                $('.allowed_dropdown').dropdown();
+                            function goBack() {
+                                window.history.back();
+                            }
+            });
        </script>
         
     </body>

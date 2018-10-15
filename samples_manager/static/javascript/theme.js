@@ -36,6 +36,7 @@ $(document)
         dimPage: false
       })
       .sidebar('attach events', $launcher)
+      .sidebar('attach events', $('#save_preferences'))
     ;
 
     $menuToggle

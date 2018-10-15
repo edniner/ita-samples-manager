@@ -74,3 +74,8 @@ span.circle_span {
 div.ui.container{
     width:96%;
 }
+
+#popup{
+    height: 50px;
+    background-color:blue;
+}
