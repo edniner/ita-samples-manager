@@ -72,8 +72,7 @@ var loadForm = function () {
     return false;
   };
 
-  var get_sec = function(timestamp) {
-      console.log("get sec",timestamp);
+  var get_sec = function() {
       var form = $("#sec_form");
       $.ajax({
       url: form.attr("action"),
@@ -98,7 +97,7 @@ function getFormattedDate() {
     return str;
 }
 
-var starting_sec = function(){
+/*var starting_sec = function(){
   // the task stops after refreshing to be thought!
   var nIntervId;
   if (document.getElementById("get_sec").value=="Get SEC"){
@@ -118,6 +117,26 @@ var starting_sec = function(){
    }
 
  }
+
+var nIntervId;
+console.log("----starting sec----");
+nIntervId = setInterval(starting_sec, 5000, '');
+
+ var starting_sec = function(timestamp){
+    console.log("getting sec!!");
+    timestamp = document.getElementById("start_timestamp").value;
+    if (timestamp != ''){
+      get_sec(); 
+    }
+    else{}
+ }
+
+$(document).ready(function() {
+    var nIntervId;
+    console.log("----starting sec----");
+    nIntervId = setInterval(starting_sec, 5000, '');
+            });*/
+
 
  var downloadCSV = function(csv, filename) {
     var csvFile;
@@ -184,7 +203,8 @@ var starting_sec = function(){
   $("#modal-irradiation").on("submit", ".js-irradiation-update-form", saveForm);
 
   // get sec
-  $("#get_sec").on("click",starting_sec);
+  //$("#get_sec").on("click",starting_sec);
 
    $("#export_button").on("click", exportTableToCSV);
 });
+

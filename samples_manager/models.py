@@ -275,6 +275,7 @@ class Dosimeters(models.Model):
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
     last_location = models.CharField(max_length=100,null=True)
+    parent_dosimeter = models.ForeignKey('self',null=True)
 
     def __str__(self):              # __str__ on Python 2
         return self.dos_id
@@ -341,10 +342,8 @@ class Irradiation(models.Model):
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
     status = models.CharField(max_length=50, choices=STATUS)
+    in_beam =  models.BooleanField(default=False)
     comments =  models.TextField(null=True)
-
-    def __str__(self):             # __str__ on Python 2
-        return str(self.sample) + str(self.dosimeter)
     
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
@@ -361,7 +360,7 @@ class ArchiveExperimentSample(models.Model):
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
         if not self.id:
-            self.timestamp= timezone.now()
+            self.timestamp = timezone.now()
         return super(ArchiveExperimentSample, self).save(*args, **kwargs)
         
 class UserPreferences(models.Model):

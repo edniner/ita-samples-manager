@@ -1,5 +1,37 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
+<script>   
+        var starting_sec = function(){
+            console.log("getting sec...");
+            timestamp = document.getElementById("start_timestamp").value;
+            if (timestamp != ''){
+                get_sec(); 
+            }
+            else{
+            
+            }
+        }
+
+        var get_sec = function() {
+            var form = $("#sec_form");
+            $.ajax({
+            url: form.attr("action"),
+            data:  form.serialize(),
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                    if (data.form_is_valid) {
+                        $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+                    }
+                    else {
+                    alert("data is not correct");
+                    }
+                }
+            });
+        }
+        var nIntervId;
+        //nIntervId = setInterval(starting_sec, 5000);
+ </script>
  <!-- THE MODAL WE WILL BE USING -->
  <div class="ui modal"  id="modal-irradiation">
     <i class="close icon"></i>
@@ -28,13 +60,6 @@
             <form method="post" id="sec_form" action="{% url 'samples_manager:get_sec'%}">
                 {% csrf_token %}
                 <input type="hidden" id="start_timestamp" name="start_timestamp" value="">
-                <button type="button"
-                            id = "get_sec"
-                            class="ui orange button"
-                            title='Get SEC'
-                            data-url="{% url 'samples_manager:get_sec'%}">
-                            Get SEC
-                </button>   
             </form>
         </div>
     </div>
@@ -49,8 +74,10 @@
                         <th>IRRAD<br>table</th>
                         <th>Table<br>position</th>
                         <th>Accumulated<br>fluence</th>
+                        <th>SEC</th>
                         <th>Updated by</th>
                         <th>Status</th>
+                        <th class="sorttable_nosort">In Beam </th>
                         <th class="sorttable_nosort">Actions</th>
                     </tr>
                 </thead>
@@ -60,5 +87,22 @@
             </table>
     </div>
 </div>
+<script> 
+    var in_beam_checkboxes = document.querySelectorAll('.in_beam_checkbox');
+        for(var i = 0; i < in_beam_checkboxes.length; i++) {
+            console.log(i);
+            if(in_beam_checkboxes[i].checked) {
+                console.log(in_beam_checkboxes[i]);
+            }
+        };
+        // here to be checked!!
+        $('.in_beam_checkbox').checkbox({
+                onChecked: () => {
+                    alert('is window ? ');
+                }
+            });
+</script>
 {% endblock %}
+
+
 

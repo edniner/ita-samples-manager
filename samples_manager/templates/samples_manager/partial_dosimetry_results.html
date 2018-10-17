@@ -3,9 +3,9 @@
     <td>{{ result.dosimeter.dos_id }}</td>
     <td>{{ result.date_in|date:"d/m/Y"}} {{ result.date_in|time:"H:i"}}</td>
     <td>{{ result.date_out|date:"d/m/Y"}} {{ result.date_out|time:"H:i"}}</td>
-    <td> {{ result.sec_sum }}</td>
-    <td> {{ result.accumulated_fluence }}</td>
-    <td> {{ result.error }}</td>
+    <td> {{ result.sec|stringformat:".2e" }}</td>
+    <td> {{ result.accumulated_fluence|stringformat:".2e" }}</td>
+    <td> {{ result.fluence_error}}</td>
     <td> {{ result.comments }}</td>
     </tr>
   {% empty %}

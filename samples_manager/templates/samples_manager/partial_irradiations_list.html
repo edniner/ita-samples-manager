@@ -7,9 +7,15 @@
     <td>{{ irradiation.irrad_table }}</td>
     <td> {{ irradiation.table_position }}</td>
     <td> {{ irradiation.accumulated_fluence }}</td>
-    <!--<td>{{ sec_sum }}</td>-->
+    <td>{{ irradiation.sec }}</td>
     <td>{{ irradiation.updated_by}}</td>
     <td>{{ irradiation.status}}</td>
+    <td>      
+      <div class="ui red fitted toggle checkbox">
+        <input type="checkbox" name ="in_beam_checkbox[]" class = "in_beam_checkbox"  value = '{{irradiation.in_beam}}'>
+        <label></label>
+     </div>
+    </td>
     <td>
       <button type="button"
                 class="mini ui yellow icon button js-update-irradiation"
