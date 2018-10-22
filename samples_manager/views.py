@@ -2393,7 +2393,6 @@ def search_dosimeters(request):
 
 def get_sec(request):
     print("getting sec!!")
-    '''timestamp = request.POST['start_timestamp']'''
     irradiations = Irradiation.objects.all()
     cursor = connection.cursor()
     data = dict()
@@ -2410,11 +2409,33 @@ def get_sec(request):
                 sec_sum = sec_sum + row[0]
             irradiation.sec = sec_sum
             irradiation.save()
-            print("sec_sum", sec_sum)
+    cursor.close()
     data['form_is_valid'] = True
     print("form is valid")
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations},request=request)
-    print("Query executed!")
+    return JsonResponse(data)
+
+def in_beam_change(request, irradiation_id):
+    print("in beam change")
+    full_path = request.get_full_path()
+    change = full_path.split("/")[5]
+    print(change)
+    irradiation = get_object_or_404(Irradiation, pk = irradiation_id)
+    print("before:",irradiation.in_beam)
+    if change == "out":
+        print("out: ")
+        irradiation.in_beam = False
+    else:
+        print("in: ")
+        irradiation.in_beam = True
+    irradiation.save()
+    print("after:",irradiation.in_beam)
+    data = dict()
+    data['form_is_valid'] = True
+    irradiations = Irradiation.objects.all()
+    irradiation2 = get_object_or_404(Irradiation, pk = irradiation_id)
+    print("irradiation2: ",irradiation2.in_beam)
+    data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations},request=request)
     return JsonResponse(data)
 
 

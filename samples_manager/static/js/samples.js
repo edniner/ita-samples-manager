@@ -33,7 +33,6 @@ $(function () {
       }
     }
   });
-
   
 var load_values = function() {
   checked_sample_values = 0;

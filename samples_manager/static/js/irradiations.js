@@ -1,4 +1,75 @@
 $(function () {
+  var starting_sec = function(){
+            console.log("getting sec...");
+            timestamp = document.getElementById("start_timestamp").value;
+            get_sec();
+        }
+
+  var get_sec = function() {
+            var form = $("#sec_form");
+            $.ajax({
+            url: form.attr("action"),
+            data:  form.serialize(),
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                    if (data.form_is_valid) {
+                        $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+                    }
+                    else {
+                    alert("data is not correct");
+                    }
+                }
+            });
+        }
+var nIntervId;
+var in_beam_checked = 0;
+
+var in_beam_checkboxes = document.querySelectorAll('.in_beam_checkbox');
+for(var i = 0; i < in_beam_checkboxes.length; i++) {
+            if(in_beam_checkboxes[i].checked) {
+                 in_beam_checked++;
+            }
+        };
+if(in_beam_checked!=0){
+    console.log("in_beam_checked: ",in_beam_checked);
+    nIntervId = setInterval(starting_sec, 5000);
+}
+
+$('.in_beam_checkbox').change(function() {
+            console.log("changing!");
+            var form = $("#sec_form");
+            var input = this;
+            if (this.checked){
+                modified_url = input.value +"in/";
+                if(in_beam_checked==0){
+                  nIntervId = setInterval(starting_sec, 5000);
+                }
+                in_beam_checked++;
+            } 
+            else{
+                modified_url = input.value +"out/";
+                in_beam_checked--;
+                if(in_beam_checked==0){
+                   console.log("clear interval:", in_beam_checked);
+                   clearInterval(nIntervId);
+                }
+            }
+            $.ajax({
+              url: modified_url,
+              data:  form.serialize(),
+              type: 'post',
+              dataType: 'json',
+              success: function (data) {
+                if (data.form_is_valid) {
+                    $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+                }
+                else {
+                alert("data is not correct");
+                }
+              }
+            });
+        });
 
 var newGroupIrradiation = function (){
       var btn = $(this);

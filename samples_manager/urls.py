@@ -67,4 +67,7 @@ urlpatterns = [
     url(r'^get/sec/$', views.get_sec, name='get_sec'),
     url(r'^admin/dosimetry/results/$', views.admin_dosimetry_results, name='admin_dosimetry_results'),
     url(r'^sample/(?P<sample_id>\d+)/dosimetry/results/$', views.dosimetry_results, name='dosimetry_results'),
+    url(r'^irradiation/(?P<irradiation_id>\d+)/beam/$', views.in_beam_change, name='in_beam_change'),
+    url(r'^irradiation/(?P<irradiation_id>\d+)/beam/in/$', views.in_beam_change, name='in_beam'),
+    url(r'^irradiation/(?P<irradiation_id>\d+)/beam/out/$', views.in_beam_change, name='out_beam'),
     ]
