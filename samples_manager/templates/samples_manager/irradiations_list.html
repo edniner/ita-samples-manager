@@ -6,6 +6,9 @@
       <div class="scrolling content">
       </div>
 </div>
+<form method="post" id="sec_form" action="{% url 'samples_manager:get_sec'%}">
+    {% csrf_token %}
+</form>
 <div class= "ui center aligned raised segment">
     <h2>Irradiation Status</h2>
     <div class= "ui grid segment">
@@ -14,57 +17,73 @@
                             <i class="angle left icon"></i>Back
                 </button>
         </div>
-        <div class="ten wide column">
-            <button type="button"
-                        id = "irradiation_new"
-                        data-target = "#modal-irradiation"
-                        class="ui blue button js-create-sample"
-                        title='New irradition'
-                        data-url="{% url 'samples_manager:irradiation_new'%}">
-                        <i class="plus icon"></i> New Irradiation
-            </button>   
-        </div>
-        <div class="two wide column">
-            <button type="button"
-                        id = "in_beam_button_save"
-                        class="huge ui positive button js-create-sample"
-                        style = "display: none"
-                        title='New irradition'
-                        data-url="">
-                        <i class="save icon"></i> Save
-            </button>   
-        </div>
-        <div class="three wide column">
-            <form method="post" id="sec_form" action="{% url 'samples_manager:get_sec'%}">
-                {% csrf_token %}
-                <input type="hidden" id="start_timestamp" name="start_timestamp" value="">
-            </form>
-        </div>
+            <div class="ten wide column">
+                <button type="button"
+                            id = "irradiation_new"
+                            data-target = "#modal-irradiation"
+                            class="ui blue button js-create-sample"
+                            title='New irradition'
+                            data-url="{% url 'samples_manager:irradiation_new'%}">
+                            <i class="plus icon"></i> New Irradiation
+                </button>   
+            </div>
+            <div class="two wide column" id="select_table_form" >
+                <form style="text-align: center; display: block" name="select_table" method="GET" action="{% url 'samples_manager:select_table'%}"> 
+                    <div class="ui right action input">
+                        <select class="form-control" id="irrad_table" name="irrad_table">
+                            <option value="" selected="selected">Select a table</option>
+                                            {% for table in tables %}
+                                                <option value="{{table}}">{{table}}</option>
+                                            {% endfor %}
+                        </select>
+                         <button type="submit"
+                                    id = "change_table"
+                                    class="ui positive button">
+                                    <i class="check icon"></i>
+                        </button>
+                     </div>
+                </form>
+            </div>
+            <div class="two wide column">
+                <button type="button"
+                            id = "in_beam_button_save"
+                            class="huge ui positive button js-create-sample"
+                            style = "display: none"
+                            title='New irradition'
+                            data-url="{% url 'samples_manager:get_sec'%}">
+                            <i class="save icon"></i> Save
+                </button>   
+            </div>
+
+        
     </div>
-    <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
-            <table class="ui center aligned sortable celled table very compact striped" id="irradiation-table">
-                <thead>
-                    <tr>
-                        <th>Updated at</th>
-                        <th>Sample</th>
-                        <th>Dosimeter</th>
-                        <th>Date IN - Date OUT</th>
-                        <th>IRRAD<br>table</th>
-                        <th>Table<br>position</th>
-                        <th>Accumulated<br>fluence</th>
-                        <th>SEC</th>
-                        <th>Updated by</th>
-                        <th>Status</th>
-                        <th class="sorttable_nosort">In Beam </th>
-                        <th class="sorttable_nosort">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% include 'samples_manager/partial_irradiations_list.html' %}
-                </tbody>
-            </table>
-    </div>
+
+
+        <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
+                <table class="ui center aligned sortable celled table very compact striped" id="irradiation-table">
+                    <thead>
+                        <tr>
+                            <th>Updated at</th>
+                            <th>Sample</th>
+                            <th>Dosimeter</th>
+                            <th>Date IN - Date OUT</th>
+                            <th>IRRAD<br>table</th>
+                            <th>Table<br>position</th>
+                            <th>Accumulated<br>fluence</th>
+                            <th>SEC</th>
+                            <th>Updated by</th>
+                            <th>Status</th>
+                            <th class="sorttable_nosort">In Beam </th>
+                            <th class="sorttable_nosort">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% include 'samples_manager/partial_irradiations_list.html' %}
+                    </tbody>
+                </table>
+        </div>
 </div>
+
 {% endblock %}
 
 

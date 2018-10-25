@@ -70,4 +70,5 @@ urlpatterns = [
     url(r'^irradiation/(?P<irradiation_id>\d+)/beam/$', views.in_beam_change, name='in_beam_change'),
     url(r'^irradiation/(?P<irradiation_id>\d+)/beam/in/$', views.in_beam_change, name='in_beam'),
     url(r'^irradiation/(?P<irradiation_id>\d+)/beam/out/$', views.in_beam_change, name='out_beam'),
+    url(r'^select_table/$', views.select_table, name='select_table'),
     ]

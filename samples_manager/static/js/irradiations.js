@@ -35,6 +35,7 @@ $('.in_beam_checkbox').change(function() {
             clearInterval(nIntervId);
             console.log("clear interval!");
             $('#in_beam_button_save').show();
+            $('#select_table_form').hide();
             $('#back_button').hide();
             $('#irradiation_new').hide();
         });
@@ -212,6 +213,7 @@ var checkInBeamState = function(){
     nIntervId = setInterval(starting_sec, 5000);
                   }
   $('#in_beam_button_save').hide();
+  $('#select_table_form').show();
   $('#back_button').show();
   $('#irradiation_new').show();
 }

@@ -2327,7 +2327,20 @@ def search_samples(request, experiment_id):
             entry_query = get_query(query_string, ['set_id', 'name', 'category'])
             experiment_samples = Samples.objects.filter(experiment = experiment)
             samples = experiment_samples.filter(entry_query)
-        return render(request, 'samples_manager/samples_list.html', {'samples': samples, 'logged_user':logged_user, 'experiment': experiment})
+        return render(request, 'samples_manager/samples_list.html', {'samples': samples,  'experiment': experiment})
+
+
+def select_table(request):
+        logged_user = get_logged_user(request)
+        tables = ['IRRAD1','IRRAD3','IRRAD5','IRRAD7','IRRAD9','IRRAD11','IRRAD13','IRRAD15','IRRAD17','IRRAD19']
+        query_string = ''
+        found_entries = None
+        irradiations =[]
+        if ('irrad_table' in request.GET) and request.GET['irrad_table'].strip():
+            query_string = request.GET['irrad_table']
+            entry_query = get_query(query_string, ['irrad_table'])
+            irradiations = Irradiation.objects.filter(entry_query)
+        return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user':logged_user, 'tables':tables})
 
 
 def search_experiments_user(request):
