@@ -10,7 +10,7 @@
     <h2>Irradiation Status</h2>
     <div class= "ui grid segment">
         <div class="three wide column">
-                <button type="button" class="ui left floated grey button"  onclick="goBack()" title='Back'>
+                <button type="button" class="ui left floated grey button" id = "back_button" onclick="goBack()" title='Back'>
                             <i class="angle left icon"></i>Back
                 </button>
         </div>
@@ -22,6 +22,16 @@
                         title='New irradition'
                         data-url="{% url 'samples_manager:irradiation_new'%}">
                         <i class="plus icon"></i> New Irradiation
+            </button>   
+        </div>
+        <div class="two wide column">
+            <button type="button"
+                        id = "in_beam_button_save"
+                        class="huge ui positive button js-create-sample"
+                        style = "display: none"
+                        title='New irradition'
+                        data-url="">
+                        <i class="save icon"></i> Save
             </button>   
         </div>
         <div class="three wide column">

@@ -230,12 +230,12 @@ def filtered_authorised_experiments(logged_user, experiments):
         return experiments 
 
 def irradiations(request):
+     tables = ['IRRAD1','IRRAD3','IRRAD5','IRRAD7','IRRAD9','IRRAD11','IRRAD13','IRRAD15','IRRAD17','IRRAD19']
      preference = define_preferences(request)
      logged_user = get_logged_user(request)
-     irradiations = []
      if logged_user.role == 'Admin':
         irradiations = Irradiation.objects.all()
-     return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme'], 'timestamp_in': irradiations[0].date_in})
+     return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations,'tables': tables, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme'], 'timestamp_in': irradiations[0].date_in})
 
 def define_preferences(request):
     data = dict()
@@ -2409,7 +2409,6 @@ def get_sec(request):
                 sec_sum = sec_sum + row[0]
             irradiation.sec = sec_sum
             irradiation.save()
-    cursor.close()
     data['form_is_valid'] = True
     print("form is valid")
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations},request=request)

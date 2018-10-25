@@ -1,7 +1,5 @@
 $(function () {
   var starting_sec = function(){
-            console.log("getting sec...");
-            timestamp = document.getElementById("start_timestamp").value;
             get_sec();
         }
 
@@ -15,9 +13,6 @@ $(function () {
             success: function (data) {
                     if (data.form_is_valid) {
                         $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
-                    }
-                    else {
-                    alert("data is not correct");
                     }
                 }
             });
@@ -33,42 +28,15 @@ for(var i = 0; i < in_beam_checkboxes.length; i++) {
         };
 if(in_beam_checked!=0){
     console.log("in_beam_checked: ",in_beam_checked);
-    nIntervId = setInterval(starting_sec, 5000);
+    //nIntervId = setInterval(starting_sec, 5000);
 }
 
 $('.in_beam_checkbox').change(function() {
-            console.log("changing!");
-            var form = $("#sec_form");
-            var input = this;
-            if (this.checked){
-                modified_url = input.value +"in/";
-                if(in_beam_checked==0){
-                  nIntervId = setInterval(starting_sec, 5000);
-                }
-                in_beam_checked++;
-            } 
-            else{
-                modified_url = input.value +"out/";
-                in_beam_checked--;
-                if(in_beam_checked==0){
-                   console.log("clear interval:", in_beam_checked);
-                   clearInterval(nIntervId);
-                }
-            }
-            $.ajax({
-              url: modified_url,
-              data:  form.serialize(),
-              type: 'post',
-              dataType: 'json',
-              success: function (data) {
-                if (data.form_is_valid) {
-                    $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
-                }
-                else {
-                alert("data is not correct");
-                }
-              }
-            });
+            clearInterval(nIntervId);
+            console.log("clear interval!");
+            $('#in_beam_button_save').show();
+            $('#back_button').hide();
+            $('#irradiation_new').hide();
         });
 
 var newGroupIrradiation = function (){
@@ -164,50 +132,8 @@ var loadForm = function () {
 function getFormattedDate() {
     var date = new Date();
     var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-
     return str;
 }
-
-/*var starting_sec = function(){
-  // the task stops after refreshing to be thought!
-  var nIntervId;
-  if (document.getElementById("get_sec").value=="Get SEC"){
-      document.getElementById("get_sec").value = "Stop SEC";
-      timestamp = getFormattedDate();
-      document.getElementById("start_timestamp").value = timestamp;
-      nIntervId = setInterval(get_sec, 5000, timestamp);
-      document.getElementById("get_sec").classList.add('red');
-      document.getElementById("get_sec").classList.remove('orange');
-      
-   }
-  else{ 
-     document.getElementById("get_sec").value = "Get SEC";
-     document.getElementById("get_sec").classList.add('orange');
-     document.getElementById("get_sec").classList.remove('red');
-     clearInterval(nIntervId);
-   }
-
- }
-
-var nIntervId;
-console.log("----starting sec----");
-nIntervId = setInterval(starting_sec, 5000, '');
-
- var starting_sec = function(timestamp){
-    console.log("getting sec!!");
-    timestamp = document.getElementById("start_timestamp").value;
-    if (timestamp != ''){
-      get_sec(); 
-    }
-    else{}
- }
-
-$(document).ready(function() {
-    var nIntervId;
-    console.log("----starting sec----");
-    nIntervId = setInterval(starting_sec, 5000, '');
-            });*/
-
 
  var downloadCSV = function(csv, filename) {
     var csvFile;
@@ -253,6 +179,43 @@ $(document).ready(function() {
     downloadCSV(csv.join("\n"), filename);
 }
 
+var checkInBeamState = function(){
+  var form = $("#sec_form");
+  $(".in_beam_checkbox").each(function() {
+      if (this.defaultChecked !== this.checked) {
+                var input = this;
+                if (this.checked){
+                  modified_url = input.value +"in/";
+                  console.log(modified_url);
+                  in_beam_checked++;
+                }
+                else{
+                  modified_url = input.value +"out/";
+                  console.log(modified_url);
+                  in_beam_checked--;
+              } 
+               $.ajax({
+                url: modified_url,
+                data:  form.serialize(),
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                  if (data.form_is_valid) {
+                      $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+                      }
+                    }
+                  });
+                }
+    });
+  if(in_beam_checked!=0){
+    console.log("in beam");
+    nIntervId = setInterval(starting_sec, 5000);
+                  }
+  $('#in_beam_button_save').hide();
+  $('#back_button').show();
+  $('#irradiation_new').show();
+}
+
 
 
 
@@ -277,5 +240,8 @@ $(document).ready(function() {
   //$("#get_sec").on("click",starting_sec);
 
    $("#export_button").on("click", exportTableToCSV);
-});
+
+   $("#in_beam_button_save").on("click",checkInBeamState);
+
+   });
 
