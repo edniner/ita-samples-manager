@@ -3,22 +3,9 @@ $(function () {
             get_sec();
         }
 
-  var get_sec = function() {
-            var form = $("#sec_form");
-            $.ajax({
-            url: form.attr("action"),
-            data:  form.serialize(),
-            type: 'post',
-            dataType: 'json',
-            success: function (data) {
-                    if (data.form_is_valid) {
-                        $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
-                    }
-                }
-            });
-        }
-var nIntervId;
+var nIntervId = null;
 var in_beam_checked = 0;
+var detected_change = false;
 
 var in_beam_checkboxes = document.querySelectorAll('.in_beam_checkbox');
 for(var i = 0; i < in_beam_checkboxes.length; i++) {
@@ -26,19 +13,11 @@ for(var i = 0; i < in_beam_checkboxes.length; i++) {
                  in_beam_checked++;
             }
         };
-if(in_beam_checked!=0){
+if(0<in_beam_checked){
     console.log("in_beam_checked: ",in_beam_checked);
-    //nIntervId = setInterval(starting_sec, 5000);
+    nIntervId = setInterval(starting_sec, 5000);
 }
 
-$('.in_beam_checkbox').change(function() {
-            clearInterval(nIntervId);
-            console.log("clear interval!");
-            $('#in_beam_button_save').show();
-            $('#select_table_form').hide();
-            $('#back_button').hide();
-            $('#irradiation_new').hide();
-        });
 
 var newGroupIrradiation = function (){
       var btn = $(this);
@@ -112,7 +91,7 @@ var loadForm = function () {
     return false;
   };
 
-  var get_sec = function() {
+/* var get_sec = function() {
       var form = $("#sec_form");
       $.ajax({
       url: form.attr("action"),
@@ -120,15 +99,46 @@ var loadForm = function () {
       type: 'post',
       dataType: 'json',
       success: function (data) {
-        if (data.form_is_valid) {
-            $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+        if (detected_change == false) {
+          if (data.form_is_valid) {
+              $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+          }
+          else {
+          alert("data is not correct");
+          }
         }
-        else {
-         alert("data is not correct");
+        else{
+          console.log("detected_change",detected_change);
         }
       }
     });
-  }
+  }*/
+
+    var get_sec = function() {
+            var form = $("#sec_form");
+            if (detected_change == false) { 
+              $.ajax({
+              url: form.attr("action"),
+              data:  form.serialize(),
+              type: 'post',
+              dataType: 'json',
+              success: function (data) {
+                if (detected_change == false) { 
+                      if (data.form_is_valid) {
+                          $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+                          console.log("replacing data html_irradiation_list!");
+                      }
+                }
+                else{
+                    console.log("ignore answer data!");
+                }
+                  }
+              });
+            }
+            else{
+                console.log("detected_change!");
+              }
+        }
 
 function getFormattedDate() {
     var date = new Date();
@@ -181,44 +191,66 @@ function getFormattedDate() {
 }
 
 var checkInBeamState = function(){
+  console.log("check in beam state");
   var form = $("#sec_form");
-  $(".in_beam_checkbox").each(function() {
-      if (this.defaultChecked !== this.checked) {
-                var input = this;
-                if (this.checked){
-                  modified_url = input.value +"in/";
-                  console.log(modified_url);
-                  in_beam_checked++;
-                }
-                else{
-                  modified_url = input.value +"out/";
-                  console.log(modified_url);
-                  in_beam_checked--;
-              } 
-               $.ajax({
-                url: modified_url,
-                data:  form.serialize(),
-                type: 'post',
-                dataType: 'json',
-                success: function (data) {
-                  if (data.form_is_valid) {
-                      $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+  var btn = $("#in_beam_button_save");
+    $.ajax({
+              url: btn.attr("data-url"),
+              data:  form.serialize(),
+              type: 'post',
+              dataType: 'json',
+              success: function (data) {
+                      console.log("spiting data!");
+                      if (data.form_is_valid) {
+                          console.log("data changed successfully");
+                          $('#in_beam_button_save').hide();
+                          $('#cancel_button').hide();
+                          $('#select_table_form').show();
+                          $('#back_button').show();
+                          $('#irradiation_new_div').show();
+                          in_beam_checked = data['in_beam_checked']
+                          if(0<in_beam_checked){
+                            console.log("in_beam_checked!=0 setting interval");
+                            console.log(in_beam_checked);
+                            nIntervId = setInterval(starting_sec, 5000);
+                                          }
+                          else{
+                            console.log("in beam checked");
+                            console.log(in_beam_checked);
+                            clearInterval(nIntervId);
+                          }
+                          detected_change = false;
+                          }
                       }
-                    }
-                  });
-                }
-    });
-  if(in_beam_checked!=0){
-    console.log("in beam");
-    nIntervId = setInterval(starting_sec, 5000);
-                  }
-  $('#in_beam_button_save').hide();
-  $('#select_table_form').show();
-  $('#back_button').show();
-  $('#irradiation_new').show();
+            });
 }
 
-
+var cancelButton = function(){
+            var form = $("#sec_form");
+            $.ajax({
+              url: form.attr("action"),
+              data:  form.serialize(),
+              type: 'post',
+              dataType: 'json',
+              success: function (data) {
+                      if (data.form_is_valid) {
+                          $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+                          console.log("replacing data html_irradiation_list!");
+                          if (0<data["in_beam_checked"]){
+                            setInterval(nIntervId);
+                          }
+                          else{
+                            clearInterval(nIntervId);
+                          }
+                          $('#in_beam_button_save').hide();
+                          $('#cancel_button').hide();
+                          $('#select_table_form').show();
+                          $('#back_button').show();
+                          $('#irradiation_new_div').show();
+                      }
+                  }
+              });
+}
 
 
 //New irradiation
@@ -243,7 +275,20 @@ var checkInBeamState = function(){
 
    $("#export_button").on("click", exportTableToCSV);
 
-   $("#in_beam_button_save").on("click",checkInBeamState);
+   $("body").on("click","#in_beam_button_save",checkInBeamState);
+   $("body").on("click","#cancel_button",cancelButton);
 
-   });
+   $("body").on("change", ".in_beam_checkbox", function(){
+      console.log("triggering in change clear interval!");
+      detected_change = true;
+      clearInterval(nIntervId);
+      $('#in_beam_button_save').show();
+      $('#cancel_button').show();
+      $('#select_table_form').hide();
+      $('#back_button').hide();
+      $('#irradiation_new_div').hide();
+  });
+  
+});
 
+document.addEventListener('touchstart', handler, {passive: true});

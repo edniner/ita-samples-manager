@@ -1,4 +1,5 @@
 {% extends 'samples_manager/base.html' %}
+
 {% block content %}
  <!-- THE MODAL WE WILL BE USING -->
  <div class="ui modal"  id="modal-irradiation">
@@ -6,9 +7,7 @@
       <div class="scrolling content">
       </div>
 </div>
-<form method="post" id="sec_form" action="{% url 'samples_manager:get_sec'%}">
-    {% csrf_token %}
-</form>
+
 <div class= "ui center aligned raised segment">
     <h2>Irradiation Status</h2>
     <div class= "ui grid segment">
@@ -17,7 +16,7 @@
                             <i class="angle left icon"></i>Back
                 </button>
         </div>
-            <div class="ten wide column">
+            <div class="ten wide column" id="irradiation_new_div">
                 <button type="button"
                             id = "irradiation_new"
                             data-target = "#modal-irradiation"
@@ -44,21 +43,28 @@
                      </div>
                 </form>
             </div>
-            <div class="two wide column">
+            <div class="ten wide column">
                 <button type="button"
                             id = "in_beam_button_save"
                             class="huge ui positive button js-create-sample"
                             style = "display: none"
                             title='New irradition'
-                            data-url="{% url 'samples_manager:get_sec'%}">
+                            data-url="{% url 'samples_manager:in_beam_change'%}">
                             <i class="save icon"></i> Save
+                </button>  
+                 <button type="button"
+                            id = "cancel_button"
+                            class="huge ui grey button"
+                            style = "display: none"
+                            title='Cancel'
+                            data-url="">
+                            <i class="window close icon"></i>Cancel
                 </button>   
-            </div>
-
-        
+            </div>    
     </div>
 
-
+<form method="post" id="sec_form" action="{% url 'samples_manager:get_sec'%}">
+    {% csrf_token %}
         <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
                 <table class="ui center aligned sortable celled table very compact striped" id="irradiation-table">
                     <thead>
@@ -83,7 +89,7 @@
                 </table>
         </div>
 </div>
-
+</form>
 {% endblock %}
 
 

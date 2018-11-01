@@ -1,4 +1,3 @@
-{% load staticfiles %}
 {% for irradiation in irradiations %}
   <tr>
     <td>{{ irradiation.updated_at|date:"d/m/Y"}}</td>
@@ -14,9 +13,9 @@
     <td>      
       <div class="ui fitted toggle checkbox">
         {%if irradiation.in_beam %}
-          <input type="checkbox" name ="in_beam_checkbox[]" class = "in_beam_checkbox" value="{% url 'samples_manager:in_beam_change' irradiation.id%}" checked>
+          <input type="checkbox" name ="in_beam_checkbox[]" class = "in_beam_checkbox" value="{{irradiation.id}}-{{irradiation.in_beam}}" checked>
         {%else %}
-          <input type="checkbox" name ="in_beam_checkbox[]" class = "in_beam_checkbox" value="{% url 'samples_manager:in_beam_change' irradiation.id%}">
+          <input type="checkbox" name ="in_beam_checkbox[]" class = "in_beam_checkbox" value="{{irradiation.id}}-{{irradiation.in_beam}}">
         {%endif%}
         <label></label>
      </div>
@@ -48,10 +47,11 @@
       <td colspan="10">There are no irradiations</td>
     </tr>
   {% endfor %}
+ 
   <script>
-            $('.allowed_dropdown')
-            .dropdown();
+            $('.allowed_dropdown').dropdown();
             function goBack() {
                 window.history.back();
-            }
-    </script>
+            };
+  </script>
+    

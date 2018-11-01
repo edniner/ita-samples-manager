@@ -1,55 +1,156 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
-<div class='panel panel-default'>
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-            <h2>{{ experiment.title }}</h2>
-            <dl class="dl">
-                <dt>Maximum requested fluence (p/cm<sup>2</sup>)</dt>
-                <dd>{{experiment.max_requested_fluence}}</dd>
-                <dt>When the samples  will be available for irradiation</dt>
-                <dd>{{experiment.start_date}}</dd>
-                <dt>Deadline for the end of irradiation</dt>
-                <dd>{{experiment.end_date}}</dd>
-                <dt>Justification</dt>
-                <dd>{{experiment.justification}}</dd>
-                <dt>Irradiation type</dt>
-                <dd>{{experiment.irradiation_type}}</dd>
-                <dt>Irradiation category</dt>
-                <dd>{{experiment.category}} mm<sup>2</sup></dd>
-                <dt>Planning</dt>
-                <dd>{{experiment.planning}}</dd>
-                <dt>Needed resources</dt>
-                <dd>{{experiment.resources}}</dd>
-                <dt>Storage</dt>
-                <dd>{{experiment.storage}}</dd>
-            </dl>
+<div class= "ui segment">
+    <div class= "ui center aligned segment">
+        <h2>{{experiment.title}}</h2>
+    </div>
+    <div class="ui two column grid">
+        <div class="column">
+            <div class="ui segment">
+                <div class="ui blue ribbon label">Experiment Details</div>
+                <div class="ui divided selection list">
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Description
+                        </div>
+                        {{experiment.description}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            CERN experiment/Projects
+                        </div>
+                        {{experiment.cern_experiment}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Responsible person
+                        </div>
+                        {{experiment.responsible.email}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Emergency telephone number
+                        </div>
+                        {{experiment.telephone}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Irradiation type
+                        </div>
+                        {{experiment.irradiation_type}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Availability
+                        </div>
+                        {{experiment.availability}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Constraints
+                        </div>
+                        {{experiment.constraints}}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-md-2"></div>
+        <div class="column">
+            <div class="ui segment">
+                <div class="ui blue ribbon label">Samples Details</div>
+                <div class="ui divided selection list">
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Number of samples 
+                        </div>
+                        {{experiment.number_samples}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Category 
+                        </div>
+                        {{experiment.category}}
+                    </div>
+                    {%if experiment.category == 'Passive Standard'%}
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Irradiation area: 
+                        </div>
+                        {%if category_object.irradiation_area_5x5 == True %}
+                            5x5 mm²  
+                        {%endif%}
+                        {%if category_object.irradiation_area_10x10 == True %}
+                            10x10 mm²  
+                        {%endif%}
+                        {%if category_object.irradiation_area_20x20 == True %}
+                            20x20 mm²  
+                        {%endif%}
+                    </div>
+                    {% elif experiment.irradiation_type == 'Passive Custom'%}
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Type: 
+                        </div>
+                        {{category_object.active_category_type}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Irradiation area: 
+                        </div>
+                        {{category_object.active_irradiation_area}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Modus operandi: 
+                        </div>
+                        {{category_object.active_modus_operandi}}
+                    </div>
+                    {%else%}
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Type
+                        </div>
+                        {{category_object.passive_category_type}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Irradiation area 
+                        </div>
+                        {{category_object.passive_irradiation_area}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Modus operandi 
+                        </div>
+                        {{category_object.passive_modus_operandi}}
+                    </div>
+                    {%endif%}
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Fluences
+                        </div>
+                        {% for fluence in requested_fluences %}
+                            {{fluence.req_fluence}}  
+                        {% endfor %}                         
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Types of samples
+                        </div>
+                        {% for material in materials %}
+                            {{ material.material}}  
+                        {% endfor %}                         
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Additional comments
+                        </div>
+                        {{experiment.comments}}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="button_div">
-            <a href="{% url 'samples_manager:experiment_new' %}" class="">
-                <button type="button" class="btn btn-warning">
-                    <a href="{% url 'samples_manager:experiment_new' %}" class="">
-                        <h3>Edit</h3>
-                </button>
-            </a>
 
-            <a href="{% url 'samples_manager:sample_new' %}" class="">
-                    <button type="button" class="btn btn-danger">
-                        <h3>Delete</h3>
-                    </button>
-            </a>   
 
-            <a href="{% url 'samples_manager:experiment_new' %}" class="">
-                    <button type="button" class="btn btn-warning">
-                        <h3>Clone</h3>
-                    </button>
-            </a> 
-    </div>
 </div>
-
-                        
-
 {% endblock %}

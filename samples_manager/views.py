@@ -40,16 +40,16 @@ from django.utils.datastructures import MultiValueDictKeyError
     msg.send()'''
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -57,7 +57,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
 
     email =  email.lower()
     users = Users.objects.all()
@@ -509,12 +509,15 @@ def assign_samples_dosimeters(request):
     return JsonResponse(data)
 
 def experiment_users_list(request, experiment_id):
-    #print("experiment users list")
+    print("experiment users list")
     preference = define_preferences(request)
     experiment = Experiments.objects.get(pk = experiment_id)
-    users= experiment.users.values()
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme'] })
+    if (logged_user.email != experiment.responsible.email) and (logged_user not in experiment.users.all()) and logged_user.role != 'Admin':
+        return render(request,'samples_manager/not_allowed_user.html',{'logged_user': logged_user})
+    else:
+        users= experiment.users.values()
+        return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme'] })
 
 def save_occupancies(sample, status):
     #print("save_occupancies")
@@ -635,19 +638,21 @@ def move_samples(request, experiment_id):
                 return render(request, 'samples_manager/samples_list.html', {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments})
 
 def experiment_samples_list(request, experiment_id):
-    #print('experiment_samples_list')
     preference = define_preferences(request)
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
-    samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
-    samples_data = get_samples_occupancies(samples)
-    irradiations = []
-    experiments = authorised_experiments(logged_user)
-    if  logged_user.role == 'Admin': 
-        template_url = 'samples_manager/admin_samples_list.html'
+    if (logged_user.email != experiment.responsible.email) and (logged_user not in experiment.users.all()) and logged_user.role != 'Admin':
+        return render(request,'samples_manager/not_allowed_user.html',{'logged_user': logged_user})
     else:
-         template_url = 'samples_manager/samples_list.html'
-    return render(request,template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+        samples = Samples.objects.filter(experiment = experiment).order_by('set_id')
+        samples_data = get_samples_occupancies(samples)
+        irradiations = []
+        experiments = authorised_experiments(logged_user)
+        if  logged_user.role == 'Admin': 
+            template_url = 'samples_manager/admin_samples_list.html'
+        else: 
+            template_url = 'samples_manager/samples_list.html'
+        return render(request,template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def dosimeters_list(request):
     preference = define_preferences(request)
@@ -656,8 +661,17 @@ def dosimeters_list(request):
     return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def experiment_details(request, experiment_id):
+    print()
     experiment = get_object_or_404(Experiments, pk=experiment_id)
-    return render(request, 'samples_manager/experiment_details.html', {'experiment': experiment})
+    if experiment.category == "Passive Standard":
+        category_object = get_object_or_404(PassiveStandardCategories, experiment = experiment)
+    elif experiment.category == "Passive Custom":
+        category_object = get_object_or_404(PassiveCustomCategories, experiment = experiment)
+    else:
+        category_object = get_object_or_404(ActiveCategories, experiment = experiment)
+    requested_fluences = ReqFluences.objects.filter(experiment = experiment)
+    materials = Materials.objects.filter(experiment = experiment)
+    return render(request, 'samples_manager/experiment_details.html', {'experiment': experiment, 'category_object':category_object, 'requested_fluences':requested_fluences,'materials':materials})
 
 
 def user_details(request, user_id):
@@ -2405,14 +2419,13 @@ def search_dosimeters(request):
 
 
 def get_sec(request):
-    print("getting sec!!")
     irradiations = Irradiation.objects.all()
     cursor = connection.cursor()
     data = dict()
+    in_beam_checked = 0
     for irradiation in irradiations: 
-        if irradiation.in_beam is False:
-            pass
-        else:
+        if irradiation.in_beam is True:
+            in_beam_checked = in_beam_checked + 1         
             date_in = irradiation.date_in
             timestamp = date_in.strftime('%Y-%m-%d %H:%M:%S')
             cursor.execute("SELECT SEC_VALUE FROM SEC_DATA WHERE SEC_ID = 'SEC_01' AND TIMESTAMP>TO_DATE('"+str(timestamp)+"', 'YYYY-MM-DD HH24:MI:SS')")
@@ -2423,31 +2436,35 @@ def get_sec(request):
             irradiation.sec = sec_sum
             irradiation.save()
     data['form_is_valid'] = True
-    print("form is valid")
+    data['in_beam_checked'] = in_beam_checked
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations},request=request)
     return JsonResponse(data)
 
-def in_beam_change(request, irradiation_id):
-    print("in beam change")
-    full_path = request.get_full_path()
-    change = full_path.split("/")[5]
-    print(change)
-    irradiation = get_object_or_404(Irradiation, pk = irradiation_id)
-    print("before:",irradiation.in_beam)
-    if change == "out":
-        print("out: ")
-        irradiation.in_beam = False
-    else:
-        print("in: ")
-        irradiation.in_beam = True
-    irradiation.save()
-    print("after:",irradiation.in_beam)
-    data = dict()
-    data['form_is_valid'] = True
+def in_beam_change(request):
+    print("----in beam change----")
+    checked_irradiations = request.POST.getlist('in_beam_checkbox[]')
+    checked_irradiation_ids = []
     irradiations = Irradiation.objects.all()
-    irradiation2 = get_object_or_404(Irradiation, pk = irradiation_id)
-    print("irradiation2: ",irradiation2.in_beam)
-    data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations},request=request)
+    in_beam_checked = 0
+    for checked_irradiation in checked_irradiations:
+        irradiation_splitted =  checked_irradiation.split("-")
+        irradiation_id = irradiation_splitted[0]
+        checked_irradiation_ids.append(irradiation_id)
+        in_beam_checked = in_beam_checked + 1 
+    print(checked_irradiation_ids)
+    for irradiation in irradiations:
+        if str(irradiation.id) in checked_irradiation_ids:
+            irradiation.in_beam = True
+            print(irradiation.in_beam)
+        else:
+            irradiation.in_beam = False
+        irradiation.save()
+    data = dict()
+    print("irradiations saved")
+    data['form_is_valid'] = True
+    data['in_beam_checked'] = in_beam_checked
+    new_irradiations = Irradiation.objects.all()
+    data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 
 
