@@ -1,0 +1,44 @@
+{% extends 'samples_manager/base.html' %}
+{% block content %}
+ <!-- THE MODAL WE WILL BE USING -->
+  <div class="ui modal" id="modal-experiment">
+     <i class="close icon"></i>
+     <div class="scrolling content">
+      </div>
+  </div>
+  
+<div class= "ui center aligned raised segment">
+     <h2 >Irradiation Experiments History</h2>
+     <div class= "ui grid segment">
+        <div class="three wide column">
+                    <button type="button" class="ui left floated grey button" onclick="goBack()" title='Back'>
+                        <i class="angle left icon"></i>Back
+                    </button>
+        </div>
+        <div class="ten wide column">
+            <form style="text-align: center; display: block" name="search_form" method="GET" action="{% url 'samples_manager:search_experiments_admin'%}"> 
+                <div class="ui right action input">
+                    <input title="Search irradiation title or status"   id="search_box" type="text" name="search_box"  placeholder="Search..." >
+                    <button title="Search irradiation title or status" class="ui icon green button" id="search_submit" type="submit"><i class="search icon"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
+        <table class="ui center aligned sortable celled table" id="experiment-table">
+                    <thead>
+                        <tr>
+                            <th>Irradiation<br>title</th>
+                            <th>Responsible<br>person</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% include 'samples_manager/partial_experiments_history.html' %}
+                    </tbody>
+                    <tfoot>
+                        <tr><td></td><td></td><td></td></tr>
+                    </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

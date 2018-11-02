@@ -2,7 +2,7 @@
    <tr>
      <td>{{experiment.experiment.id}}</td>
     <td>
-    {{experiment.experiment.title}}<br>(
+    <a href="{% url 'samples_manager:experiment_details' experiment.experiment.id %}">{{experiment.experiment.title}}</a><br>(
       {%if experiment.experiment.irradiation_type == 'Protons'%}
         <span title="Protons" style = " color: red">p</span>
       {%elif experiment.experiment.irradiation_type == 'Heavy ions'%}
