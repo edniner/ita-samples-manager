@@ -51,7 +51,7 @@
         },
         "position": "bottom",
         "content": { 
-            "message": 'This web application uses cookies to ensure you get the best experience on our web application. Please, choose your display preferences.',
+            "message": 'This web application uses cookies to ensure you get the best experience on our web application. Please, choose your display preferences from the menu on the side.',
         }
     })
     var $uisidebar        = $('.ui.sidebar');
@@ -72,20 +72,23 @@
                 <h3 class="ui dividing header">Display Preferences</h3>
                 <tr><th><label for="id_global_theme">Global theme:</label></th>
                 <td><select class="ui theme dropdown" id="id_global_theme" name="global_theme">
+                    <option value="">Select</option> 
                     <option value="default">Default</option>  
+                    <option value="dark">Dark</option>
                     <option value="basic">Basic</option>                  
                     <option value="amazon">Amazon</option>
                     <option value="material">Material</option>
                     <option value="colored">Colored</option>
                     <option value="flat">Flat</option>
                     <option value="striped">Striped</option>
-                    <option value="dark">Dark</option>
                 </select></td>
                 </tr>
                 <br><br>
                 <tr><th><label for="id_button_theme">Button:</label></th>
                     <td><select class="ui secondary dropdown" id="id_button_theme" name="button">
-                        <option value="default">Default</option>  
+                        <option value="">Select</option> 
+                        <option value="default">Default</option> 
+                        <option value="dark">Dark</option> 
                         <option value="basic">Basic</option>                  
                         <option value="amazon">Amazon</option>
                         <option value="material">Material</option>
@@ -96,9 +99,11 @@
                     </td>
                 </tr>
                 <br><br>
-                <tr><th><label for="id_menu_theme">Menu:</label></th>
-                    <td><select class="ui third dropdown" id="id_menu_theme" name="menu">
+                <tr><th><label for="id_segment_theme">Segment:</label></th>
+                    <td><select class="ui third dropdown" id="id_segment_theme" name="segment">
+                        <option value="">Select</option>  
                         <option value="default">Default</option>  
+                        <option value="dark">Dark</option> 
                         <option value="basic">Basic</option>                  
                         <option value="amazon">Amazon</option>
                         <option value="material">Material</option>
@@ -111,7 +116,9 @@
                 <br><br>
                 <tr><th><label for="id_table_theme">Table:</label></th>
                     <td><select class="ui fourth dropdown" id="id_table_theme" name="table">
+                        <option value="">Select</option>  
                         <option value="default">Default</option>  
+                        <option value="dark">Dark</option>
                         <option value="basic">Basic</option>                  
                         <option value="amazon">Amazon</option>
                         <option value="material">Material</option>

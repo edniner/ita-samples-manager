@@ -36,7 +36,6 @@ $(document)
         dimPage: false
       })
       .sidebar('attach events', $launcher)
-      .sidebar('attach events', $('#save_preferences'))
     ;
 
     $menuToggle
@@ -123,7 +122,6 @@ $(document)
         }
       })
     ;
-
     $ribbonToggle
       .checkbox('uncheck')
       .checkbox({
@@ -137,29 +135,31 @@ $(document)
         }
       })
     ;
-
     $themeDropdown
       .dropdown({
         onChange: function(theme) {
-          form = $('#preferences_form');
-          var type = $(this).attr('name') || false;
-          $.each($css, function() {
-            var
-              currentHREF = $(this).attr('href'),
-              newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
-            ;
-            if(type == 'global_theme' || currentHREF.search(type) !== -1) {
-              $(this).attr('href', newHREF);
+            form = $('#preferences_form');
+            var type = $(this).attr('name') || false;
+            $.each($css, function() {
+              var
+                currentHREF = $(this).attr('href'),
+                newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2')
+              ;
+              if(type == 'global_theme' || currentHREF.search(type) !== -1) {
+                $(this).attr('href', newHREF);
+              }
+            });
+            // make other dropdown match
+            if(type == 'global_theme') {
+              $themeDropdown.dropdown('set value', theme);
             }
-          });
-          // make other dropdown match
-          if(type == 'global_theme') {
-            $themeDropdown.dropdown('set value', theme);
-          }
         }
       });
       theme_value = String(document.getElementById("prefered_theme").value);
-      $themeDropdown.dropdown('set selected', theme_value);
+      if ( theme_value != ''){
+        console.log("Theme",  theme_value);
+         $themeDropdown.dropdown('set selected', theme_value);
+      }
 
       $buttonDropdown
       .dropdown({
@@ -176,7 +176,9 @@ $(document)
         }
       });
       button_theme = String(document.getElementById("prefered_button").value);
-      $buttonDropdown.dropdown('set selected', button_theme);
+      if ( button_theme != ''){
+         $buttonDropdown.dropdown('set selected', button_theme);
+      }
 
       $menuDropdown
       .dropdown({
@@ -187,14 +189,17 @@ $(document)
                     var
                       currentHREF = $(this).attr('href'),
                       newHREF     = currentHREF.replace(regExp, '$1' + theme + '$2');
-                    if(type == 'global_theme' || currentHREF.search(type) !== -1) {
+                    /*if(type == 'global_theme' || currentHREF.search(type) !== -1) {
                       $(this).attr('href', newHREF);
-                    }
+                    }*/
             });
         }
       });
       menu_theme = String(document.getElementById("prefered_menu").value);
       $menuDropdown.dropdown('set selected', menu_theme);
+      if ( menu_theme != ''){
+         $menuDropdown.dropdown('set selected', menu_theme);
+      }
 
       $tableDropdown
       .dropdown({
@@ -212,25 +217,34 @@ $(document)
         }
       });
       table_theme = String(document.getElementById("prefered_table").value);
-      $tableDropdown.dropdown('set selected', table_theme);
+      if (table_theme != ''){
+         $tableDropdown.dropdown('set selected', table_theme);
+      }
 
       var savePreferences = function(){
+              var form = $(this);
               $.ajax({
               url: form.attr("action"),
               data: form.serialize(),
               type: form.attr("method"),
               dataType: 'json',
               success: function (data) {
-                 document.getElementById("prefered_theme").value = data['global_theme'];
-                 document.getElementById("prefered_button").value = data['button_theme'];
-                 document.getElementById("prefered_menu").value = data['menu_theme'];
-                 document.getElementById("prefered_table").value = data['table_theme'];
+                  console.log(data);
+                 if (data['form_is_valid']){
+                  document.getElementById("prefered_theme").value = data['global_theme'];
+                  document.getElementById("prefered_button").value = data['button_theme'];
+                  document.getElementById("prefered_menu").value = data['menu_theme'];
+                  document.getElementById("prefered_table").value = data['table_theme'];
+                  $sidebar.removeClass('visible');
+                 }else
+                 {
+                   alert("Please select your display preferences.");
+                 }
               }
             });
             return false;
       }
-
-      $("#save_preferences").on("click",savePreferences);
+      $("body").on("submit", "#preferences_form",savePreferences);
 
   })
 ;

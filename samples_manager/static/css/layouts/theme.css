@@ -13,6 +13,14 @@
   padding: 1em;
 }
 
+h3.ui.dividing.header{
+  color: #333333;
+}
+
+label{
+   color: #333333;
+}
+
 .theme.sidebar .button + .button {
   margin-top: 0.5em;
 }

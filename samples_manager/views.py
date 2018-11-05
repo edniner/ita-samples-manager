@@ -39,16 +39,16 @@ from django.utils.datastructures import MultiValueDictKeyError
     msg.send()'''
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -56,7 +56,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"
+    home_institute = "MINES ParisTech"'''
 
     email =  email.lower()
     users = Users.objects.all()
@@ -246,10 +246,10 @@ def define_preferences(request):
         data['menu_theme'] = userpreference.menu_theme
         data['table_theme'] = userpreference.table_theme
     except:
-        data['global_theme'] = request.session.get('prefered_theme', 'default')
-        data['button_theme'] = request.session.get('prefered_button', 'default')
-        data['menu_theme'] = request.session.get('prefered_menu', 'default')
-        data['table_theme'] = request.session.get('prefered_table', 'default')
+        data['global_theme'] = ''
+        data['button_theme'] = ''
+        data['menu_theme'] = ''
+        data['table_theme'] = ''
     return data
 
 
@@ -267,27 +267,30 @@ def experiments_list(request):
 def register_preferences(request):
     global_theme = request.POST['global_theme']
     button_theme = request.POST['button']
-    menu_theme = request.POST['menu']
+    menu_theme = request.POST['segment']
     table_theme = request.POST['table']
-    print("global_theme",global_theme)
-    print("button_theme", button_theme)
-    print("menu_theme", menu_theme)
-    print("table_theme", table_theme)
-    logged_user = get_logged_user(request)
-    try:
-        userpreference = get_object_or_404(UserPreferences, user = logged_user)
-        userpreference.global_theme =  global_theme
-        userpreference.button_theme = button_theme
-        userpreference.menu_theme = menu_theme
-        userpreference.table_theme = table_theme
-    except:
-        userpreference = UserPreferences(global_theme = global_theme, button_theme = button_theme, menu_theme = menu_theme, table_theme = table_theme, user = logged_user)
-    userpreference.save()
+    str_global_theme = str(global_theme)
     data = dict()
-    data['global_theme'] = global_theme
-    data['button_theme'] = button_theme
-    data['menu_theme'] = menu_theme
-    data['table_theme'] = table_theme
+    if str_global_theme == '':
+        data['form_is_valid'] = False
+        print('data is not valid')
+    else:
+        data['form_is_valid'] = True
+        logged_user = get_logged_user(request)
+        try:
+            userpreference = get_object_or_404(UserPreferences, user = logged_user)
+            userpreference.global_theme =  global_theme
+            userpreference.button_theme = button_theme
+            userpreference.menu_theme = menu_theme
+            userpreference.table_theme = table_theme
+        except:
+            userpreference = UserPreferences(global_theme = global_theme, button_theme = button_theme, menu_theme = menu_theme, table_theme = table_theme, user = logged_user)
+        userpreference.save()
+        data['global_theme'] = global_theme
+        data['button_theme'] = button_theme
+        data['menu_theme'] = menu_theme
+        data['table_theme'] = table_theme
+        print('save data')
     return JsonResponse(data)
 
 
