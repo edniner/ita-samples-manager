@@ -191,6 +191,7 @@ var loadForm = function () {
       type: form.attr("method"),
       dataType: 'json',
       success: function (data) {
+        console.log("data returned successfully");
         if (data.form_is_valid) {
           $("#dosimeter-table tbody").html(data.html_dosimeter_list);  // <-- Replace the table body
           $("#modal-dosimeter").modal("hide");  // <-- Close the modal

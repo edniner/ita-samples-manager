@@ -1,7 +1,7 @@
 {% for experiment in experiments %}
   <tr>
     <td>{{ experiment.updated_at|date:"d/m/Y"}}</td>
-    <a href="{% url 'samples_manager:experiment_details' experiment.experiment.id %}"><td>{{ experiment.title }}</a></td>
+    <td><a href="{% url 'samples_manager:experiment_details' experiment.id %}">{{ experiment.title }}</a></td>
     <td>{{ experiment.availability|date:"d/m/Y" }}</td>
     <td>{{ experiment.number_samples }}</td>
     <td>{{ experiment.users.count }}</td>

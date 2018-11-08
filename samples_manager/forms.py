@@ -398,6 +398,7 @@ class DosimetersForm2(ModelForm):
         super(DosimetersForm2, self).__init__(*args, **kwargs)
         self.fields['comments'].required = False
         self.fields['responsible'].empty_label = None
+        self.fields['parent_dosimeter'].required = False
 
     class Meta:
         model = Dosimeters
@@ -422,7 +423,7 @@ class GroupIrradiationForm(ModelForm):
     class Meta:
         model = Irradiation
         fields = ['dosimeter','irrad_table', 'table_position']
-        exclude = ('sample','date_in', 'date_out', 'accumulated_fluence')
+        exclude = ('sample','date_in', 'date_out', 'accumulated_fluence','sec','fluence_error', 'in_beam')
 
 class IrradiationForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -446,7 +447,7 @@ class IrradiationForm(ModelForm):
     class Meta:
         model = Irradiation
         fields = ['sample','dosimeter','irrad_table', 'table_position', 'sec', 'accumulated_fluence', 'fluence_error','date_in', 'date_out', 'accumulated_fluence', 'comments']
-        exclude = ()
+        exclude = ('in_beam',)
 
 
 class CompoundElementsFormSet(forms.BaseInlineFormSet):

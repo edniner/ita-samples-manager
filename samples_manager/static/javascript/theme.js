@@ -157,7 +157,6 @@ $(document)
       });
       theme_value = String(document.getElementById("prefered_theme").value);
       if ( theme_value != ''){
-        console.log("Theme",  theme_value);
          $themeDropdown.dropdown('set selected', theme_value);
       }
 

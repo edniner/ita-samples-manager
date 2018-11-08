@@ -30,6 +30,7 @@ from datetime import date
 import random
 import time
 from django.utils.datastructures import MultiValueDictKeyError
+import pytz
 
 
 '''def send_mail_notification(title,message,from_mail,to_mail):
@@ -39,16 +40,16 @@ from django.utils.datastructures import MultiValueDictKeyError
     msg.send()'''
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -56,7 +57,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
 
     email =  email.lower()
     users = Users.objects.all()
@@ -233,7 +234,7 @@ def irradiations(request):
      preference = define_preferences(request)
      logged_user = get_logged_user(request)
      if logged_user.role == 'Admin':
-        irradiations = Irradiation.objects.all()
+        irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
      return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations,'tables': tables, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme'], 'timestamp_in': irradiations[0].date_in})
 
 def define_preferences(request):
@@ -246,6 +247,7 @@ def define_preferences(request):
         data['menu_theme'] = userpreference.menu_theme
         data['table_theme'] = userpreference.table_theme
     except:
+        print("exception!")
         data['global_theme'] = ''
         data['button_theme'] = ''
         data['menu_theme'] = ''
@@ -392,13 +394,22 @@ def irradiation_new(request):
     logged_user = get_logged_user(request)
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
-        print(form)
-        print("form is valid: ", form.is_valid())
         if form.is_valid():
-            irradiation = form.save()
+            irradiation = Irradiation(in_beam = False)
+            irradiation.save()
+            irradiation.sample = form.cleaned_data['sample']
+            irradiation.dosimeter = form.cleaned_data['dosimeter']
+            irradiation.irrad_table = form.cleaned_data['irrad_table']
+            irradiation.table_position = form.cleaned_data['table_position']
+            irradiation.sec = form.cleaned_data['sec']
+            irradiation.accumulated_fluence = form.cleaned_data['accumulated_fluence']
+            irradiation.fluence_error = form.cleaned_data['fluence_error']
+            irradiation.date_in = form.cleaned_data['date_in']
+            irradiation.date_out = form.cleaned_data['date_out']
+            irradiation.comments = form.cleaned_data['comments']
             irradiation.status = "Registered"
             irradiation.save()
-            irradiations = Irradiation.objects.all()
+            irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
             data['form_is_valid'] = True
             data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user, 'sec':'0', 'start_timestamp': ''})
         else:
@@ -420,7 +431,7 @@ def irradiation_update(request, pk):
         form = IrradiationForm(request.POST, instance = irradiation)
         if form.is_valid():
             form.save()
-            irradiations = Irradiation.objects.all()
+            irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
             data['form_is_valid'] = True
             data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user, 'sec': '0','start_timestamp':''})
         else:
@@ -441,7 +452,7 @@ def irradiation_delete(request ,pk):
     if request.method == 'POST':
         irradiation.delete()
         data['form_is_valid'] = True 
-        irradiations = Irradiation.objects.all()
+        irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
         data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',
         {'irradiations': irradiations, 'logged_user': logged_user, 'sec': '0', 'start_timestamp':''})
     else:
@@ -489,7 +500,8 @@ def assign_dosimeters(request, experiment_id):
             if form.cleaned_data is not None:
                 dosimeter = form.cleaned_data['dosimeter']
                 for sample in samples: 
-                        irradiation = Irradiation()
+                        irradiation = Irradiation(in_beam = False)
+                        irradiation.save()
                         irradiation.sample = sample
                         irradiation.dosimeter = dosimeter
                         irradiation.irrad_table = form.cleaned_data['irrad_table']
@@ -498,7 +510,7 @@ def assign_dosimeters(request, experiment_id):
                         irradiation.updated_by = logged_user
                         irradiation.created_by = logged_user
                         irradiation.save()
-            irradiations = Irradiation.objects.all()
+            irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
             data['form_is_valid'] = True
             data['html_irradiation_list'] = render_to_string('samples_manager/irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user, 'sec': '0','start_timestamp':''})
         else:
@@ -742,8 +754,12 @@ def generate_dos_id(dosimeter):
         dosimeters_numbers = []
         for dosimeter in all_dosimeters:
             if dosimeter.dos_id !='': 
-                 dosimeters_numbers.append(int(dosimeter.dos_id[4:]))
+                 print(dosimeter.dos_id)
+                 print(dosimeter.dos_id[4:10])
+                 dosimeters_numbers.append(int(dosimeter.dos_id[4:10]))
+
             else:
+                print(dosimeters_numbers)
                 dosimeters_numbers.append(0)  
         dosimeters_numbers.sort(reverse=False)
         assigned_dosimeters = []
@@ -914,6 +930,8 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
     data = dict()
     logged_user = get_logged_user(request)
     if request.method == 'POST':
+        print(form1.is_valid())
+        print(form2.is_valid())
         if form1.is_valid() and form2.is_valid():
             if status == 'new' or  status == 'clone':
                 dosimeter_data = {}
@@ -1381,7 +1399,7 @@ def irradiation_status_update(request, pk):
         if form.is_valid():
             updated_irradiation =  form.save()
             data['form_is_valid'] = True
-            irradiations = Irradiation.objects.all()
+            irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
             template_data = {'irradiations': irradiations, 'logged_user':logged_user, 'sec': '0','start_timestamp':'' }
             output_template = 'samples_manager/partial_irradiations_list.html'
             data['html_irradiation_list'] = render_to_string(output_template, template_data)
@@ -1897,7 +1915,6 @@ def admin_user_delete(request ,pk):
 def generate_dos_ids(request):
     data = dict()
     if request.method == 'POST':
-        print("in request post")
         number_ids = int(request.POST['number_ids'])
         for i in range(0,number_ids):
             dosimeter = Dosimeters(status = "Registered", dos_type = "Aluminium")
@@ -2029,6 +2046,7 @@ def sample_delete(request,experiment_id, pk):
 
 def dosimeter_new(request):
     logged_user = get_logged_user(request)
+    print("dosimeter new")
     if request.method == 'POST':
         form1 = DosimetersForm1(request.POST)
         form2 = DosimetersForm2(request.POST)
@@ -2195,7 +2213,7 @@ def print_sample_view(request, experiment_id, pk):
     Story.append(Spacer(1,0.05*inch))
     layers = Layers.objects.all().filter(sample=sample)
     for layer in layers: 
-        layer_text= "Name: "+layer.name+ " - Length: "+str(layer.length)+" mm  - Element name: "+str(layer.element_type)+ "  - Weight fraction: "+str(layer.percentage)+ "%  - Density: "+str(layer.density)+"  g/mL"
+        layer_text= "Name: "+layer.name+ " - Length: "+str(layer.length)+" mm  - Element/Compound: "+str(layer.compound_type.name)
         Story.append(Paragraph(layer_text, style))
         Story.append(Spacer(1,0.05*inch))
     fluences = ReqFluences.objects.all().filter(experiment=experiment)
@@ -2430,15 +2448,16 @@ def search_dosimeters(request):
 
 
 def get_sec(request):
-    irradiations = Irradiation.objects.all()
+    irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
     cursor = connection.cursor()
     data = dict()
     in_beam_checked = 0
     for irradiation in irradiations: 
         if irradiation.in_beam is True:
             in_beam_checked = in_beam_checked + 1         
-            date_in = irradiation.date_in
+            date_in = irradiation.date_in.astimezone(pytz.timezone("Europe/Paris"))
             timestamp = date_in.strftime('%Y-%m-%d %H:%M:%S')
+            print("date in: ",timestamp)
             cursor.execute("SELECT SEC_VALUE FROM SEC_DATA WHERE SEC_ID = 'SEC_01' AND TIMESTAMP>TO_DATE('"+str(timestamp)+"', 'YYYY-MM-DD HH24:MI:SS')")
             rows=cursor.fetchall()
             sec_sum = 0
@@ -2455,7 +2474,7 @@ def in_beam_change(request):
     print("----in beam change----")
     checked_irradiations = request.POST.getlist('in_beam_checkbox[]')
     checked_irradiation_ids = []
-    irradiations = Irradiation.objects.all()
+    irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
     in_beam_checked = 0
     for checked_irradiation in checked_irradiations:
         irradiation_splitted =  checked_irradiation.split("-")
@@ -2474,7 +2493,7 @@ def in_beam_change(request):
     print("irradiations saved")
     data['form_is_valid'] = True
     data['in_beam_checked'] = in_beam_checked
-    new_irradiations = Irradiation.objects.all()
+    new_irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 

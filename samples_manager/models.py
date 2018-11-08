@@ -238,7 +238,7 @@ class Samples(models.Model):
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
 
     def __str__(self):              # __str__ on Python 2
-        return self.name
+        return self.set_id
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''
@@ -342,7 +342,7 @@ class Irradiation(models.Model):
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
     status = models.CharField(max_length=50, choices=STATUS)
-    in_beam =  models.BooleanField(default=False)
+    in_beam =  models.BooleanField()
     comments =  models.TextField(null=True)
     
     def save(self, *args, **kwargs):
