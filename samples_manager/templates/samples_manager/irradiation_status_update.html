@@ -1,7 +1,7 @@
 <meta charset="UTF-8"> 
 {% load staticfiles %}
 {% load widget_tweaks %}
-<form method="post" action="{% url 'samples_manager:irradiation_status_update' form.instance.pk %}" class="ui form js-irradiation-update-form">
+<form method="post" data-url="{% url 'samples_manager:irradiations'%}"  action="{% url 'samples_manager:irradiation_status_update' form.instance.pk %}" class="ui form js-irradiation-update-form">
   {% csrf_token %}
   <div class="ui center aligned segment container">
       <div class="ui centered header">

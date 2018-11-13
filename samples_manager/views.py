@@ -33,23 +33,23 @@ from django.utils.datastructures import MultiValueDictKeyError
 import pytz
 
 
-'''def send_mail_notification(title,message,from_mail,to_mail):
+def send_mail_notification(title,message,from_mail,to_mail):
     headers = {'Reply-To': 'irrad.ps@cern.ch'}
     from_mail='irrad.ps@cern.ch'
     msg = EmailMessage(title,message,from_mail, to=[to_mail], headers = headers)
-    msg.send()'''
+    msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -57,7 +57,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"
+    home_institute = "MINES ParisTech"'''
 
     email =  email.lower()
     users = Users.objects.all()
@@ -233,9 +233,10 @@ def irradiations(request):
      tables = ['IRRAD1','IRRAD3','IRRAD5','IRRAD7','IRRAD9','IRRAD11','IRRAD13','IRRAD15','IRRAD17','IRRAD19']
      preference = define_preferences(request)
      logged_user = get_logged_user(request)
-     if logged_user.role == 'Admin':
+     irradiations = []
+     if logged_user == 'Admin':
         irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
-     return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations,'tables': tables, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme'], 'timestamp_in': irradiations[0].date_in})
+     return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations,'tables': tables, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def define_preferences(request):
     data = dict()
@@ -439,13 +440,14 @@ def irradiation_update(request, pk):
     else:
         form = IrradiationForm(instance = irradiation)
         context = {'form': form, 'logged_user': logged_user}
-        data['html_form'] = render_to_string('samples_manager/partial_irradiation_form.html',
+        data['html_form'] = render_to_string('samples_manager/partial_irradiation_form_update.html',
                     context,
                     request=request,
                 )
     return JsonResponse(data)
 
 def irradiation_delete(request ,pk):
+    print("irradiation_delete")
     irradiation = get_object_or_404(Irradiation, pk=pk)
     logged_user = get_logged_user(request)
     data = dict()
@@ -453,8 +455,8 @@ def irradiation_delete(request ,pk):
         irradiation.delete()
         data['form_is_valid'] = True 
         irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
-        data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',
-        {'irradiations': irradiations, 'logged_user': logged_user, 'sec': '0', 'start_timestamp':''})
+        print(irradiations)
+        data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user, 'sec': '0', 'start_timestamp':''},request=request,)
     else:
         context = {'irradiation': irradiation,}
         data['html_form'] = render_to_string('samples_manager/partial_irradiation_delete.html',
@@ -484,10 +486,9 @@ def new_group_irradiation(request, experiment_id):
     #print("selected:",selected_samples)
     return JsonResponse(data)
 
-
 def assign_dosimeters(request, experiment_id):
     data = dict()
-    #print("assign dosimeters")
+    print("assign dosimeters")
     sample_names = request.session['selected_samples']
     logged_user = get_logged_user(request)
     samples = []
@@ -524,8 +525,6 @@ def assign_dosimeters(request, experiment_id):
                 request=request,
             )
     return JsonResponse(data)
-
-
 
 def assign_samples_dosimeters(request):
     data = dict()
@@ -619,6 +618,7 @@ def archive_experiment_samples(request,experiment_id):
     logged_user = get_logged_user(request)
     experiment =  Experiments.objects.get(pk = experiment_id)
     archives = ArchiveExperimentSample.objects.filter(experiment = experiment)
+    print(archives)
     return render(request, 'samples_manager/archive_experiment_samples.html', {'archives': archives, 'logged_user':logged_user, 'experiment': experiment, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def move_samples(request, experiment_id):
@@ -743,10 +743,6 @@ def generate_set_id(sample):
     else:
         return sample.set_id
 
-#def generate_multiple_dos(request):
-
-
-
 
 def generate_dos_id(dosimeter):
     if dosimeter.dos_id =='':
@@ -754,12 +750,8 @@ def generate_dos_id(dosimeter):
         dosimeters_numbers = []
         for dosimeter in all_dosimeters:
             if dosimeter.dos_id !='': 
-                 print(dosimeter.dos_id)
-                 print(dosimeter.dos_id[4:10])
                  dosimeters_numbers.append(int(dosimeter.dos_id[4:10]))
-
             else:
-                print(dosimeters_numbers)
                 dosimeters_numbers.append(0)  
         dosimeters_numbers.sort(reverse=False)
         assigned_dosimeters = []
@@ -771,7 +763,7 @@ def generate_dos_id(dosimeter):
             if idx == 0:
                 pass
             else:
-                if val==assigned_dosimeters[idx-1]+1:
+                if val==assigned_dosimeters[idx-1]+1 or val==assigned_dosimeters[idx-1]:
                     pass 
                 else:
                     available_dos_id = assigned_dosimeters[idx-1]+1
@@ -930,8 +922,6 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
     data = dict()
     logged_user = get_logged_user(request)
     if request.method == 'POST':
-        print(form1.is_valid())
-        print(form2.is_valid())
         if form1.is_valid() and form2.is_valid():
             if status == 'new' or  status == 'clone':
                 dosimeter_data = {}
@@ -942,8 +932,7 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
                 dosimeter.status = "Registered"
                 dosimeter.created_by = logged_user
                 if dosimeter.dos_id =='':
-                    print("generating")
-                dosimeter.dos_id = generate_dos_id(dosimeter)
+                    dosimeter.dos_id = generate_dos_id(dosimeter)
                 dosimeter.save()
             elif status == 'update':
                 dosimeter_updated = form1.save()
@@ -951,7 +940,6 @@ def save_dosimeter_form(request,form1, form2, status, template_name):
                 dosimeter_updated.status = "Updated"
                 dosimeter_updated.updated_by = logged_user
                 dosimeter_updated.save()
-                print("sample updated")
             else:
                 pass
             data['form_is_valid'] = True
@@ -1918,9 +1906,14 @@ def generate_dos_ids(request):
         number_ids = int(request.POST['number_ids'])
         for i in range(0,number_ids):
             dosimeter = Dosimeters(status = "Registered", dos_type = "Aluminium")
+            print("---------dosimeter created-------")
             dosimeter.save()
+            print("---------dosimeter saved-------:",dosimeter.id)
             dosimeter.dos_id = generate_dos_id(dosimeter)
+            print("---------dosimeter:",dosimeter.dos_id)
+            print("---------dosimeter id: ",dosimeter.id)
             dosimeter.save()
+            print("---------dosimeter generate id saved:")
         data['form_is_valid'] = True
         dosimeters = Dosimeters.objects.order_by('dos_id')
         data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {

@@ -1,9 +1,10 @@
+{% load staticfiles %}
 {% load widget_tweaks %}
-<form method="post" data-url="{% url 'samples_manager:irradiations'%}" action="{% url 'samples_manager:irradiation_update'%}" class="ui form js-irradiation-update-form">
+<form method="post" data-url="{% url 'samples_manager:irradiations'%}"  action="{% url 'samples_manager:irradiation_update'  form.instance.pk%}" class="ui form js-irradiation-form">
   {% csrf_token %}
   <div class="ui center aligned segment container">
       <div class="ui centered header">
-            <h3>Edit irradiation data</h3>
+            <h3>Assign dosimeter</h3>
       </div>
   {% for field in form %}
     <div class="field form-group{% if field.errors %} has-error{% endif %}">
@@ -14,9 +15,16 @@
   {% endfor %}
     </div>
   {% endfor %}
-  <div class="two ui buttons actions">
+       <div class="two ui buttons actions">
               <button  type="button"  class="ui deny medium button">Cancel</button>
               <button  type="submit" class="ui positive medium button submit">Save</button>
         </div>
   </div>
 </form>
+<script src="{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+<script>
+    $( function() {
+        jQuery('#id_date_in').datetimepicker();
+        jQuery('#id_date_out').datetimepicker();
+    } );
+  </script>
