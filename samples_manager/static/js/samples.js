@@ -338,6 +338,33 @@ var new_irradiation = function (){
 }
 
 
+   $("body").on("change", ".public_experiment_checkbox", function(){
+      var form = $('#change_experiment_visibility');
+      console.log("I'm here!!");
+      current_url =  form.attr("action");
+      if (this.checked){
+          modified_url =  current_url +"on/";
+            }
+      else{
+        modified_url =  current_url +"off/";
+      }
+      $.ajax({
+        url:  modified_url,
+        data:  form.serialize(),
+        type: form.attr("method"),
+        dataType: 'json',
+        success: function (data) {
+          if (data.request_valid) {
+            document.location.reload(true);
+          }
+          else {
+            alert("We are sorry. Something went wrong.");
+          }
+        }
+      });
+      return false;
+  });
+
 
   // Create sample
   $(".js-create-sample").click(loadForm);

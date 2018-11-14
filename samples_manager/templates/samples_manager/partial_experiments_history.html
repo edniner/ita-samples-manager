@@ -1,26 +1,35 @@
 {% for experiment in experiment_data.experiments %}
-   <tr>
-    <td>
-    <a href="{% url 'samples_manager:experiment_details' experiment.experiment.id %}">{{experiment.experiment.title}}</a><br>(
-      {%if experiment.experiment.irradiation_type == 'Protons'%}
-        <span title="Protons" style = " color: red">p</span>
-      {%elif experiment.experiment.irradiation_type == 'Heavy ions'%}
-        <span title="Heavy Ions" style = " color: blue"><i>HI</i></span>
-      {%else%}
-        <span title="Pions" style = " color: green"><i>Pi</i></span>
-      {%endif%}
-    )
-    </td>
-    {%if experiment.experiment.responsible.surname %}
-      <td>{{experiment.experiment.responsible.name}} {{experiment.experiment.responsible.surname}} ({{experiment.experiment.responsible.email}})</td>
-    {%else%}
-      <td>{{experiment.experiment.responsible}} </td>
-    {%endif%}
-    </tr>
-  {% empty %}
     <tr>
-      <td colspan="10">There are no experiments</td>
-    </tr>
+      <td>
+      <a href="{% url 'samples_manager:experiment_details' experiment.experiment.id %}">{{experiment.experiment.title}}</a><br>(
+        {%if experiment.experiment.irradiation_type == 'Protons'%}
+          <span title="Protons" style = " color: red">p</span>
+        {%elif experiment.experiment.irradiation_type == 'Heavy ions'%}
+          <span title="Heavy Ions" style = " color: blue"><i>HI</i></span>
+        {%else%}
+          <span title="Pions" style = " color: green"><i>Pi</i></span>
+        {%endif%}
+      )
+      </td>
+      {%if experiment.experiment.responsible.surname %}
+        <td>{{experiment.experiment.responsible.name}} {{experiment.experiment.responsible.surname}} ({{experiment.experiment.responsible.email}})</td>
+      {%else%}
+        <td>{{experiment.experiment.responsible}} </td>
+      {%endif%}
+      <td>
+        <a href="{% url 'samples_manager:experiment_details' experiment.experiment.id %}">
+          <button type="button"
+                  class="mini ui green icon button"
+                  title='View'>
+                  <i class="eye icon"></i>View
+          </button>
+        </a>
+          </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="10">There are no experiments</td>
+      </tr>
   {% endfor %}
   
   <script>

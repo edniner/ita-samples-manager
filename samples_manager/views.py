@@ -26,12 +26,10 @@ from django.utils import timezone
 from django.db import connection
 import re
 from datetime import date
-from datetime import date
 import random
 import time
 from django.utils.datastructures import MultiValueDictKeyError
 import pytz
-
 
 def send_mail_notification(title,message,from_mail,to_mail):
     headers = {'Reply-To': 'irrad.ps@cern.ch'}
@@ -40,16 +38,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -57,7 +55,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
 
     email =  email.lower()
     users = Users.objects.all()
@@ -297,6 +295,25 @@ def register_preferences(request):
     return JsonResponse(data)
 
 
+def change_experiment_visibility(request, pk):
+    data = dict()
+    try:
+        experiment = Experiments.objects.get(id = pk)
+        full_path = request.get_full_path()
+        change = full_path.split("/")[6]
+        if change == 'on':
+            experiment.public_experiment = True
+        else:
+            experiment.public_experiment = False
+        experiment.save()
+        data['request_valid'] = True
+        data['experiment_visibility'] = render_to_string('samples_manager/experiment_visibility.html', {
+                    'experiment':experiment,
+                }) 
+    except: 
+        data['request_valid'] = False 
+    return JsonResponse(data)
+
 def admin_experiments_user_view(request, pk):
         #print("admin_experiments_user_view")
         preference = define_preferences(request)
@@ -318,9 +335,12 @@ def admin_experiments_list(request):
 def admin_experiments_list(request):
     #print("admin_experiments_list")
     preference = define_preferences(request)
-    experiments = Experiments.objects.order_by('-updated_at')
-    experiment_data = get_registered_samples_number(experiments)
     logged_user = get_logged_user(request)
+    if logged_user == 'Admin':
+        experiments = Experiments.objects.order_by('-updated_at')
+    else:
+        experiments = Experiments.objects.filter(public_experiment = True)
+    experiment_data = get_registered_samples_number(experiments)
     return render(request, 'samples_manager/experiments_history.html',{'experiment_data': experiment_data,'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def users_list(request):
@@ -1089,7 +1109,6 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 if form1.checking_unique() == True:
                     experiment_data = {}
                     experiment_data.update(form1.cleaned_data)
-                    print(experiment_data)
                     experiment_data.update(form2.cleaned_data)
                     experiment_data.update(form3.cleaned_data)
                     experiment_temp = Experiments.objects.create(**experiment_data)
@@ -1098,6 +1117,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     experiment.updated_by =  logged_user
                     experiment.status = "Registered"
                     experiment.save()
+                    print("experiment saved")
                     if experiment.category == "Passive Standard":
                         if passive_standard_categories_form.is_valid(): 
                             if passive_standard_categories_form.cleaned_data is not None:
@@ -1128,12 +1148,15 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                             print("data none")
                     else:
                         print("fluence not valid")
+                    print(fluence_formset.is_valid())
                     if material_formset.is_valid():
                         if material_formset.cleaned_data is not None:
                             for form in material_formset.forms:
                                 material= form.save()
                                 material.experiment = experiment
                                 material.save()
+                    else:
+                        print("material formset not valid")
                     if  status == 'clone':
                         previous_experiment = Experiments.objects.get(pk =  form1.instance.pk)
                         for user in previous_experiment.users.all():
@@ -2464,7 +2487,6 @@ def get_sec(request):
     return JsonResponse(data)
 
 def in_beam_change(request):
-    print("----in beam change----")
     checked_irradiations = request.POST.getlist('in_beam_checkbox[]')
     checked_irradiation_ids = []
     irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))

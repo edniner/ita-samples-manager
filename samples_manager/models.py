@@ -132,6 +132,7 @@ class Experiments(models.Model):
     updated_at = models.DateTimeField()
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
+    public_experiment = models.BooleanField()
 
     def save(self, *args, **kwargs):
         ''' On save, update timestamps '''

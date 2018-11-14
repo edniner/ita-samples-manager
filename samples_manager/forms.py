@@ -70,8 +70,8 @@ class ExperimentsForm1(forms.ModelForm):
 
     class Meta:
         model = Experiments
-        exclude = ('category','number_samples','comments','regulations_flag','irradiation_type')
-        fields = ['title','description','cern_experiment','responsible','emergency_phone','availability','constraints']
+        exclude = ('category','number_samples','comments','regulations_flag','irradiation_type', 'public_experiment')
+        fields = ['title','description','cern_experiment','responsible','emergency_phone','availability','constraints',]
         widgets = {
             'title': forms.TextInput(attrs={'placeholder': 'Please, provide a unique title for your irradiation experiment'}),
             'description': forms.Textarea(attrs={'placeholder': 'Please, provide a short description of your experiment', 'rows':2}),
@@ -106,19 +106,21 @@ class ExperimentsForm2(forms.ModelForm):
         self.fields['category'].label='Category *'
     class Meta:
         model = Experiments
-        exclude = ('title','description','cern_experiment','responsible','availability','constraints','comments','regulations_flag')
-        fields = ['irradiation_type','number_samples','category']
+        exclude = ('title','description','cern_experiment','responsible','availability','constraints','comments','regulations_flag', 'public_experiment')
+        fields = ['irradiation_type','number_samples','category', ]
 
 class ExperimentsForm3(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ExperimentsForm3, self).__init__(*args, **kwargs)
         self.fields['comments'].required = False
         self.fields['regulations_flag'].required = True
+        self.fields['public_experiment'].label= mark_safe("Would you like to make your experiment details public to other IRRAD users.<br> This will allow you to view other users' experiments, too.")
+        self.fields['public_experiment'].required = False
         self.fields['regulations_flag'].label=mark_safe('<a target="_blank" style="color:black; text-decoration: underline;" href="/samples_manager/regulations/">Please, accept terms and conditions *</a> <a target="_blank" href="/samples_manager/regulations/"><i class="info circle icon"></i></a>')
     class Meta:
         model = Experiments
         exclude = ('title','description','responsible','cern_experiment''availability','constraints','category','number_samples','irradiation_type')
-        fields = ['comments','regulations_flag']
+        fields = ['comments','regulations_flag','public_experiment']
         widgets = {
            'comments': forms.Textarea(attrs={'placeholder': 'Any additional comments?', 'rows':4}),
         }
