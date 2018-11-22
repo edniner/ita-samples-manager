@@ -1,4 +1,4 @@
-<form method="post" data-url="{% url 'samples_manager:irradiations'%}"  action="{% url 'samples_manager:irradiation_delete' irradiation.id %}" class="ui form js-irradiation-delete-form">
+<form method="post" data-url="{% url 'samples_manager:irradiations'%}" action="{% url 'samples_manager:irradiation_update'%}" class="ui form js-irradiation-update-form">
   {% csrf_token %}
  <div class="ui center aligned segment container">
       <div class="ui centered header">

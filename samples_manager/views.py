@@ -38,16 +38,16 @@ def send_mail_notification(title,message,from_mail,to_mail):
     msg.send()
 
 def get_logged_user(request):
-    '''username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    username =  "bgkotse"
+    '''username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -55,7 +55,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"
+    home_institute = "MINES ParisTech"'''
 
     email =  email.lower()
     users = Users.objects.all()
@@ -231,9 +231,7 @@ def irradiations(request):
      tables = ['IRRAD1','IRRAD3','IRRAD5','IRRAD7','IRRAD9','IRRAD11','IRRAD13','IRRAD15','IRRAD17','IRRAD19']
      preference = define_preferences(request)
      logged_user = get_logged_user(request)
-     irradiations = []
-     if logged_user == 'Admin':
-        irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
+     irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
      return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations,'tables': tables, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def define_preferences(request):
@@ -429,6 +427,7 @@ def irradiation_new(request):
             irradiation.date_out = form.cleaned_data['date_out']
             irradiation.comments = form.cleaned_data['comments']
             irradiation.status = "Registered"
+            irradiation.updated_by = logged_user
             irradiation.save()
             irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
             data['form_is_valid'] = True
