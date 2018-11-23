@@ -31,23 +31,23 @@ import time
 from django.utils.datastructures import MultiValueDictKeyError
 import pytz
 
-def send_mail_notification(title,message,from_mail,to_mail):
+'''def send_mail_notification(title,message,from_mail,to_mail):
     headers = {'Reply-To': 'irrad.ps@cern.ch'}
     from_mail='irrad.ps@cern.ch'
     msg = EmailMessage(title,message,from_mail, to=[to_mail], headers = headers)
-    msg.send()
+    msg.send()'''
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    '''username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]'''
 
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -55,7 +55,7 @@ def get_logged_user(request):
     email =  "Blerina.Gkotse@cern.ch"
     mobile = "12345"
     department = "EP/DT"
-    home_institute = "MINES ParisTech"'''
+    home_institute = "MINES ParisTech"
 
     email =  email.lower()
     users = Users.objects.all()
@@ -142,6 +142,7 @@ def fluence_conversion(request):
     return render(request, 'samples_manager/fluence_conversion.html',{'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def get_registered_samples_number(experiments):
+    data = dict()
     experiment_data = []
     total_registered_samples = 0
     total_declared_samples = 0
@@ -703,7 +704,6 @@ def dosimeters_list(request):
     return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def experiment_details(request, experiment_id):
-    print()
     experiment = get_object_or_404(Experiments, pk=experiment_id)
     if experiment.category == "Passive Standard":
         category_object = get_object_or_404(PassiveStandardCategories, experiment = experiment)
@@ -713,7 +713,38 @@ def experiment_details(request, experiment_id):
         category_object = get_object_or_404(ActiveCategories, experiment = experiment)
     requested_fluences = ReqFluences.objects.filter(experiment = experiment)
     materials = Materials.objects.filter(experiment = experiment)
-    return render(request, 'samples_manager/experiment_details.html', {'experiment': experiment, 'category_object':category_object, 'requested_fluences':requested_fluences,'materials':materials})
+    experiment_samples = Samples.objects.filter(experiment = experiment)
+    dosimetry_results =  []
+    for sample in experiment_samples:
+        print("sample:", sample.name)
+        irradiations = Irradiation.objects.filter(sample = sample)
+        result = 0 
+        tuple_list = []
+        for irradiation in irradiations:
+            if irradiation.accumulated_fluence:
+                if '.' in str(irradiation.dosimeter):
+                    print('no calculation') 
+                else:
+                    print('size:'+ str(irradiation.dosimeter.width)+ ' x '+ str(irradiation.dosimeter.height))
+                    dosimeter_area =  irradiation.dosimeter.width * irradiation.dosimeter.height
+                    print(dosimeter_area)
+                    dos_tuple = (dosimeter_area, irradiation.dosimeter, irradiation.accumulated_fluence,irradiation.sample)
+                    tuple_list.append(dos_tuple)
+        tuple_list.sort(key=lambda tup: tup[0]) 
+        sum_fluence = tuple_list[0][2]
+        fluences = []
+        tuple_list_length = len(tuple_list)
+        for i in range(1,tuple_list_length):
+            if tuple_list[i-1][0] == tuple_list[i][0]:
+                sum_fluence = sum_fluence + tuple_list[i][2]
+            else:
+                fluences.append({'Sample':sample,'Dosimeter':tuple_list[i-1][1],'Fluence_data':{'width':tuple_list[i-1][1].width,'height':tuple_list[i-1][1].height,'accumulated_fluence':sum_fluence}})
+                sum_fluence = 0
+        if tuple_list[tuple_list_length-2][0] == tuple_list[tuple_list_length-1][0]:
+             fluences.append({'Sample':sample,'Dosimeter':tuple_list[tuple_list_length-1][1],'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':sum_fluence}})
+        else:
+            fluences.append({'Sample':sample,'Dosimeter':tuple_list[tuple_list_length-1][1],'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':tuple_list[tuple_list_length-1][2]}})
+    return render(request, 'samples_manager/experiment_details.html', {'experiment': experiment, 'category_object':category_object, 'requested_fluences':requested_fluences,'materials':materials, 'experiment_samples':experiment_samples, 'fluences':fluences})
 
 
 def user_details(request, user_id):

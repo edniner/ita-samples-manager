@@ -1,6 +1,11 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
-<div class= "ui segment">
+  <div class="ui modal" id="modal-experiment-details">
+     <i class="close icon"></i>
+     <div class="scrolling content">
+      </div>
+  </div>
+<div id = 'experiment-details' class= "ui segment">
     <div class= "ui center aligned segment">
         <h2>{{experiment.title}}</h2>
     </div>
@@ -9,6 +14,12 @@
             <div class="ui segment">
                 <div class="ui blue ribbon label">Experiment Details</div>
                 <div class="ui divided selection list">
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Title
+                        </div>
+                        {{experiment.title}}
+                    </div>
                     <div class="item">
                         <div class="ui horizontal label">
                             Description
@@ -29,27 +40,15 @@
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
-                            Emergency telephone number
-                        </div>
-                        {{experiment.telephone}}
-                    </div>
-                    <div class="item">
-                        <div class="ui horizontal label">
                                 Irradiation type
                         </div>
                         {{experiment.irradiation_type}}
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
-                            Availability
+                                Additional comments
                         </div>
-                        {{experiment.availability}}
-                    </div>
-                    <div class="item">
-                        <div class="ui horizontal label">
-                            Constraints
-                        </div>
-                        {{experiment.constraints}}
+                        {{experiment.comments}}
                     </div>
                 </div>
             </div>
@@ -58,12 +57,6 @@
             <div class="ui segment">
                 <div class="ui blue ribbon label">Samples Details</div>
                 <div class="ui divided selection list">
-                    <div class="item">
-                        <div class="ui horizontal label">
-                                Number of samples 
-                        </div>
-                        {{experiment.number_samples}}
-                    </div>
                     <div class="item">
                         <div class="ui horizontal label">
                                 Category 
@@ -129,7 +122,7 @@
                             Fluences
                         </div>
                         {% for fluence in requested_fluences %}
-                            {{fluence.req_fluence}}  
+                            {{fluence.req_fluence}} {{experiment.irradiation_type}}/cm<sup>2</sup>  
                         {% endfor %}                         
                     </div>
                     <div class="item">
@@ -142,15 +135,30 @@
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
-                                Additional comments
+                                Dosimetry results
                         </div>
-                        {{experiment.comments}}
+                        {% for fluence in fluences %}
+                          ({{fluence.Sample}}, {{fluence.Dosimeter}} {{fluence.Fluence_data.height}}×{{fluence.Fluence_data.width}} mm<sup>2</sup>): {{fluence.Fluence_data.accumulated_fluence|stringformat:".3e"}} {{experiment.irradiation_type}}/cm<sup>2</sup> ;   
+                          <br>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
+      <button type="button"
+              class="mini ui yellow icon button js-update-experiment"
+              title='View or Edit'
+              data-url="{% url 'samples_manager:experiment_update' experiment.id %}">
+              <i class="pencil icon"></i>Edit
+      </button>
 </div>
 {% endblock %}
+
+ <script>
+            $('.allowed_dropdown')
+            .dropdown();
+            function goBack() {
+                window.history.back();
+            }
+    </script>
