@@ -31,11 +31,11 @@ import time
 from django.utils.datastructures import MultiValueDictKeyError
 import pytz
 
-'''def send_mail_notification(title,message,from_mail,to_mail):
+def send_mail_notification(title,message,from_mail,to_mail):
     headers = {'Reply-To': 'irrad.ps@cern.ch'}
     from_mail='irrad.ps@cern.ch'
     msg = EmailMessage(title,message,from_mail, to=[to_mail], headers = headers)
-    msg.send()'''
+    msg.send()
 
 def get_logged_user(request):
     '''username =  request.META["HTTP_X_REMOTE_USER"]
@@ -338,10 +338,18 @@ def admin_experiments_list(request):
     if logged_user == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')
     else:
-        experiments = Experiments.objects.filter(public_experiment = True)
+        auth_experiments = authorised_experiments(logged_user)
+        visible_experiment = True
+        for experiment in auth_experiments:
+            if experiment.public_experiment == False:
+                visible_experiment = False
+        if visible_experiment: 
+            experiments = Experiments.objects.filter(public_experiment = True)
+        else:
+            experiments = []
     experiment_data = get_registered_samples_number(experiments)
     return render(request, 'samples_manager/experiments_history.html',{'experiment_data': experiment_data,'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
-
+       
 def users_list(request):
     #print("users list")
     logged_user = get_logged_user(request)
@@ -406,8 +414,9 @@ def admin_dosimetry_results(request):
 def dosimetry_results(request, sample_id):
     logged_user = get_logged_user(request)
     results = Irradiation.objects.filter(sample = sample_id)
-    print(results)
-    return render(request, 'samples_manager/dosimetry_results.html', {'results': results, 'logged_user':logged_user})
+    sample = get_object_or_404(Samples, pk=sample_id)
+    sample_fluences = get_sample_fluences(sample)
+    return render(request, 'samples_manager/dosimetry_results.html', {'sample':sample, 'results': results, 'logged_user':logged_user,'sample_fluences':sample_fluences})
 
 def irradiation_new(request):
     data = dict()
@@ -475,7 +484,6 @@ def irradiation_delete(request ,pk):
         irradiation.delete()
         data['form_is_valid'] = True 
         irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
-        print(irradiations)
         data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': irradiations, 'logged_user': logged_user, 'sec': '0', 'start_timestamp':''},request=request,)
     else:
         context = {'irradiation': irradiation,}
@@ -703,8 +711,7 @@ def dosimeters_list(request):
     dosimeters = Dosimeters.objects.order_by('dos_id')
     return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
-def experiment_details(request, experiment_id):
-    experiment = get_object_or_404(Experiments, pk=experiment_id)
+def get_experiment_data(experiment):
     if experiment.category == "Passive Standard":
         category_object = get_object_or_404(PassiveStandardCategories, experiment = experiment)
     elif experiment.category == "Passive Custom":
@@ -715,8 +722,8 @@ def experiment_details(request, experiment_id):
     materials = Materials.objects.filter(experiment = experiment)
     experiment_samples = Samples.objects.filter(experiment = experiment)
     dosimetry_results =  []
+    fluences = []
     for sample in experiment_samples:
-        print("sample:", sample.name)
         irradiations = Irradiation.objects.filter(sample = sample)
         result = 0 
         tuple_list = []
@@ -725,26 +732,83 @@ def experiment_details(request, experiment_id):
                 if '.' in str(irradiation.dosimeter):
                     print('no calculation') 
                 else:
-                    print('size:'+ str(irradiation.dosimeter.width)+ ' x '+ str(irradiation.dosimeter.height))
                     dosimeter_area =  irradiation.dosimeter.width * irradiation.dosimeter.height
-                    print(dosimeter_area)
-                    dos_tuple = (dosimeter_area, irradiation.dosimeter, irradiation.accumulated_fluence,irradiation.sample)
+                    dos_tuple = (dosimeter_area, irradiation.dosimeter, irradiation.accumulated_fluence,irradiation.sample, irradiation.dos_position)
                     tuple_list.append(dos_tuple)
-        tuple_list.sort(key=lambda tup: tup[0]) 
-        sum_fluence = tuple_list[0][2]
-        fluences = []
-        tuple_list_length = len(tuple_list)
-        for i in range(1,tuple_list_length):
-            if tuple_list[i-1][0] == tuple_list[i][0]:
-                sum_fluence = sum_fluence + tuple_list[i][2]
+        tuple_list.sort(key=lambda tup: (tup[0],tup[4]))
+        if tuple_list:
+            sum_fluence = tuple_list[0][2]
+            tuple_list_length = len(tuple_list)
+            if tuple_list_length> 1:
+                for i in range(1,tuple_list_length):
+                    if tuple_list[i-1][0] == tuple_list[i][0]:
+                        if tuple_list[i-1][4] == tuple_list[i][4]:
+                            sum_fluence = sum_fluence + tuple_list[i][2]
+                        else:
+                            fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[i-1][1].width,'height':tuple_list[i-1][1].height,'accumulated_fluence':sum_fluence}})
+                            sum_fluence = 0
+                    else:
+                        fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[i-1][1].width,'height':tuple_list[i-1][1].height,'accumulated_fluence':sum_fluence}})
+                        sum_fluence = 0
+
+                if tuple_list[tuple_list_length-2][0] == tuple_list[tuple_list_length-1][0]:
+                    if tuple_list[i-1][4] == tuple_list[i][4]:
+                        fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':sum_fluence}})
+                    else:
+                        fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':tuple_list[tuple_list_length-1][2]}})
+                else:
+                    fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':tuple_list[tuple_list_length-1][2]}})
             else:
-                fluences.append({'Sample':sample,'Dosimeter':tuple_list[i-1][1],'Fluence_data':{'width':tuple_list[i-1][1].width,'height':tuple_list[i-1][1].height,'accumulated_fluence':sum_fluence}})
-                sum_fluence = 0
-        if tuple_list[tuple_list_length-2][0] == tuple_list[tuple_list_length-1][0]:
-             fluences.append({'Sample':sample,'Dosimeter':tuple_list[tuple_list_length-1][1],'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':sum_fluence}})
-        else:
-            fluences.append({'Sample':sample,'Dosimeter':tuple_list[tuple_list_length-1][1],'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':tuple_list[tuple_list_length-1][2]}})
-    return render(request, 'samples_manager/experiment_details.html', {'experiment': experiment, 'category_object':category_object, 'requested_fluences':requested_fluences,'materials':materials, 'experiment_samples':experiment_samples, 'fluences':fluences})
+                 fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':tuple_list[tuple_list_length-1][2]}})
+    data = {'experiment': experiment, 'category_object':category_object, 'requested_fluences':requested_fluences,'materials':materials, 'experiment_samples':experiment_samples, 'fluences':fluences}
+    return data
+
+def get_sample_fluences(sample):
+    fluences = []
+    irradiations = Irradiation.objects.filter(sample = sample)
+    result = 0 
+    tuple_list = []
+    for irradiation in irradiations:
+        if irradiation.accumulated_fluence:
+            if '.' in str(irradiation.dosimeter):
+                print('no calculation') 
+            else:
+                print('size:'+ str(irradiation.dosimeter.width)+ ' x '+ str(irradiation.dosimeter.height))
+                dosimeter_area =  irradiation.dosimeter.width * irradiation.dosimeter.height
+                dos_position = irradiation.dos_position
+                dos_tuple = (dosimeter_area, irradiation.dosimeter, irradiation.accumulated_fluence,irradiation.sample, irradiation.dos_position)
+                tuple_list.append(dos_tuple)
+    tuple_list.sort(key=lambda tup: (tup[0],tup[4]))
+    if tuple_list:
+            sum_fluence = tuple_list[0][2]
+            tuple_list_length = len(tuple_list)
+            if tuple_list_length> 1:
+                for i in range(1,tuple_list_length):
+                    if tuple_list[i-1][0] == tuple_list[i][0]:
+                        if tuple_list[i-1][4] == tuple_list[i][4]:
+                            sum_fluence = sum_fluence + tuple_list[i][2]
+                        else:
+                            fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[i-1][1].width,'height':tuple_list[i-1][1].height,'accumulated_fluence':sum_fluence}})
+                            sum_fluence = 0
+                    else:
+                        fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[i-1][1].width,'height':tuple_list[i-1][1].height,'accumulated_fluence':sum_fluence}})
+                        sum_fluence = 0
+
+                if tuple_list[tuple_list_length-2][0] == tuple_list[tuple_list_length-1][0]:
+                    if tuple_list[i-1][4] == tuple_list[i][4]:
+                        fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':sum_fluence}})
+                    else:
+                        fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':tuple_list[tuple_list_length-1][2]}})
+                else:
+                    fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':tuple_list[tuple_list_length-1][2]}})
+            else:
+                 fluences.append({'Sample':sample,'Fluence_data':{'width':tuple_list[tuple_list_length-1][1].width,'height':tuple_list[tuple_list_length-1][1].height,'accumulated_fluence':tuple_list[tuple_list_length-1][2]}})
+    return fluences
+
+def experiment_details(request, experiment_id):
+    experiment = get_object_or_404(Experiments, pk=experiment_id)
+    data = get_experiment_data(experiment)
+    return render(request, 'samples_manager/experiment_details.html', data)
 
 
 def user_details(request, user_id):
@@ -1204,9 +1268,9 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                     data['html_experiment_list'] = render_to_string(output_template, template_data)
                     data['state'] = "Created"
                     message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                    #send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
+                    send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
                     message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
-                    #send_mail_notification('IRRAD Data Manager: New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+                    send_mail_notification('IRRAD Data Manager: New experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
                 else:
                     data['form_is_valid'] = False
                     data['state'] = "not unique"
@@ -1282,7 +1346,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 text = updated_experiment_data(old_experiment,old_fluences,old_materials,old_category,experiment)
                 message2irrad=mark_safe("The user with e-mail: "+logged_user.email+" updated the experiment with title '"+experiment.title+"'.\n"
                 +"The updated fields are: \n"+text+"\nPlease, find all the experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
-                #send_mail_notification('IRRAD Data Manager: Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
+                send_mail_notification('IRRAD Data Manager: Updated experiment',message2irrad,logged_user.email,'irrad.ps@cern.ch')
             else:
                 print("form1: ",form1.is_valid())
                 print("form2: ",form2.is_valid())
@@ -1341,9 +1405,9 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                             'experiment_data':  experiment_data, 'logged_user':logged_user 
                         })
                 message='Dear user,\nyour experiment with title "%s" was validated. \nYou can now add samples and additional users related to your irradiation experiment.\nPlease, find all your experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch'% experiment.title
-                #send_mail_notification('IRRAD Data Manager: Experiment  %s validation' % experiment.title,message,'irrad.ps@cern.ch',experiment.responsible.email)
+                send_mail_notification('IRRAD Data Manager: Experiment  %s validation' % experiment.title,message,'irrad.ps@cern.ch',experiment.responsible.email)
                 message2irrad='You validated the experiment with title: %s' % experiment.title
-                #send_mail_notification('IRRAD Data Manager: Experiment %s validation' % experiment.title,message2irrad,'irrad.ps@cern.ch','irrad.ps@cern.ch')
+                send_mail_notification('IRRAD Data Manager: Experiment %s validation' % experiment.title,message2irrad,'irrad.ps@cern.ch','irrad.ps@cern.ch')
             else:
                 print("form1: ",form1.is_valid())
                 print("form2: ",form2.is_valid())
@@ -1404,11 +1468,10 @@ def experiment_status_update(request, pk):
             updated_experiment = Experiments.objects.get(id = experiment.id)
             if  updated_experiment.status == 'Completed':
                 message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was completed.\nTwo weeks time is still needed for the cool down. Please, contact us after that period.\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
+                send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
                 exp_users= updated_experiment.users.values()
                 for user in exp_users:
-                    pass
-                    #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
+                    send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was completed'%experiment.title,message,'irrad.ps@cern.ch', user['email'])
             data['form_is_valid'] = True
             if logged_user.role == 'Admin':
                     experiments = Experiments.objects.all().order_by('-updated_at')
@@ -1426,6 +1489,30 @@ def experiment_status_update(request, pk):
         form = ExperimentStatus(instance=experiment)
     context = {'form': form, 'experiment': experiment}
     data['html_form'] = render_to_string('samples_manager/experiment_status_update.html',
+        context,
+        request=request,
+    )
+    return JsonResponse(data)
+
+def experiment_comment_update(request, pk):
+    data = dict()
+    logged_user = get_logged_user(request)
+    experiment = get_object_or_404(Experiments, pk=pk)
+    if request.method == 'POST':
+        form =   ExperimentComment(request.POST,instance=experiment)
+        if form.is_valid():
+            form.save()
+            output_template = 'samples_manager/partial_experiment_details.html'
+            template_data = get_experiment_data(experiment)
+            data['html_experiment'] = render_to_string(output_template, template_data)
+            data['form_is_valid'] = True
+        else:
+            data['form_is_valid'] = False
+            print("form is not valid")
+    else:
+        form = ExperimentComment(instance=experiment)
+    context = {'form': form, 'experiment': experiment}
+    data['html_form'] = render_to_string('samples_manager/experiment_comment_update.html',
         context,
         request=request,
     )
@@ -1647,9 +1734,9 @@ def experiment_delete(request, pk):
         data['html_experiment_list'] = render_to_string(output_template, template_data)
         data['state']='Deleted'
         message=mark_safe('Dear user,\nyour irradiation experiment with title '+experiment.title+' was deleted by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\n\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-        #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
+        send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message,'irrad.ps@cern.ch', experiment.responsible.email)
         message2irrad=mark_safe("The user with the account: "+logged_user.email+" deleted the experiment with title '"+ experiment.title+"'.\n")
-        #send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message2irrad,experiment.responsible.email, 'irrad.ps@cern.ch')
+        send_mail_notification( 'IRRAD Data Manager: Experiment "%s"  was deleted'%experiment.title,message2irrad,experiment.responsible.email, 'irrad.ps@cern.ch')
     else:
         context = {'experiment': experiment}
         data['html_form'] = render_to_string('samples_manager/partial_experiment_delete.html',
@@ -1684,9 +1771,8 @@ def save_user_form(request, form, experiment, template_name):
                     user.save()
                     if submited_user["email"] !=  experiment.responsible.email:
                         experiment.users.add(user)
-                print("here")
                 message=mark_safe('Dear user,\nyou were assigned as a user for the experiment '+experiment.title+' by the account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
-                #send_mail_notification('IRRAD Data Manager: Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
+                send_mail_notification('IRRAD Data Manager: Registration to the experiment %s of CERN IRRAD Proton Irradiation Facility' %experiment.title,message,'irrad.ps@cern.ch', user.email)
             data['form_is_valid'] = True
             users = experiment.users.all()
             data['html_user_list'] = render_to_string('samples_manager/partial_users_list.html', {
@@ -2538,7 +2624,8 @@ def in_beam_change(request):
     print("irradiations saved")
     data['form_is_valid'] = True
     data['in_beam_checked'] = in_beam_checked
-    new_irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
+    #new_irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
+    new_irradiations = Irradiation.objects.all()
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 

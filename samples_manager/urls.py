@@ -73,4 +73,5 @@ urlpatterns = [
     url(r'^sample/(?P<sample_id>\d+)/dosimetry/results/$', views.dosimetry_results, name='dosimetry_results'),
     url(r'^irradiation/beam/change/$', views.in_beam_change, name='in_beam_change'),
     url(r'^select_table/$', views.select_table, name='select_table'),
+    url(r'^experiment/(?P<pk>\d+)/comment/$', views.experiment_comment_update, name='experiment_comment_update'),
     ]

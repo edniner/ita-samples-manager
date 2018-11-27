@@ -1,5 +1,5 @@
 $(function () {
-console.log("experiments")
+console.log("experiments");
 var loadForm = function () {
     var btn = $(this);
     $.ajax({
@@ -20,6 +20,7 @@ var loadForm = function () {
     });
   };
 var loadFormDetails = function () {
+    console.log("loading form details");
     var btn = $(this);
     $.ajax({
       url: btn.attr("data-url"),
@@ -38,6 +39,7 @@ var loadFormDetails = function () {
       }
     });
   };
+
   var saveForm = function () {
     console.log("saving form!!!!!");
     var form = $(this);
@@ -81,26 +83,19 @@ var loadFormDetails = function () {
       type: form.attr("method"),
       dataType: 'json',
       success: function (data) {
-        console.log("successsssss");
+        console.log("succe");
         if (data.form_is_valid) {
           alert("Your irradiation experiment was successfully updated!");
-          $("#modal-experiment").modal("hide");  // <-- Close the modal
-          console.log(document.location);
-          document.location.reload(true);
+          $("#experiment-details").html(data.html_experiment);  // <-- Replace the table body
+          $("#modal-experiment-details").modal("hide");  // <-- Close the modal
           return false;
-          
         }
         else {
-           $("#modal-experiment .scrolling.content").html(data.html_form);
-          if(data['state']=='not unique')
-            alert("This title already exists! Please, choose a different title.");
-          else
-            alert("Please, fill all the required fields!");
+           $("#modal-experiment-details .scrolling.content").html(data.html_form);
         }
       }
     });
     return false;
-
    }
 
   $(".js-assign-dosimeters").click(loadForm);
@@ -112,8 +107,8 @@ var loadFormDetails = function () {
   $("#experiment-table").on("click", ".js-update-experiment", loadForm);
   $("#modal-experiment").on("submit", ".js-experiment-update-form", saveForm);
 
-  $("#experiment-details").on("click", ".js-update-experiment", loadFormDetails);
-  $("#experiment-details").on("submit", ".js-experiment-update-form", saveFormInDetails);
+  $("#experiment-details").on("click", ".js-update-experiment-details", loadFormDetails);
+  $("#modal-experiment-details").on("submit", ".js-experiment-comment-update-form", saveFormInDetails);
 
   //Clone experiment
   $("#experiment-table").on("click", ".js-clone-experiment", loadForm);

@@ -133,6 +133,19 @@ class ExperimentStatus(forms.ModelForm):
         model = Experiments
         fields = ['status']
 
+class ExperimentComment(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ExperimentComment, self).__init__(*args, **kwargs)
+        self.fields['comments'].required = False
+        self.fields['comments'].label = "Add additional comments(e.g. link to publications):"
+    class Meta:
+        model = Experiments
+        fields = ['comments']
+        widgets = {
+           'comments': forms.Textarea(attrs={'placeholder': 'Add any link to publication', 'rows':4}),
+        }
+
+
 class IrradiationStatus(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(IrradiationStatus, self).__init__(*args, **kwargs)

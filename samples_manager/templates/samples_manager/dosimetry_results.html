@@ -2,7 +2,7 @@
 {% block content %}
  <!-- THE MODAL WE WILL BE USING -->
 <div class= "ui center aligned raised segment">
-    <h2>Dosimetry results</h2>
+    <h2>Dosimetry results for {{sample.set_id}} ({{sample.name}})</h2>
     <div class= "ui grid segment">
         <div class="three wide column">
                 <button type="button" class="ui left floated grey button"  onclick="goBack()" title='Back'>
@@ -44,6 +44,26 @@
                 </thead>
                 <tbody>
                     {% include 'samples_manager/partial_dosimetry_results.html' %}
+                </tbody>
+            </table>
+            <table class="ui center aligned sortable celled table very compact striped" id="fluences-table">
+                <thead>
+                    <tr>
+                        <th>Dosimeter dimensions (mm<sup>2</sup>)</th>
+                        <th>Total accumulated fluence</th>
+                    </tr>
+                </thead>
+                 <tbody>
+                     {% for fluence in sample_fluences %}
+                    <tr>
+                        <td>{{fluence.Fluence_data.height}}&#10005;{{fluence.Fluence_data.width}} mm<sup>2</sup></td>
+                        <td>{{fluence.Fluence_data.accumulated_fluence|stringformat:".3e"}} {{fluence.Sample.experiment.irradiation_type}}/cm<sup>2</sup></td>
+                    </tr>
+                    {% empty %}
+                        <tr>
+                        <td colspan="10">There are no results</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
     </div>

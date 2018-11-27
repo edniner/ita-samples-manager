@@ -1,0 +1,28 @@
+<meta charset="UTF-8"> 
+{% load staticfiles %}
+{% load widget_tweaks %}
+<form method="post" action="{% url 'samples_manager:experiment_comment_update' form.instance.pk %}" class="ui form js-experiment-comment-update-form">
+  {% csrf_token %}
+   <div class="ui center aligned segment container">
+      <div class="ui centered header">
+            <h3>Update Comment</h3>
+      </div>
+
+    <div class="ui center aligned segment container">
+          {% for field in form %}
+            <div class="field form-group{% if field.errors %} has-error{% endif %}">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% render_field field class="form-control" %}
+        {% for error in field.errors %}
+                <p class="ui  pointing  basic label">{{ error }}</p>
+        {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="two ui buttons actions">
+              <button  type="button"  class="ui deny medium button">Cancel</button>
+              <button  type="submit" id="experiment_submit" class="ui positive medium button submit">Submit</button>
+    </div>
+  </div>
+</form>

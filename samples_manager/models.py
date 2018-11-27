@@ -343,6 +343,7 @@ class Irradiation(models.Model):
     created_by = models.ForeignKey(Users,related_name="%(class)s_created_by", null=True)
     updated_by = models.ForeignKey(Users, related_name="%(class)s_updated_by", null=True)
     status = models.CharField(max_length=50, choices=STATUS)
+    dos_position = models.PositiveIntegerField()
     in_beam =  models.BooleanField()
     comments =  models.TextField(null=True)
     

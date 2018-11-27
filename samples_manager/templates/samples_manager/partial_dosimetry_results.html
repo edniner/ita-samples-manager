@@ -1,7 +1,7 @@
 {% for result in results %}
   <tr>
     <td>{{ result.dosimeter.dos_id }}</td>
-    <td>{{ result.dosimeter.width}} × {{ result.dosimeter.height}} </td>
+    <td>{{ result.dosimeter.width}}&#10005;{{ result.dosimeter.height}} </td>
     <td>{{ result.date_in|date:"d/m/Y"}} {{ result.date_in|time:"H:i"}}</td>
     <td>{{ result.date_out|date:"d/m/Y"}} {{ result.date_out|time:"H:i"}}</td>
     <td> {{ result.sec|stringformat:".2e" }}</td>
