@@ -438,11 +438,12 @@ class GroupIrradiationForm(ModelForm):
     class Meta:
         model = Irradiation
         fields = ['dosimeter','irrad_table', 'table_position']
-        exclude = ('sample','date_in', 'date_out', 'accumulated_fluence','sec','fluence_error', 'in_beam')
+        exclude = ('sample','date_in', 'date_out', 'accumulated_fluence','sec','fluence_error', 'in_beam', 'dos_position')
 
 class IrradiationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(IrradiationForm, self).__init__(*args, **kwargs)
+        #self.fields['sample']= forms.ModelChoiseField(Samples.objects.order_by('set_id'))
         self.fields['sample'].required = False
         self.fields['dosimeter'].required = False
         self.fields['dosimeter'].empty_label = 'Select dosimeter'
@@ -458,10 +459,12 @@ class IrradiationForm(ModelForm):
         self.fields['date_in'].required = False
         self.fields['date_out'].required = False
         self.fields['accumulated_fluence'].required = False
+        self.fields['dos_position'].required = True
+        self.fields['dos_position'].label = 'Dosimeter Position (e.g., Front = 1, Middle = 2, Back = 3)'
         
     class Meta:
         model = Irradiation
-        fields = ['sample','dosimeter','irrad_table', 'table_position', 'sec', 'accumulated_fluence', 'fluence_error','date_in', 'date_out', 'accumulated_fluence', 'comments']
+        fields = ['sample','dosimeter','irrad_table', 'table_position', 'dos_position', 'sec', 'accumulated_fluence', 'fluence_error','date_in', 'date_out', 'accumulated_fluence', 'comments',]
         exclude = ('in_beam',)
 
 

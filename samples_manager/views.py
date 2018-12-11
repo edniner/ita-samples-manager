@@ -323,19 +323,9 @@ def admin_experiments_user_view(request, pk):
 
 
 def admin_experiments_list(request):
-    #print("admin_experiments_list")
-    preference = define_preferences(request)
-    experiments = Experiments.objects.order_by('-updated_at')
-    experiment_data = get_registered_samples_number(experiments)
-    logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/admin_experiments_list.html',{'experiment_data': experiment_data,'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
-
-
-def admin_experiments_list(request):
-    #print("admin_experiments_list")
     preference = define_preferences(request)
     logged_user = get_logged_user(request)
-    if logged_user == 'Admin':
+    if logged_user.role == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')
     else:
         auth_experiments = authorised_experiments(logged_user)
@@ -351,7 +341,6 @@ def admin_experiments_list(request):
     return render(request, 'samples_manager/experiments_history.html',{'experiment_data': experiment_data,'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
        
 def users_list(request):
-    #print("users list")
     logged_user = get_logged_user(request)
     preference = define_preferences(request)
     users = Users.objects.all()
@@ -424,7 +413,7 @@ def irradiation_new(request):
     if request.method == 'POST':
         form = IrradiationForm(request.POST)
         if form.is_valid():
-            irradiation = Irradiation(in_beam = False)
+            irradiation = Irradiation(in_beam = False, dos_position = form.cleaned_data['dos_position'])
             irradiation.save()
             irradiation.sample = form.cleaned_data['sample']
             irradiation.dosimeter = form.cleaned_data['dosimeter']
@@ -516,7 +505,6 @@ def new_group_irradiation(request, experiment_id):
 
 def assign_dosimeters(request, experiment_id):
     data = dict()
-    print("assign dosimeters")
     sample_names = request.session['selected_samples']
     logged_user = get_logged_user(request)
     samples = []
@@ -529,7 +517,7 @@ def assign_dosimeters(request, experiment_id):
             if form.cleaned_data is not None:
                 dosimeter = form.cleaned_data['dosimeter']
                 for sample in samples: 
-                        irradiation = Irradiation(in_beam = False)
+                        irradiation = Irradiation(in_beam = False, dos_position = 1)
                         irradiation.save()
                         irradiation.sample = sample
                         irradiation.dosimeter = dosimeter
@@ -538,6 +526,7 @@ def assign_dosimeters(request, experiment_id):
                         irradiation.status = "Registered"
                         irradiation.updated_by = logged_user
                         irradiation.created_by = logged_user
+                        irradiation.dos_position = 1
                         irradiation.save()
             irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
             data['form_is_valid'] = True
