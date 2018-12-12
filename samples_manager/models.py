@@ -336,7 +336,7 @@ class Irradiation(models.Model):
     table_position = models.CharField(max_length=50, null=True)
     irrad_table = models.CharField(max_length=50, null = True)
     sec = models.PositiveIntegerField(null = True)
-    accumulated_fluence =  models.DecimalField(max_digits=30,decimal_places=6, null=True)
+    accumulated_fluence =  models.DecimalField(max_digits=33,decimal_places=9, null=True)
     fluence_error = models.DecimalField(max_digits=10,decimal_places=3, null=True)
     created_at = models.DateTimeField(editable=False,null=True)
     updated_at = models.DateTimeField(null=True)
