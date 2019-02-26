@@ -93,6 +93,7 @@ var loadForm = function () {
 
  var saveForm = function () {
     var form = $(this);
+    console.log("save form");
     $.ajax({
       url: form.attr("action"),
       data: form.serialize(),
@@ -106,7 +107,7 @@ var loadForm = function () {
             alert("Your sample was successfully updated!")
           else if (data['state']=='Deleted')
             alert("The sample was deleted!")
-          $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
+          $("#data-table tbody").html(data.html_sample_list);  // <-- Replace the table body
           $("#modal-sample").modal("hide");  // <-- Close the modal
             /*if(data.experiment_id != -1)
             samplesloadForm(data.experiment_id);*/
@@ -140,7 +141,7 @@ var loadForm = function () {
                   my_window = window.open('', 'mywindow', 'status=1,width=300,height=300');
                   my_window.document.write(text);
                   my_window.document.close();
-                  $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
+                  $("#data-table tbody").html(data.html_sample_list);  // <-- Replace the table body
                   load_values();
               }
           });
@@ -262,7 +263,7 @@ var dymoPrintSamples = function(){
         dataType: 'json',
         success: function (data) {
           if (data.form_is_valid) {
-            $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
+            $("#data-table tbody").html(data.html_sample_list);  // <-- Replace the table body
             $('.chkbox:checked').removeAttr('checked');
             $('#unchecked_segment').show();
             $('#checked_segment').hide();
@@ -295,7 +296,7 @@ var move_samples = function (){
         dataType: 'json',
         success: function (data) {
           if (data.form_is_valid) {
-            $("#sample-table tbody").html(data.html_sample_list);  // <-- Replace the table body
+            $("#data-table tbody").html(data.html_sample_list);  // <-- Replace the table body
             $('.chkbox:checked').removeAttr('checked');
             checked_sample_values = 0;
             disactivate_hidden_buttons();
@@ -375,18 +376,18 @@ var new_irradiation = function (){
   $("#modal-sample").on("submit", ".js-sample-create-form",saveForm);
 
    // Update sample
-  $("#sample-table").on("click", ".js-update-sample", loadForm);
+  $("#data-table").on("click", ".js-update-sample", loadForm);
   $("#modal-sample").on("submit", ".js-sample-update-form",saveForm);
 
     //Clone sample
-  $("#sample-table").on("click", ".js-clone-sample", loadForm);
+  $("#data-table").on("click", ".js-clone-sample", loadForm);
 
   // Delete book
-  $("#sample-table").on("click", ".js-delete-sample", loadForm);
+  $("#data-table").on("click", ".js-delete-sample", loadForm);
   $("#modal-sample").on("submit", ".js-sample-delete-form", saveForm);
 
   // Print label
-  $("#sample-table").on("click", ".js-print-sample-label", loadForm);
+  $("#data-table").on("click", ".js-print-sample-label", loadForm);
   $("#modal-sample").on("submit", ".js-print-sample-label-form", printLabel);
   $("#print_samples").on("click",dymoPrintSamples);
   //Assign SET_IDs

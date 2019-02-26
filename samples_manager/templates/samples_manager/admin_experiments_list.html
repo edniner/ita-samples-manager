@@ -1,5 +1,7 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
+
+
  <!-- THE MODAL WE WILL BE USING -->
   <div class="ui modal" id="modal-experiment">
      <i class="close icon"></i>
@@ -33,8 +35,8 @@
             </button> 
         </div>
     </div>
-    <div class="sixteen wide column" style='height:750px; overflow-x:scroll; overflow-y:scroll;'>
-        <table class="ui center aligned sortable celled table" id="experiment-table">
+    <div class="sixteen wide column" style='overflow-x:scroll;'>
+        <table class="ui center aligned sortable celled table" id="data-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -53,10 +55,14 @@
                     </tbody>
                     <tfoot>
                         <tr><td></td><td></td><td></td><td><b>{{experiment_data.total_registered_samples}}/{{experiment_data.total_declared_samples}}</b></td>
-                        <td><b>{{experiment_data.total_experiments_radiation_length_occupancy}}</b> / <b>{{experiment_data.total_experiments_nu_coll_length_occupancy}}</b> / <b>{{experiment_data.total_experiments_int_length_occupancy}}</b></td>
+                        <td><b>{{experiment_data.total_experiments_radiation_length_occupancy}}</b> / <b>{{experiment_data.total_experiments_nu_coll_length_occupancy}}</b></td>
                         <td></td><td></td><td></td></tr>
                     </tfoot>
         </table>
     </div>
 </div>
+
 {% endblock %}
+
+
+

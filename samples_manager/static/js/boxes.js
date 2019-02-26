@@ -28,7 +28,7 @@ var loadForm = function () {
         console.log("Success");
         console.log(data);
         if (data.form_is_valid) {
-          $("#box-table tbody").html(data.html_box_list);  // <-- Replace the table body
+          $("#data-table tbody").html(data.html_box_list);  // <-- Replace the table body
           $("#modal-box").modal("hide");  // <-- Close the modal
         }
         else {
@@ -45,14 +45,14 @@ var loadForm = function () {
   $("#modal-box").on("submit", ".js-box-create-form",saveForm );
 
    // Update box
-  $("#box-table").on("click", ".js-update-box", loadForm);
+  $("#data-table").on("click", ".js-update-box", loadForm);
   $("#modal-box").on("submit", ".js-box-update-form", saveForm);
 
     //Clone box
-  $("#box-table").on("click", ".js-clone-box", loadForm);
+  $("#data-table").on("click", ".js-clone-box", loadForm);
 
   // Delete book
-  $("#box-table").on("click", ".js-delete-box", loadForm);
+  $("#data-table").on("click", ".js-delete-box", loadForm);
   $("#modal-box").on("submit", ".js-box-delete-form", saveForm);
 
 

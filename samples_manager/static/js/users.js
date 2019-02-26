@@ -40,7 +40,7 @@ var loadForm = function () {
             alert("The user was deleted. He/she will not have access to the related experiments and samples anymore!")
           else if(data['state']=='Updated')
             alert("The user information were updated!")
-          $("#user-table tbody").html(data.html_user_list);  // <-- Replace the table body
+          $("#data-table tbody").html(data.html_user_list);  // <-- Replace the table body
           $("#modal-user").modal("hide");  // <-- Close the modal
         }
         else {
@@ -57,14 +57,14 @@ var loadForm = function () {
   $("#modal-user").on("submit", ".js-user-create-form",saveForm);
 
    // Update user
-  $("#user-table").on("click", ".js-update-user", loadForm);
+  $("#data-table").on("click", ".js-update-user", loadForm);
   $("#modal-user").on("submit", ".js-user-update-form", saveForm);
 
     //Clone user
-  $("#user-table").on("click", ".js-clone-user", loadForm);
+  $("#data-table").on("click", ".js-clone-user", loadForm);
 
   // Delete book
-  $("#user-table").on("click", ".js-delete-user", loadForm);
+  $("#data-table").on("click", ".js-delete-user", loadForm);
   $("#modal-user").on("submit", ".js-user-delete-form", saveForm);
 
 

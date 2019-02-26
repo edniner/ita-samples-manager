@@ -75,7 +75,7 @@ var loadForm = function () {
       dataType: 'json',
       success: function (data) {
         if (data.form_is_valid) {
-          $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+          $("#data-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
           $("#modal-irradiation").modal("hide");  // <-- Close the modals
           console.log(form.attr("data-url"));
           window.location.href =  form.attr("data-url");
@@ -91,30 +91,7 @@ var loadForm = function () {
     return false;
   };
 
-/* var get_sec = function() {
-      var form = $("#sec_form");
-      $.ajax({
-      url: form.attr("action"),
-      data:  form.serialize(),
-      type: 'post',
-      dataType: 'json',
-      success: function (data) {
-        if (detected_change == false) {
-          if (data.form_is_valid) {
-              $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
-          }
-          else {
-          alert("data is not correct");
-          }
-        }
-        else{
-          console.log("detected_change",detected_change);
-        }
-      }
-    });
-  }*/
-
-    var get_sec = function() {
+  var get_sec = function() {
             var form = $("#sec_form");
             if (detected_change == false) { 
               $.ajax({
@@ -125,7 +102,7 @@ var loadForm = function () {
               success: function (data) {
                 if (detected_change == false) { 
                       if (data.form_is_valid) {
-                          $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+                          $("#data-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
                           console.log("replacing data html_irradiation_list!");
                       }
                 }
@@ -234,7 +211,7 @@ var cancelButton = function(){
               dataType: 'json',
               success: function (data) {
                       if (data.form_is_valid) {
-                          $("#irradiation-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
+                          $("#data-table tbody").html(data.html_irradiation_list);  // <-- Replace the table body
                           console.log("replacing data html_irradiation_list!");
                           if (0<data["in_beam_checked"]){
                             setInterval(nIntervId);
@@ -259,15 +236,15 @@ var cancelButton = function(){
   $("#modal-irradiation").on("submit", ".js-irradiation-form",saveForm);
 
 // Update irradiation
-  $("#irradiation-table").on("click", ".js-update-irradiation", loadForm);
+  $("#data-table").on("click", ".js-update-irradiation", loadForm);
   $("#modal-irradiation").on("submit", ".js-irradiation-update-form",saveForm);
 
 // delete irradiation
-  $("#irradiation-table").on("click", ".js-delete-irradiation", loadForm);
+  $("#data-table").on("click", ".js-delete-irradiation", loadForm);
   $("#modal-irradiation").on("submit", ".js-irradiation-delete-form", saveForm);
 
   //update irradiation status
-  $("#irradiation-table").on("click", ".js-change-irradiation-status", loadForm);
+  $("#data-table").on("click", ".js-change-irradiation-status", loadForm);
   $("#modal-irradiation").on("submit", ".js-irradiation-update-form", saveForm);
 
   // get sec

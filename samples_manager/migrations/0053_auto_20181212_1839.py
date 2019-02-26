@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('samples_manager', '0061_auto_20181212_1814'),
+        ('samples_manager', '0052_irradiation_dos_position'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='irradiation',
             name='accumulated_fluence',
-            field=models.DecimalField(null=True, max_digits=44, decimal_places=20),
+            field=models.DecimalField(null=True, max_digits=33, decimal_places=9),
         ),
     ]

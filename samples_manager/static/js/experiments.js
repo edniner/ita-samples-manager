@@ -59,7 +59,7 @@ var loadFormDetails = function () {
             alert("The experiment was validated. The users will be notified now. ")
           else if (data['state']=='Deleted')
             alert("The experiment was successfully deleted!")
-          $("#experiment-table tbody").html(data.html_experiment_list);  // <-- Replace the table body
+          $("#data-table tbody").html(data.html_experiment_list);  // <-- Replace the table body
           $("#modal-experiment").modal("hide");  // <-- Close the modal
         }
         else {
@@ -104,17 +104,17 @@ var loadFormDetails = function () {
   $("#modal-experiment").on("submit", ".js-experiment-create-form",saveForm);
 
    // Update experiment
-  $("#experiment-table").on("click", ".js-update-experiment", loadForm);
+  $("#data-table").on("click", ".js-update-experiment", loadForm);
   $("#modal-experiment").on("submit", ".js-experiment-update-form", saveForm);
 
   $("#experiment-details").on("click", ".js-update-experiment-details", loadFormDetails);
   $("#modal-experiment-details").on("submit", ".js-experiment-comment-update-form", saveFormInDetails);
 
   //Clone experiment
-  $("#experiment-table").on("click", ".js-clone-experiment", loadForm);
+  $("#data-table").on("click", ".js-clone-experiment", loadForm);
 
   // Delete book
-  $("#experiment-table").on("click", ".js-delete-experiment", loadForm);
+  $("#data-table").on("click", ".js-delete-experiment", loadForm);
   $("#modal-experiment").on("submit", ".js-experiment-delete-form", saveForm);
 
 

@@ -193,7 +193,7 @@ var loadForm = function () {
       success: function (data) {
         console.log("data returned successfully");
         if (data.form_is_valid) {
-          $("#dosimeter-table tbody").html(data.html_dosimeter_list);  // <-- Replace the table body
+          $("#data-table tbody").html(data.html_dosimeter_list);  // <-- Replace the table body
           $("#modal-dosimeter").modal("hide");  // <-- Close the modal
           checked_values = 0;
           $('#unchecked_segment').show();
@@ -223,7 +223,7 @@ var loadForm = function () {
                   my_window = window.open('', 'mywindow', 'status=1,width=350,height=300');
                   my_window.document.write(text);
                   my_window.document.close();
-                  $("#dosimeter-table tbody").html(data.html_dosimeter_list);  // <-- Replace the table body
+                  $("#data-table tbody").html(data.html_dosimeter_list);  // <-- Replace the table body
                   load_values();
               }
           });
@@ -239,18 +239,18 @@ var loadForm = function () {
   $("#modal-dosimeter").on("submit", ".js-dosimeter-create-form",saveForm );
 
    // Update dosimeter
-  $("#dosimeter-table").on("click", ".js-update-dosimeter", loadForm);
+  $("#data-table").on("click", ".js-update-dosimeter", loadForm);
   $("#modal-dosimeter").on("submit", ".js-dosimeter-update-form", saveForm);
 
     //Clone dosimeter
-  $("#dosimeter-table").on("click", ".js-clone-dosimeter", loadForm);
+  $("#data-table").on("click", ".js-clone-dosimeter", loadForm);
 
   // Delete dosimeter
-  $("#dosimeter-table").on("click", ".js-delete-dosimeter", loadForm);
+  $("#data-table").on("click", ".js-delete-dosimeter", loadForm);
   $("#modal-dosimeter").on("submit", ".js-dosimeter-delete-form", saveForm);
 
   // Print label
-  $("#dosimeter-table").on("click", ".js-print-dosimeter-label", loadForm);
+  $("#data-table").on("click", ".js-print-dosimeter-label", loadForm);
   $("#modal-dosimeter").on("submit", ".js-print-dosimeter-label-form", printLabel);
   $("#print_dos").click(dymoPrint);
       

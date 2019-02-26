@@ -430,6 +430,7 @@ class GroupIrradiationForm(ModelForm):
         super(GroupIrradiationForm, self).__init__(*args, **kwargs)
         self.fields['dosimeter'].required = True
         self.fields['dosimeter'].empty_label = 'Select dosimeter'
+        self.fields['dosimeter']= forms.ModelChoiceField(Dosimeters.objects.filter(dos_id__isnull = False).order_by('dos_id'))
         self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES)
         self.fields['irrad_table'].required = True
         self.fields['table_position'] = forms.ChoiceField(choices = TABLE_POSITIONS)
@@ -443,8 +444,9 @@ class GroupIrradiationForm(ModelForm):
 class IrradiationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(IrradiationForm, self).__init__(*args, **kwargs)
-        #self.fields['sample']= forms.ModelChoiseField(Samples.objects.order_by('set_id'))
+        self.fields['sample']= forms.ModelChoiceField(Samples.objects.filter(set_id__isnull = False).order_by('set_id'))
         self.fields['sample'].required = False
+        self.fields['dosimeter']= forms.ModelChoiceField(Dosimeters.objects.filter(dos_id__isnull = False).order_by('dos_id'))
         self.fields['dosimeter'].required = False
         self.fields['dosimeter'].empty_label = 'Select dosimeter'
         self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES)

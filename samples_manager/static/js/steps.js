@@ -5,7 +5,7 @@
 
             e.preventDefault();
 
-            $('#step1').animate('slow', function() {
+            $('#step1').animate('fast', function() {
 
             if (ct > 0) {
                 $('#step1').removeClass('transition visible');
@@ -32,7 +32,7 @@
             $('#step1S').removeClass('disabled');
             $('#step2S').addClass('disabled');
 
-            $('#step2').animate('slow', function() {
+            $('#step2').animate('fast', function() {
 
             $('body').css('background-color', '#300032');
             $('#step2').transition('hide');
@@ -49,7 +49,7 @@
             $('#step2S').addClass('disabled');
             $('#step3S').removeClass('disabled');
 
-            $('#step2').animate('slow', function() {
+            $('#step2').animate('fast', function() {
 
             $('body').css('background-color', '#251605');
             $('#step2').transition('hide');
@@ -65,7 +65,7 @@
             $('#step3S').addClass('disabled');
             $('#step2S').removeClass('disabled');
 
-            $('#step3').animate('slow', function() {
+            $('#step3').animate('fast', function() {
 
             $('body').css('background-color', '#06000a');
             $('#step3').transition('hide');

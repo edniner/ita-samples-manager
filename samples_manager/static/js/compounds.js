@@ -80,7 +80,7 @@ var saveForm = function () {
       dataType: 'json',
       success: function (data) {
         if (data.form_is_valid) {
-          $("#compound-table tbody").html(data.html_compound_list);  // <-- Replace the table body
+          $("#data-table tbody").html(data.html_compound_list);  // <-- Replace the table body
           $("#admin-modal-compound").modal("hide");  // <-- Close the modal
         }
         else {
@@ -109,14 +109,14 @@ var saveForm = function () {
   $("#admin-modal-compound").on("submit", ".js-compound-create-form",saveForm);
 
    // Update compound
-  $("#compound-table").on("click", ".js-update-compound", loadForm);
+  $("#data-table").on("click", ".js-update-compound", loadForm);
   $("#admin-modal-compound").on("submit", ".js-compound-update-form",saveForm);
 
     //Clone compound
-  $("#compound-table").on("click", ".js-clone-compound", loadForm);
+  $("#data-table").on("click", ".js-clone-compound", loadForm);
 
   // Delete book
-  $("#compound-table").on("click", ".js-delete-compound", loadForm);
+  $("#data-table").on("click", ".js-delete-compound", loadForm);
   $("#admin-modal-compound").on("submit", ".js-compound-delete-form", saveForm);
 
 
