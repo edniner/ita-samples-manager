@@ -7,3 +7,4 @@ mod_wsgi
 pytz
 django-widget-tweaks==1.4.1
 reportlab==3.4.0
+requests
