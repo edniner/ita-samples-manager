@@ -30,18 +30,19 @@ import time
 from django.utils.datastructures import MultiValueDictKeyError
 import requests
 from string import Template
+import xml.etree.ElementTree as ET
 
 def get_logged_user(request):
-    username =  request.META["HTTP_X_REMOTE_USER"]
+    """username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]"""
 
-    """username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -50,7 +51,7 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"
-    """
+    
 
     email =  email.lower()
     users = Users.objects.all()
@@ -814,13 +815,13 @@ def in_beam_change(request):
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 
-def webservice_test(request):
-    url = "http://cmmsx-test.cern.ch/WSHub/SOAP"
+def read_sample_trec(request):
+    url = "https://cmmsx-test.cern.ch/WSHub/SOAP"
     body="""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsh="http://cern.ch/cmms/infor/wshub">
     <soapenv:Header/>
     <soapenv:Body>
         <wsh:readEquipment>
-            <equipmentCode>PXXISET001-CR002706</equipmentCode>
+            <equipmentCode>PXXISET001-CR003122</equipmentCode>
             <credentials>
                 <password>Maurice009</password>
                 <username>irrad</username>
@@ -830,19 +831,36 @@ def webservice_test(request):
     </soapenv:Body>
     </soapenv:Envelope>"""
     headers = { 
-                "Host": "cmmsx-test.cern.ch",
-                "Accept-Encoding": "gzip,deflate",
                 "Content-Type": "text/xml;charset=UTF-8",
-                "SOAPAction": "",
-                "Content-Length": "657",
-                "Host": "cmmsx-test.cern.ch",
-                "Connection": "Keep-Alive",
-                "User-Agent": "Apache-HttpClient/4.1.1 (java 1.5)",
-}
-    response = requests.post(url,data=body,headers=headers)
-    print(response)
-    data = {}
-    return JsonResponse(data)
+    }
+    
+    response = requests.post(url,data=body,headers=headers, stream = True)
+    response.raw.decode_content = True
+    tree = ET.parse(response.raw)
+    root = tree.getroot()
+    ''' code '''
+    data = {'code': root[0][0][0][4].text, 
+            'description': root[0][0][0][9].text,
+            'value': root[0][0][0][10].text,
+            'current_location': root[0][0][0][11].text,
+            'previous_location': root[0][0][0][12].text,
+            'set_number':root[0][0][0][15].text,
+            'length':root[0][0][0][20][11].text,
+            'width':root[0][0][0][20][12].text,
+            'height':root[0][0][0][20][13].text,
+            'weight': root[0][0][0][20][14].text}
+    print(root[0][0][0][4].text) 
+    print(root[0][0][0][9].text) 
+    print(root[0][0][0][10].text) 
+    print(root[0][0][0][11].text)
+    print(root[0][0][0][12].text)
+    print(root[0][0][0][15].text)
+    print(root[0][0][0][20][11].text)
+    print(root[0][0][0][20][12].text)
+    print(root[0][0][0][20][13].text)
+    print(root[0][0][0][20][14].text)
+  
+    return render(request, 'samples_manager/read_trec_details.html', data)
 
 
 

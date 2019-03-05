@@ -1,0 +1,100 @@
+{% extends 'samples_manager/base.html' %}
+{% block content %}
+  <div class="ui modal" id="modal-experiment-details">
+     <i class="close icon"></i>
+     <div class="scrolling content">
+      </div>
+  </div>
+<div id = 'experiment-details' class= "ui segment">
+
+<script>
+     $(document).ready(function() {
+                $('.allowed_dropdown').dropdown();
+            });
+    function goBack() {
+         window.history.back();
+    }
+       </script>
+<div class= "ui center aligned segment grid">
+        <div class="two wide column">
+                    <button type="button" class="ui left floated grey button" onclick="goBack()" title='Back'>
+                        <i class="angle left icon"></i>Back
+                    </button>
+        </div>
+        <div class="fourteen wide column">
+            <h2>{{set_number}}</h2>
+        </div>
+    </div>
+    <div class="ui two column grid">
+        <div class="column">
+            <div class="ui segment">
+                <div class="ui blue ribbon label">Identification</div>
+                <div class="ui divided selection list">
+                    <div class="item">
+                        <div class="ui horizontal label">
+                           Code
+                        </div>
+                        {{code}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Description
+                        </div>
+                        {{description}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Current location
+                        </div>
+                        {{current_location}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                            Previous Location
+                        </div>
+                        {{previous_location}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui segment">
+                <div class="ui blue ribbon label">Charecteristics</div>
+                <div class="ui divided selection list">
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Length 
+                        </div>
+                        {{length}} cm
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Width 
+                        </div>
+                            {{width}} cm
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Height 
+                        </div>
+                            {{height}} cm
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Weight 
+                        </div>
+                            {{weight}} kg
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Value 
+                        </div>
+                            {{value}} CHF
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+</div>
+{% endblock %}
