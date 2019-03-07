@@ -45,6 +45,9 @@
                       {% if experiment.status != 'Completed'%}
                       <a data-url="{% url 'samples_manager:sample_delete' experiment.id sample_data.sample.id %}" class="item js-delete-sample"><b>Delete</b></a>
                       {% endif %}
+                      {% if logged_user.role == 'Admin'%}
+                        <a href="{% url 'samples_manager:read_sample_trec' sample_data.sample.id  %}" class="item"><b>TREC</b></a>
+                      {% endif %}
                   </div>
         </button>
     </td>

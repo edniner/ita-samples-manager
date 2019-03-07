@@ -1,3 +1,10 @@
+
+  <script>
+            $('.allowed_dropdown').dropdown();
+            function goBack() {
+                window.history.back();
+            }
+    </script>
 {% for experiment in experiment_data.experiments %}
    <tr>
      <td>{{experiment.experiment.id}}</td>
@@ -63,10 +70,4 @@
     </tr>
   {% endfor %}
   
-  <script>
-            $('.allowed_dropdown')
-            .dropdown();
-            function goBack() {
-                window.history.back();
-            }
-    </script>
+

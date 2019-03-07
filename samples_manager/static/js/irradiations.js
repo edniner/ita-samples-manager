@@ -268,4 +268,4 @@ var cancelButton = function(){
   
 });
 
-document.addEventListener('touchstart', handler, {passive: true});
+//document.addEventListener('touchstart', handler, {passive: true});

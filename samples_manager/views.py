@@ -33,16 +33,16 @@ from string import Template
 import xml.etree.ElementTree as ET
 
 def get_logged_user(request):
-    """username =  request.META["HTTP_X_REMOTE_USER"]
+    username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
     telephone = request.META["HTTP_X_REMOTE_USER_PHONENUMBER"]
     email =  request.META["HTTP_X_REMOTE_USER_EMAIL"]
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
-    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]"""
+    home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    username =  "bgkotse"
+    """username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -51,6 +51,7 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"
+    """
     
 
     email =  email.lower()
@@ -815,51 +816,61 @@ def in_beam_change(request):
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 
-def read_sample_trec(request):
-    url = "https://cmmsx-test.cern.ch/WSHub/SOAP"
-    body="""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsh="http://cern.ch/cmms/infor/wshub">
-    <soapenv:Header/>
-    <soapenv:Body>
-        <wsh:readEquipment>
-            <equipmentCode>PXXISET001-CR003122</equipmentCode>
-            <credentials>
-                <password>Maurice009</password>
-                <username>irrad</username>
-            </credentials>
-            <sessionID></sessionID>
-        </wsh:readEquipment>
-    </soapenv:Body>
-    </soapenv:Envelope>"""
-    headers = { 
-                "Content-Type": "text/xml;charset=UTF-8",
-    }
-    
-    response = requests.post(url,data=body,headers=headers, stream = True)
-    response.raw.decode_content = True
-    tree = ET.parse(response.raw)
-    root = tree.getroot()
-    ''' code '''
-    data = {'code': root[0][0][0][4].text, 
-            'description': root[0][0][0][9].text,
-            'value': root[0][0][0][10].text,
-            'current_location': root[0][0][0][11].text,
-            'previous_location': root[0][0][0][12].text,
-            'set_number':root[0][0][0][15].text,
-            'length':root[0][0][0][20][11].text,
-            'width':root[0][0][0][20][12].text,
-            'height':root[0][0][0][20][13].text,
-            'weight': root[0][0][0][20][14].text}
-    print(root[0][0][0][4].text) 
-    print(root[0][0][0][9].text) 
-    print(root[0][0][0][10].text) 
-    print(root[0][0][0][11].text)
-    print(root[0][0][0][12].text)
-    print(root[0][0][0][15].text)
-    print(root[0][0][0][20][11].text)
-    print(root[0][0][0][20][12].text)
-    print(root[0][0][0][20][13].text)
-    print(root[0][0][0][20][14].text)
-  
+def read_sample_trec(request, pk):
+    sample = get_object_or_404(Samples, pk=pk)
+    data = dict()
+    if sample.set_id:
+        sample_name = sample.set_id.split("SET-")
+        code_name = "PXXISET001-CR"+sample_name[1]
+        url = "https://cmmsx-test.cern.ch/WSHub/SOAP"
+        body="""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsh="http://cern.ch/cmms/infor/wshub">
+        <soapenv:Header/>
+        <soapenv:Body>
+            <wsh:readEquipment>
+                <equipmentCode>"""+code_name+"""</equipmentCode>
+                <credentials>
+                    <password>Maurice010</password>
+                    <username>irrad</username>
+                </credentials>
+                <sessionID></sessionID>
+            </wsh:readEquipment>
+        </soapenv:Body>
+        </soapenv:Envelope>"""
+        headers = { 
+                    "Content-Type": "text/xml;charset=UTF-8",
+        }
+        
+        response = requests.post(url,data=body,headers=headers, stream = True)
+        response.raw.decode_content = True
+        tree = ET.parse(response.raw)
+        root = tree.getroot()
+        data = dict()
+
+        for child in root:
+        #print ("-------Tag: "+str(child.tag)+" ------ Attribute: "+ str(child.text))
+            if child.text:
+                data[child.tag] = child.text
+            for gchild in child:
+                #print ("-------Tag: "+str(gchild.tag)+" ------ Attribute: "+ str(gchild.text))
+                if gchild.text:
+                    data[gchild.tag] = gchild.text
+                for ggchild in gchild:
+                    #print ("-------Tag: "+str(ggchild.tag)+" ------ Attribute: "+ str(ggchild.text))
+                    if ggchild.text:
+                        data[ggchild.tag] = ggchild.text
+                    for gggchild in ggchild:
+                        #print ("-------Tag: "+str(gggchild.tag)+" ------ Attribute: "+ str(gggchild.text))
+                        if gggchild.text:
+                            data[gggchild.tag] = gggchild.text
+                        for ggggchild in gggchild:
+                            #print ("-------Tag: "+str(ggggchild.tag)+" ------ Attribute: "+ str(ggggchild.text))
+                            if ggggchild.text:
+                                data[ggggchild.tag] = ggggchild.text
+        data['exist'] = True
+    else:
+        data['exist'] = False
+
+        
     return render(request, 'samples_manager/read_trec_details.html', data)
 
 

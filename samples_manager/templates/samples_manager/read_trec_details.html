@@ -21,11 +21,14 @@
                         <i class="angle left icon"></i>Back
                     </button>
         </div>
-        <div class="fourteen wide column">
-            <h2>{{set_number}}</h2>
+        <div class="twelve wide column">
+            <h2>TREC Data of Sample {{serialNumber}}</h2>
         </div>
-    </div>
-    <div class="ui two column grid">
+        <div class="two wide column">
+        </div>
+</div>
+{% if exist %}
+<div class="ui two column grid">
         <div class="column">
             <div class="ui segment">
                 <div class="ui blue ribbon label">Identification</div>
@@ -46,13 +49,13 @@
                         <div class="ui horizontal label">
                             Current location
                         </div>
-                        {{current_location}}
+                        {{hierarchyLocationCode}}
                     </div>
-                    <div class="item">
+                     <div class="item">
                         <div class="ui horizontal label">
-                            Previous Location
+                                Value 
                         </div>
-                        {{previous_location}}
+                            {{equipmentValue}} CHF
                     </div>
                 </div>
             </div>
@@ -65,36 +68,35 @@
                         <div class="ui horizontal label">
                                 Length 
                         </div>
-                        {{length}} cm
+                        {{udfnum07}} cm
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
                                 Width 
                         </div>
-                            {{width}} cm
+                            {{udfnum08}} cm
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
                                 Height 
                         </div>
-                            {{height}} cm
+                            {{udfnum09}} cm
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
                                 Weight 
                         </div>
-                            {{weight}} kg
-                    </div>
-                    <div class="item">
-                        <div class="ui horizontal label">
-                                Value 
-                        </div>
-                            {{value}} CHF
+                            {{udfnum10}} kg
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    {%else%}
+    <div class= "ui center aligned segment grid">
+        <p>SET ID not assigned or sample does not exist in TREC</p>
+    </div>
+    {% endif %}
     <br>
 </div>
 {% endblock %}
