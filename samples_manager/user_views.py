@@ -105,6 +105,7 @@ def admin_user_new(request):
 def save_admin_user_form(request, form, template_name):
     data = dict()
     if request.method == 'POST':
+        print("form")
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True

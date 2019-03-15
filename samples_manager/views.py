@@ -42,7 +42,8 @@ def get_logged_user(request):
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    """username =  "bgkotse"
+    """
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -672,24 +673,12 @@ def search_irradiations(request):
         query_string = ''
         found_entries = None
         irradiations =[]
-        if ('search_box' in request.GET) and request.GET['search_box'].strip():
-            query_string = request.GET['search_box']
-            entry_query = get_query(query_string, ['status'])
-            irradiations = Irradiation.objects.filter(entry_query)
-        return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations})
-
-def search_samples(request, experiment_id):
-        query_string = ''
-        found_entries = None
-        samples = []
         logged_user = get_logged_user(request)
-        experiment = Experiments.objects.get(pk = experiment_id)
         if ('search_box' in request.GET) and request.GET['search_box'].strip():
             query_string = request.GET['search_box']
-            entry_query = get_query(query_string, ['set_id', 'name', 'category'])
-            experiment_samples = Samples.objects.filter(experiment = experiment)
-            samples = experiment_samples.filter(entry_query)
-        return render(request, 'samples_manager/samples_list.html', {'samples': samples,  'experiment': experiment})
+            entry_query = get_query(query_string, ['status', 'sample__set_id', 'dosimeter__dos_id', 'table_position', 'irrad_table', 'updated_by__email'])
+            irradiations = Irradiation.objects.filter(entry_query)
+        return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations,'logged_user': logged_user})
 
 
 def select_table(request):
@@ -712,7 +701,8 @@ def search_experiments_user(request):
         logged_user = get_logged_user(request)
         if ('search_box' in request.GET) and request.GET['search_box'].strip():
             query_string = request.GET['search_box']
-            entry_query = get_query(query_string, ['title', 'status', 'number_samples'])
+            entry_query = get_query(query_string, ['title', 'status', 'number_samples','responsible__name','responsible__surname'])
+            print(entry_query)
             experiments = Experiments.objects.filter(entry_query)
             authorised_experiments = filtered_authorised_experiments(logged_user, experiments)
         return render(request, 'samples_manager/experiments_list.html', {'experiments': authorised_experiments, 'logged_user':logged_user})
@@ -725,7 +715,8 @@ def search_experiments_admin(request):
         logged_user = get_logged_user(request)
         if ('search_box' in request.GET) and request.GET['search_box'].strip():
             query_string = request.GET['search_box']
-            entry_query = get_query(query_string, ['title', 'status'])
+            entry_query = get_query(query_string, ['title', 'status','responsible__name','responsible__surname'])
+            print(entry_query)
             experiments = Experiments.objects.filter(entry_query)
             experiment_data = get_registered_samples_number(experiments)
         return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user})

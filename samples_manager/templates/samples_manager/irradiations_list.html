@@ -16,7 +16,15 @@
                             <i class="angle left icon"></i>Back
                 </button>
         </div>
-            <div class="ten wide column" id="irradiation_new_div">
+        <div class="seven wide column">
+                <form style="text-align: center; display: block" name="search_form" method="GET" action="{% url 'samples_manager:search_irradiations'%}"> 
+                    <div class="ui fluid right action icon input">
+                        <input title="Search irradiation title or status"   id="search_box" type="text" name="search_box"  placeholder="Search..." >
+                        <button title="Search irradiation title or status" class="ui icon green button" id="search_submit" type="submit"><i class="search icon"></i></button>
+                    </div>
+                </form>
+            </div>
+            <div class="three wide column" id="irradiation_new_div">
                 <button type="button"
                             id = "irradiation_new"
                             data-target = "#modal-irradiation"

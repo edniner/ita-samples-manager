@@ -103,7 +103,7 @@ WSGI_APPLICATION = 'wsgi.application'
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'pdbr-s.cern.ch:10121/pdbr.cern.ch',
         'USER': 'ps_irrad_admin',
-        'PASSWORD': 'RadmonAdmin009',
+        'PASSWORD': 'RadmonAdmin010',
         'OPTIONS': {'threaded': True}
     }
 }"""
@@ -113,7 +113,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'devdb11-s.cern.ch:10121/devdb11.cern.ch',
         'USER': 'ps_irrad_admin',
-        'PASSWORD': 'RadmonAdmin009',
+        'PASSWORD': 'RadmonAdmin010',
         'OPTIONS': {'threaded': True}
     }
 }
