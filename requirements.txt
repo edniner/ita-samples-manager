@@ -6,6 +6,4 @@ whitenoise==3.3.1
 mod_wsgi
 pytz
 django-widget-tweaks==1.4.1
-reportlab==3.5.21
-Pillow == 6.0.0
 requests
