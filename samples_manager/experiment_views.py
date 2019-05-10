@@ -101,9 +101,13 @@ def experiments_list(request):
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,})
 
 def admin_experiments_list(request):
+<<<<<<< HEAD
     print("-------------------------")
     if request.COOKIES.get('container_bgk'):
         print("Your favorite color is {0}-------------------------".format(request.COOKIES['container_bgk']))
+=======
+    preference = define_preferences(request)
+>>>>>>> 04a38f2255d2d94d719acea0275aec51531d70cc
     logged_user = get_logged_user(request)
     if logged_user.role == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')

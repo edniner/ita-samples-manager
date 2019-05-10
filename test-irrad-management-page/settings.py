@@ -36,7 +36,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.cern.ch'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'Irradiation.Facilities@cern.ch'
-EMAIL_HOST_PASSWORD = 'Maurice010'
+EMAIL_HOST_PASSWORD = 'Maurice009'
 
 # Application definition
 

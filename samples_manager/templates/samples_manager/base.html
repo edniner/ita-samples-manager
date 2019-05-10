@@ -6,13 +6,12 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}"/>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.0/dist/semantic.min.css">
+        <link rel="stylesheet" href="{% static 'css/style2.css' %}">
         <link rel="stylesheet" href="{% static 'css/widget.css' %}">
         <link rel="stylesheet" href="{% static 'css/cern_toolbar.css' %}">
         <link rel="stylesheet" href="{% static 'css/number-polyfill.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/global.css' %}">
         <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.css" />
-        <link rel="stylesheet" href="{% static 'css/style2.css' %}">
-        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.css">
         <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.0/cookieconsent.min.js"></script>
         <script>
         window.addEventListener("load", function(){
@@ -43,7 +42,7 @@
     </head>
     <body id="home" class="pushable">
         <div class="ui theme left push sidebar">
-            <form method="post" class="ui form" id = "preferences_form" style ='display: none' action="{% url 'samples_manager:register_preferences'%}">
+            <form method="post" class="ui form" id = "preferences_form" action="{% url 'samples_manager:register_preferences'%}">
                 {% csrf_token %}
                 <h3 class="ui dividing header">Display Preferences</h3>
                 <tr><th><label for="id_global_theme">Global theme:</label></th>
@@ -111,36 +110,11 @@
                 <input type="hidden" id="prefered_table" name="prefered_table" value="{{prefered_table}}"></tr>
                 <tr><th></th><td><button id =  "save_preferences"  type="submit" class="ui fluid positive medium button submit">Save</button></td></tr>
             </form>
-            <div class="ui divided items">
-                <div class="item">
-                   <label>Background body color:  &nbsp;</label>
-                   <input type='text' id="body_bgk" />
-                </div>
-                <div class="item">
-                   <label>Content color:  &nbsp;</label>
-                   <input type='text' id="segment_bgk" />
-                </div>
-                <div class="item">
-                   <label>Table color:  &nbsp;</label>
-                   <input type='text' id="table_bgk" />
-                </div>
-                <div class="item">
-                   <label>Font color:  &nbsp;</label>
-                   <input type='text' id="table_font_color" />
-                </div>
-                <div class="item">
-                   <label>Links:  &nbsp;</label>
-                   <input type='text' id="link_color" />
-                </div>
-                <div class="item">
-                   <label>Font size:  &nbsp;</label>
-                   <input type='number' style = "width:20%" id="font_size"/><span>px</span>
-                </div>
-            </div>
-            
         </div>
-        <div class="pusher" >
-                <div class="ui container" style="font-size: 80px !important">
+        <div class="pusher">
+            
+            <div class="page header">
+                <div class="ui container">
                     <div class="blank-toolbar s4-notdlg"></div>
                     <div class="toolbar-wrapper s4-notdlg">
                         <div id="cern-toolbar">
@@ -153,7 +127,7 @@
                             </ul>
                         </div>	
                     </div>	
-                    <div class="ui text menu" >
+                    <div class="ui text menu">
                         <div class="ten wide column item">
                                 <a href="{% url 'samples_manager:index' %}" class="item">
                                 <b>HOME</b>
@@ -210,18 +184,19 @@
                         <h1 class="ui center aligned header">IRRAD Data Manager</h1>
                     </div>
                 </div>
-
+            </div>
              <div class="page content">
                 <div class='ui container'>
+                    <div class="content container">
                         {% block content %}
                         {% endblock %}
+                    </div>
                 </div>
             </div>
         </div>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> 
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <script src="{% static 'js/custom_css.js' %}"></script>
         <script src="{% static 'js/samples.js' %}"></script>
         <script src="{% static 'js/experiments.js' %}"></script>
         <script src="{% static 'js/users.js' %}"></script>
@@ -233,13 +208,13 @@
         <script src="{% static 'js/number-polyfill.js' %}"></script>
         <script src="{% static 'js/sorttable.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.0/dist/semantic.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.0/spectrum.min.js"></script>
         <script src="{% static 'javascript/home.js' %}"></script>
         <script src="{% static 'javascript/theme.js' %}"></script>  
         <script src="{% static 'js/DYMO.Label.Framework.2.0.2.js' %}"></script>
         <script>
             
             $(document).ready(function() {
+
                 $('.allowed_dropdown').dropdown();
                             function goBack() {
                                 window.history.back();
