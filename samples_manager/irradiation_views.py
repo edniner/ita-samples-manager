@@ -27,10 +27,9 @@ from .views import *
 
 def irradiations(request):
      tables = ['IRRAD1','IRRAD3','IRRAD5','IRRAD7','IRRAD9','IRRAD11','IRRAD13','IRRAD15','IRRAD17','IRRAD19']
-     preference = define_preferences(request)
      logged_user = get_logged_user(request)
      irradiations = Irradiation.objects.filter(~Q(status = 'Completed'))
-     return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations,'tables': tables, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+     return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations,'tables': tables, 'logged_user': logged_user,})
 
 
 def irradiation_status_update(request, pk):

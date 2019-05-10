@@ -85,29 +85,25 @@ def experiment_details(request, experiment_id):
 
 
 def admin_experiments_user_view(request, pk):
-        #print("admin_experiments_user_view")
-        preference = define_preferences(request)
         logged_user = get_logged_user(request)
         user = Users.objects.get(id = pk)
         experiments = authorised_experiments(user)
-        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,})
 
 def experiments_list(request):
-    preference = define_preferences(request)
     logged_user = get_logged_user(request)
     if logged_user.role == 'Admin':
         experiments = authorised_experiments(logged_user)
         experiment_data = get_registered_samples_number(experiments)
-        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+        return render(request, 'samples_manager/admin_experiments_list.html', {'experiment_data':experiment_data, 'logged_user': logged_user,})
     else:
         experiments = authorised_experiments(logged_user)
-        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+        return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,})
 
 def admin_experiments_list(request):
     print("-------------------------")
     if request.COOKIES.get('container_bgk'):
         print("Your favorite color is {0}-------------------------".format(request.COOKIES['container_bgk']))
-    preference = define_preferences(request)
     logged_user = get_logged_user(request)
     if logged_user.role == 'Admin':
         experiments = Experiments.objects.order_by('-updated_at')
@@ -122,7 +118,7 @@ def admin_experiments_list(request):
         else:
             experiments = []
     experiment_data = get_registered_samples_number(experiments)
-    return render(request, 'samples_manager/experiments_history.html',{'experiment_data': experiment_data,'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+    return render(request, 'samples_manager/experiments_history.html',{'experiment_data': experiment_data,'logged_user': logged_user,})
 
 def experiment_new(request):
     logged_user = get_logged_user(request)

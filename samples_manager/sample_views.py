@@ -151,12 +151,10 @@ def save_sample_form(request,form1,form2,layers_formset, form3, status, experime
     return JsonResponse(data)
 
 def archive_experiment_samples(request,experiment_id):
-    preference = define_preferences(request)
     logged_user = get_logged_user(request)
     experiment =  Experiments.objects.get(pk = experiment_id)
     archives = ArchiveExperimentSample.objects.filter(experiment = experiment)
-    print(archives)
-    return render(request, 'samples_manager/archive_experiment_samples.html', {'archives': archives, 'logged_user':logged_user, 'experiment': experiment, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+    return render(request, 'samples_manager/archive_experiment_samples.html', {'archives': archives, 'logged_user':logged_user, 'experiment': experiment,})
 
 def generate_set_id(sample):
     if sample.set_id =="":
@@ -227,7 +225,6 @@ def assign_set_ids(request, experiment_id):
 
 
 def experiment_samples_list(request, experiment_id):
-    preference = define_preferences(request)
     logged_user = get_logged_user(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     if (logged_user.email != experiment.responsible.email) and (logged_user not in experiment.users.all()) and logged_user.role != 'Admin':
@@ -240,7 +237,7 @@ def experiment_samples_list(request, experiment_id):
             template_url = 'samples_manager/admin_samples_list.html'
         else: 
             template_url = 'samples_manager/samples_list.html'
-        return render(request,template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+        return render(request,template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments,})
 
 def admin_samples_list(request):
      template_url = 'samples_manager/samples_list.html'
@@ -250,7 +247,6 @@ def admin_samples_list(request):
 
 
 def search_samples(request, experiment_id):
-        preference = define_preferences(request)
         query_string = ''
         found_entries = None
         samples = []
@@ -266,7 +262,7 @@ def search_samples(request, experiment_id):
             entry_query = get_query(query_string, ['set_id', 'name', 'category','updated_by__email'])
             samples = Samples.objects.filter(entry_query, experiment = experiment)
             samples_data = get_samples_occupancies(samples)
-        return render(request, template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+        return render(request, template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, })
 
 
 

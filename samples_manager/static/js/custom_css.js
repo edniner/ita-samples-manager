@@ -26,8 +26,6 @@ function getColor(color_string){
 }
    
     $(document).ready(function(){
-
-
     if (readCookie("body_bgk")){
             body_bgk = getColor(readCookie("body_bgk"));
             $('body.pushable > .pusher').css('background-color',body_bgk);
@@ -109,11 +107,7 @@ function getColor(color_string){
     var table_bgk = $('table#data-table.ui.center.aligned.sortable.celled.table').css('background-color');
     var table_font_color = $('table#data-table.ui.center.aligned.sortable.celled.table').css('color');
     var link_color= $('a').css('color');
-    var pix_txt= $('table#data-table.ui.center.aligned.sortable.celled.table').css('font-size');
-    
-    var pix = pix_txt.slice(0,2);
-    console.log(pix);
-    $("#font_size").val(pix);
+    var pix_txt= $('p').css('font-size');
     $("#body_bgk").spectrum({
                     preferredFormat: "hex",
                     showInitial: true,
