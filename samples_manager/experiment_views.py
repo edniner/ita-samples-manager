@@ -104,9 +104,6 @@ def experiments_list(request):
         return render(request, 'samples_manager/experiments_list.html', {'experiments': experiments, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def admin_experiments_list(request):
-    print("-------------------------")
-    if request.COOKIES.get('container_bgk'):
-        print("Your favorite color is {0}-------------------------".format(request.COOKIES['container_bgk']))
     preference = define_preferences(request)
     logged_user = get_logged_user(request)
     if logged_user.role == 'Admin':

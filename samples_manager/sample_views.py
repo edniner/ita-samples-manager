@@ -242,12 +242,6 @@ def experiment_samples_list(request, experiment_id):
             template_url = 'samples_manager/samples_list.html'
         return render(request,template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user, 'experiments':experiments,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
-def admin_samples_list(request):
-     template_url = 'samples_manager/samples_list.html'
-     logged_user = get_logged_user(request)
-     samples = Samples.objects.all()
-     return render(request,template_url, {'samples': samples, 'logged_user': logged_user})
-
 
 def search_samples(request, experiment_id):
         preference = define_preferences(request)

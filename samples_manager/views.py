@@ -33,6 +33,7 @@ from string import Template
 import xml.etree.ElementTree as ET
 
 def get_logged_user(request):
+    """
     username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
@@ -41,8 +42,9 @@ def get_logged_user(request):
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
-
     """
+
+    
     username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
@@ -52,8 +54,9 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"
-    """
     
+    
+
     email =  email.lower()
     users = Users.objects.all()
     emails = []
