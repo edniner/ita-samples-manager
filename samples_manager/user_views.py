@@ -75,6 +75,7 @@ def view_user(request):
 
 def users_list(request):
     logged_user = get_logged_user(request)
+    preference = define_preferences(request)
     users = Users.objects.all()
     users_data = []
     row = 0
@@ -91,7 +92,7 @@ def users_list(request):
             "experiments_number":experiments_number,
             "row": row
         })
-    return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user,})
+    return render(request, 'samples_manager/admin_users_list.html', {'users_data': users_data,'logged_user': logged_user, 'prefered_theme':preference['global_theme'], 'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 
 def admin_user_new(request):
@@ -134,13 +135,15 @@ def save_admin_user_form(request, form, template_name):
     return JsonResponse(data)
 
 def experiment_users_list(request, experiment_id):
+    print("experiment users list")
+    preference = define_preferences(request)
     experiment = Experiments.objects.get(pk = experiment_id)
     logged_user = get_logged_user(request)
     if (logged_user.email != experiment.responsible.email) and (logged_user not in experiment.users.all()) and logged_user.role != 'Admin':
         return render(request,'samples_manager/not_allowed_user.html',{'logged_user': logged_user})
     else:
         users= experiment.users.values()
-        return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user,})
+        return render(request, 'samples_manager/users_list.html', {'users': users,'experiment': experiment,'logged_user': logged_user, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme'] })
 
 def user_new(request,experiment_id):
     experiment = Experiments.objects.get(pk = experiment_id)

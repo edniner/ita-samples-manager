@@ -186,6 +186,7 @@ def get_compounds_data():
     return compounds_data
 
 def compounds_list(request):
+    preference = define_preferences(request)
     logged_user = get_logged_user(request)
     compounds_data = get_compounds_data()
-    return render(request, 'samples_manager/compounds_list.html',{'compounds_data': compounds_data,'logged_user': logged_user,})
+    return render(request, 'samples_manager/compounds_list.html',{'compounds_data': compounds_data,'logged_user': logged_user, 'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})

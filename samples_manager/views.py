@@ -33,7 +33,6 @@ from string import Template
 import xml.etree.ElementTree as ET
 
 def get_logged_user(request):
-    
     username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
@@ -42,7 +41,6 @@ def get_logged_user(request):
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
-    
 
     """
     username =  "bgkotse"
@@ -92,6 +90,22 @@ def get_logged_user(request):
     logged_user.save()
     return logged_user
 
+def define_preferences(request):
+    data = dict()
+    logged_user = get_logged_user(request)
+    try:
+        userpreference = get_object_or_404(UserPreferences, user = logged_user)
+        data['global_theme'] = userpreference.global_theme
+        data['button_theme'] = userpreference.button_theme
+        data['menu_theme'] = userpreference.menu_theme
+        data['table_theme'] = userpreference.table_theme
+    except:
+        print("exception!")
+        data['global_theme'] = ''
+        data['button_theme'] = ''
+        data['menu_theme'] = ''
+        data['table_theme'] = ''
+    return data
 
 def authorised_experiments(logged_user):
      if logged_user.role == 'Admin':
@@ -123,9 +137,10 @@ def send_mail_notification(title,message,from_mail,to_mail):
     
 
 def index(request):
+    preference = define_preferences(request)
     template = loader.get_template('samples_manager/index.html')
     logged_user = get_logged_user(request)
-    context = {'logged_user': logged_user,}
+    context = {'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']}
     return render(request, 'samples_manager/index.html', context)
 
 
@@ -146,12 +161,14 @@ def authorised_samples(logged_user):
     return samples
 
 def regulations(request):
+    preference = define_preferences(request)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user,})
+    return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def fluence_conversion(request):
+    preference = define_preferences(request)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/fluence_conversion.html',{'logged_user': logged_user,})
+    return render(request, 'samples_manager/fluence_conversion.html',{'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
 
 def get_registered_samples_number(experiments):
     data = dict()
