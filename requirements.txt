@@ -1,4 +1,4 @@
-Pillow == 6.0.0
+setuptools
 django==1.8
 cx_Oracle==5.2
 gunicorn==19.4.5
@@ -9,4 +9,3 @@ pytz
 django-widget-tweaks==1.4.1
 reportlab
 requests
-setuptools
