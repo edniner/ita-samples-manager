@@ -1,3 +1,4 @@
+setuptools
 django==1.8
 cx_Oracle==5.2
 gunicorn==19.4.5
@@ -6,5 +7,6 @@ whitenoise==3.3.1
 mod_wsgi
 pytz
 django-widget-tweaks==1.4.1
-reportlab==3.4.0
+Pillow == 3.4.0
+reportlab
 requests

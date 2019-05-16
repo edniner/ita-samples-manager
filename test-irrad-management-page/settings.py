@@ -26,7 +26,7 @@ STATIC_URL = 'http://test-irrad-management-page.web.cern.ch/static/'
 SECRET_KEY = 'ma_nu+jq0tcka72kv2rls1+dv6^&0@i7v3#mi(nmzcp7h1f+q-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
