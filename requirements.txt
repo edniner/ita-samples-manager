@@ -6,6 +6,6 @@ whitenoise==3.3.1
 mod_wsgi
 pytz
 django-widget-tweaks==1.4.1
-setuptools ==  41.0.1
+setuptools
 reportlab
 requests
