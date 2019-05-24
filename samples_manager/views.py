@@ -42,8 +42,8 @@ def get_logged_user(request):
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
 
-    """
-    username =  "bgkotse"
+    
+    '''username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -52,7 +52,8 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"
-    """
+    '''
+    
     
     email =  email.lower()
     users = Users.objects.all()

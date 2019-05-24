@@ -1,9 +1,11 @@
 
   <script>
+        $(document).ready(function() {
             $('.allowed_dropdown').dropdown();
             function goBack() {
                 window.history.back();
             }
+          });
     </script>
 {% for experiment in experiment_data.experiments %}
    <tr>

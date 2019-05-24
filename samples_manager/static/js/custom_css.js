@@ -110,10 +110,12 @@ function getColor(color_string){
     var table_font_color = $('table#data-table.ui.center.aligned.sortable.celled.table').css('color');
     var link_color= $('a').css('color');
     var pix_txt= $('table#data-table.ui.center.aligned.sortable.celled.table').css('font-size');
-    
-    var pix = pix_txt.slice(0,2);
-    console.log(pix);
-    $("#font_size").val(pix);
+
+    if (pix_txt) {
+        var pix = pix_txt.slice(0,2);
+        $("#font_size").val(pix);
+    }
+
     $("#body_bgk").spectrum({
                     preferredFormat: "hex",
                     showInitial: true,
