@@ -1,8 +1,12 @@
 from django.conf.urls import url, include
+
 from django.views.generic import TemplateView
 from . import views, user_views, experiment_views, sample_views, dosimeter_views, irradiation_views, compound_views
 
+
+
 urlpatterns = [
+    url(r'^docs/$', views.schema_view, name='swagger_view'),
     url(r'^$', views.index, name='index'),
     url(r'^(?P<experiment_id>[0-9]+)/experiment/$', experiment_views.experiment_details, name='experiment_details'),
     url(r'^logged_user/$',  user_views.view_user, name='view_user'),
@@ -74,4 +78,5 @@ urlpatterns = [
     url(r'^select_table/$', views.select_table, name='select_table'),
     url(r'^experiment/(?P<pk>\d+)/comment/$', experiment_views.experiment_comment_update, name='experiment_comment_update'),
     url(r'^read/(?P<pk>\d+)/trec$', views.read_sample_trec, name='read_sample_trec'),
+    url(r'^samples/$',sample_views.admin_samples_list, name='admin_samples_list'),
     ]

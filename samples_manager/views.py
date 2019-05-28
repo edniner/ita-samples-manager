@@ -31,8 +31,13 @@ from django.utils.datastructures import MultiValueDictKeyError
 import requests
 from string import Template
 import xml.etree.ElementTree as ET
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title="Swagger Docs")
+
 
 def get_logged_user(request):
+    '''
     username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
@@ -41,9 +46,9 @@ def get_logged_user(request):
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
-
+    '''
     
-    '''username =  "bgkotse"
+    username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
     telephone = "11111"
@@ -52,7 +57,6 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"
-    '''
     
     
     email =  email.lower()
