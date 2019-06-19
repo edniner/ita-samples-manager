@@ -65,7 +65,7 @@ MIDDLEWARE_CLASSES = (
     #'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Uncomment this in production!!!!
-    #'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
 
@@ -107,7 +107,7 @@ WSGI_APPLICATION = 'wsgi.application'
         'PASSWORD': 'RadmonAdmin010',
         'OPTIONS': {'threaded': True}
     }
-}
+}"""
 
 DATABASES = {
     'default': {
@@ -117,15 +117,15 @@ DATABASES = {
         'PASSWORD': 'RadmonAdmin010',
         'OPTIONS': {'threaded': True}
     }
-}"""
+}
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
+"""
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
@@ -150,6 +150,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 #Uncomment this in production!!!!
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 INTERNAL_IPS = ['127.0.0.1']
