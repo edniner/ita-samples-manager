@@ -25,10 +25,9 @@ from django.utils.datastructures import MultiValueDictKeyError
 from .views import *
 
 def dosimeters_list(request):
-    preference = define_preferences(request)
     logged_user = get_logged_user(request)
     dosimeters = Dosimeters.objects.order_by('dos_id')
-    return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+    return render(request, 'samples_manager/dosimeters_list.html', {'dosimeters': dosimeters, 'logged_user': logged_user,})
 
 def dosimeter_new(request):
     logged_user = get_logged_user(request)

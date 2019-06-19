@@ -26,7 +26,7 @@ STATIC_URL = 'http://test-irrad-management-page.web.cern.ch/static/'
 SECRET_KEY = 'ma_nu+jq0tcka72kv2rls1+dv6^&0@i7v3#mi(nmzcp7h1f+q-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -36,7 +36,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.cern.ch'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'Irradiation.Facilities@cern.ch'
-EMAIL_HOST_PASSWORD = 'Maurice009'
+EMAIL_HOST_PASSWORD = 'Maurice010'
 
 # Application definition
 
@@ -51,7 +51,7 @@ INSTALLED_APPS = (
     'pytz',
     'django.contrib.admindocs',
     #Don't forget to uncomment this part in production!!!
-    #'mod_wsgi.server',
+    'mod_wsgi.server',
     'samples_manager',
 )
 
