@@ -30,11 +30,13 @@ import time
 from django.utils.datastructures import MultiValueDictKeyError
 import requests
 from string import Template
+from zeep import Client
+from zeep.wsse.username import UsernameToken
 import xml.etree.ElementTree as ET
 
 
 def get_logged_user(request):
-    
+    '''
     username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
@@ -43,8 +45,8 @@ def get_logged_user(request):
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
-    
     '''
+    
     username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
@@ -54,7 +56,7 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"
-    '''
+    
     
     email =  email.lower()
     users = Users.objects.all()
@@ -797,6 +799,7 @@ def in_beam_change(request):
 
 def read_sample_trec(request, pk):
     sample = get_object_or_404(Samples, pk=pk)
+    client = Client("https://cmmsx-test.cern.ch/WSHub/SOAP", wsse=UsernameToken('irrad', 'Maurice010'))
     data = dict()
     if sample.set_id:
         sample_name = sample.set_id.split("SET-")
