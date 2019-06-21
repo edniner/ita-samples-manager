@@ -49,6 +49,7 @@ urlpatterns = [
     url(r'^irradiations/$', irradiation_views.irradiations, name='irradiations'),
     url(r'^search_irradiations/$', views.search_irradiations, name='search_irradiations'),
     url(r'^search/experiment/(?P<experiment_id>\d+)/sample$', sample_views.search_samples, name='search_samples'),
+    url(r'^search/sample$', sample_views.search_single_sample, name='search_single_sample'),
     url(r'^search/experiments/user$', views.search_experiments_user, name='search_experiments_user'),
     url(r'^search/admin/experiments/$', views.search_experiments_admin, name='search_experiments_admin'),
     url(r'^search/experiment/(?P<experiment_id>\d+)/users/$', views.search_experiment_users, name='search_experiment_users'),

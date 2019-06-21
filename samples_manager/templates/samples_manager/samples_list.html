@@ -31,13 +31,19 @@
                     </button>
         </div>
         <div class="ten wide column">
+            {%if experiment.id%}
             <form style="text-align: center; display: block" name="search_form" method="GET" action="{% url 'samples_manager:search_samples' experiment.id%}"> 
+            {%else%}
+             <form style="text-align: center; display: block" name="search_form" method="GET" action="{% url 'samples_manager:search_single_sample'%}"> 
+            {% endif %}
                 <div class="ui fluid right action icon input">
                     <input title="Search irradiation title or status"   id="search_box" type="text" name="search_box"  placeholder="Search..." >
                     <button title="Search irradiation title or status" class="ui icon green button" id="search_submit" type="submit"><i class="search icon"></i></button>
                 </div>
             </form>
+            
         </div>
+        {%if experiment.id%}
         {% if experiment.status != 'Completed'%}
         <div class="three wide column">
             <button type="button"
@@ -50,10 +56,12 @@
                 </button>  
         </div>
         {% endif %}
+        {% endif %}
     </div>
 <form method="post" id='move_samples'  action="">
 {% csrf_token %}
     <div class= "ui grid segment" id= "checked_segment" style = "display: none">
+        {%if experiment.id%}
         <div class="five wide column">
             <button  type="submit"
                         id = "assign_ids"
@@ -62,6 +70,7 @@
                         <i class="tags icon"></i> Assign SET ID
             </button>
         </div>
+        {% endif %}
         <div class="five wide column">
             <button  type="submit"
                     id = "print_samples"
@@ -70,6 +79,7 @@
                     <i class="barcode icon"></i> Print labels
             </button>  
         </div>
+         {%if experiment.id%}
         <div class="six wide column">
             <div class="ui right action input">
                 <select class="form-control" id="id_experiments" name="new_experiment">
@@ -86,13 +96,16 @@
                 </button>
             </div>
         </div>
+        {%endif%}
     </div>
 
 
     <div class="sixteen wide column" style='overflow-x:scroll;'>
+        {%if experiment.id%}
          <div class="ui toggle checkbox" id= "experiment_visibility_checkbox">
            {% include 'samples_manager/experiment_visibility.html' %}
         </div>
+        {%endif%}
         <table class="ui center aligned sortable celled table" id="data-table">
                             <thead>
                                 <tr>
@@ -111,7 +124,9 @@
                                 {% include 'samples_manager/partial_samples_list.html' %}
                             </tbody>
                         </table>
+                        {%if experiment.id%}
                         <p><a href="{% url 'samples_manager:archive_experiment_samples' experiment.id%}">Archive</a></p>
+                        {%endif%}
     </div>
 </div>
 </form>                  

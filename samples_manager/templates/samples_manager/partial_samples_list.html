@@ -15,14 +15,14 @@
     <td>
         <button type="button"
                 class="mini ui yellow icon button js-update-sample"
-                data-url="{%  url 'samples_manager:sample_update' experiment.id sample_data.sample.id %}"
+                data-url="{%  url 'samples_manager:sample_update' sample_data.sample.experiment.id sample_data.sample.id %}"
                 title='View or Edit sample'>
               <i class="pencil icon"></i>Edit
         </button>
         {% if experiment.status != 'Completed'%}
         <button type="button"
                 class="mini ui blue icon button js-clone-sample"
-                data-url="{%url 'samples_manager:sample_clone' experiment.id sample_data.sample.id %}"
+                data-url="{%url 'samples_manager:sample_clone' sample_data.sample.experiment.id sample_data.sample.id %}"
                 title='Clone sample'>
           <i class="clone icon"></i>Clone
         </button>
@@ -40,10 +40,10 @@
                   title='More options'>
                  <i class="ellipsis vertical icon"></i>More
                  <div class="menu">
-                      <a  href="{% url 'samples_manager:print_sample_view' experiment.id sample_data.sample.id  %}" class="item"><b>Print</b></a>
-                      <a data-url="{% url 'samples_manager:print_sample_label_view' experiment.id sample_data.sample.id %}" class="js-print-sample-label item"><b>Print Label</b></a>
+                      <a  href="{% url 'samples_manager:print_sample_view' sample_data.sample.experiment.id sample_data.sample.id  %}" class="item"><b>Print</b></a>
+                      <a data-url="{% url 'samples_manager:print_sample_label_view' sample_data.sample.experiment.id sample_data.sample.id %}" class="js-print-sample-label item"><b>Print Label</b></a>
                       {% if experiment.status != 'Completed'%}
-                      <a data-url="{% url 'samples_manager:sample_delete' experiment.id sample_data.sample.id %}" class="item js-delete-sample"><b>Delete</b></a>
+                      <a data-url="{% url 'samples_manager:sample_delete' sample_data.sample.experiment.id sample_data.sample.id %}" class="item js-delete-sample"><b>Delete</b></a>
                       {% endif %}
                       {% if logged_user.role == 'Admin'%}
                         <a href="{% url 'samples_manager:read_sample_trec' sample_data.sample.id  %}" class="item"><b>TREC</b></a>

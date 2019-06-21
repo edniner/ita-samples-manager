@@ -244,7 +244,8 @@ def admin_samples_list(request):
      template_url = 'samples_manager/samples_list.html'
      logged_user = get_logged_user(request)
      samples = Samples.objects.all()
-     return render(request,template_url, {'samples': samples, 'logged_user': logged_user})
+     samples_data = get_samples_occupancies(samples)
+     return render(request,template_url, {'samples': samples, 'logged_user': logged_user, 'samples_data': samples_data})
 
 
 def search_samples(request, experiment_id):
@@ -264,6 +265,24 @@ def search_samples(request, experiment_id):
             samples = Samples.objects.filter(entry_query, experiment = experiment)
             samples_data = get_samples_occupancies(samples)
         return render(request, template_url, {'samples': samples,'samples_data': samples_data, 'experiment': experiment,'logged_user': logged_user,})
+
+
+def search_single_sample(request):
+        query_string = ''
+        found_entries = None
+        samples = []
+        logged_user = get_logged_user(request)
+        samples_data = []
+        if  logged_user.role == 'Admin': 
+            template_url = 'samples_manager/admin_samples_list.html'
+        else: 
+            template_url = 'samples_manager/samples_list.html'
+        if ('search_box' in request.GET) and request.GET['search_box'].strip():
+            query_string = request.GET['search_box']
+            entry_query = get_query(query_string, ['set_id', 'name', 'category','updated_by__email'])
+            samples = Samples.objects.filter(entry_query)
+            samples_data = get_samples_occupancies(samples)
+        return render(request, template_url, {'samples': samples,'samples_data': samples_data,'logged_user': logged_user,})
 
 
 
