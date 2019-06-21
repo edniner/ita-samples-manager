@@ -797,9 +797,19 @@ def in_beam_change(request):
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 
+def send_request(client, data):
+    r = client.service.GetDocumentWithID(document=data)
+    return r
+
 def read_sample_trec(request, pk):
+    print("read_sample_trec")
     sample = get_object_or_404(Samples, pk=pk)
     client = Client("https://cmmsx-test.cern.ch/WSHub/SOAP", wsse=UsernameToken('irrad', 'Maurice010'))
+    req_data = {'username': 'irrad',
+        'password': 'Maurice010',
+        'equipmentCode': 'PXXISET001-CR003500'}
+    r = send_request(cl, req_data)
+    print(r['data'])
     data = dict()
     if sample.set_id:
         sample_name = sample.set_id.split("SET-")
