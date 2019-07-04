@@ -30,8 +30,6 @@ import time
 from django.utils.datastructures import MultiValueDictKeyError
 import requests
 from string import Template
-from zeep import Client
-from zeep.wsse.username import UsernameToken
 import xml.etree.ElementTree as ET
 
 
