@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'pytz',
     'django.contrib.admindocs',
+    'zeep',
     #Don't forget to uncomment this part in production!!!
     #'mod_wsgi.server',
     'samples_manager',
@@ -108,7 +109,7 @@ WSGI_APPLICATION = 'wsgi.application'
         'OPTIONS': {'threaded': True}
     }
 }
-
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
@@ -117,15 +118,15 @@ DATABASES = {
         'PASSWORD': 'RadmonAdmin010',
         'OPTIONS': {'threaded': True}
     }
-}"""
+}
 
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
+"""
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

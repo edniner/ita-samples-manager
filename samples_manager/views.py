@@ -32,8 +32,11 @@ import requests
 from string import Template
 import xml.etree.ElementTree as ET
 from rest_framework_swagger.views import get_swagger_view
+from zeep import Client
 
 schema_view = get_swagger_view(title="Swagger Docs")
+
+
 
 
 def get_logged_user(request):
@@ -47,6 +50,8 @@ def get_logged_user(request):
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
     '''
+
+    print("getting logged user---------------")
     
     username =  "bgkotse"
     firstname =  "Ina"
@@ -811,60 +816,114 @@ def in_beam_change(request):
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 
+
+def readEquipemnt(equipment_id, data):
+    wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
+    client = Client(wsdl=wsdl)
+    credetials_type = client.get_type('ns0:credentials')
+    cred = credetials_type(password= 'Maurice010', username='irrad')
+    #print(client.service.readEquipment('PXXISET001-CR003287', cred))
+    result = client.service.readEquipment(equipment_id, cred)
+
+    if result.code:
+        data['code'] =  result.code
+    else:
+        data['code'] =  ' - '
+
+    if result.description:
+        data['description'] = result.description
+    else:
+        data['description'] =  ' - '
+
+    if result.hierarchyLocationCode:
+        data['hierarchyLocationCode'] = result.hierarchyLocationCode
+    else:
+        data['hierarchyLocationCode'] =  ' - '
+ 
+    if result.equipmentValue:
+        data['equipmentValue'] = result.equipmentValue
+    else:
+        data['equipmentValue'] = ' - '
+
+    if result.userDefinedFields.udfnum07:
+        data['udfnum07'] = result.userDefinedFields.udfnum07
+    else:
+        data['udfnum07'] =  ' - '
+
+    if result.userDefinedFields.udfnum08:
+        data['udfnum08'] = result.userDefinedFields.udfnum08
+    else:
+        data['udfnum08'] =  ' - '
+
+    if result.userDefinedFields.udfnum09:
+        data['udfnum09'] = result.userDefinedFields.udfnum09
+    else:
+        data['udfnum09'] =  ' - '
+
+    if result.userDefinedFields.udfnum10:
+        data['udfnum10'] = result.userDefinedFields.udfnum10
+    else:
+        data['udfnum10'] =  ' - '
+
+    return  data
+
+
+def updateEquipement(equipment_id):
+    wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
+    client = Client(wsdl=wsdl)
+    credetials_type = client.get_type('ns0:credentials')
+    cred = credetials_type(password= 'Maurice010', username='irrad')
+
+    equipment_type = client.get_type('ns0:equipment')
+    equipment = equipment_type(code = 'PXXISET001-CR003287',equipmentValue = '2' )
+    result = client.service.updateEquipment(equipment, cred)
+    print (result) 
+
+def createEquipement(equipment_id):
+    wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
+    client = Client(wsdl=wsdl)
+    credetials_type = client.get_type('ns0:credentials')
+    cred = credetials_type(password= 'Maurice010', username='irrad')
+    equipment_type = client.get_type('ns0:equipment')
+    equipment = equipment_type(code = 'PXXISET001-CR004001')
+    result = client.service.createEquipment(equipment, cred, '')
+    print (result) 
+
+
+def deleteEquipement(equipment_id):
+    wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
+    client = Client(wsdl=wsdl)
+    credetials_type = client.get_type('ns0:credentials')
+    cred = credetials_type(password= 'Maurice010', username='irrad')
+    equipment_type = client.get_type('ns0:equipment')
+    equipment = equipment_type(code = 'PXXISET001-CR003200')
+    result = client.service.deleteEquipment('PXXISET001-CR003200', cred)
+    print (result) 
+
+def createComment(equipment_id):
+    wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
+    client = Client(wsdl=wsdl)
+    credetials_type = client.get_type('ns0:credentials')
+    cred = credetials_type(password= 'Maurice010', username='irrad')
+    equipment_type = client.get_type('ns0:equipment')
+    equipment = equipment_type(code = 'PXXISET001-CR003200')
+    result = client.service.deleteEquipment('PXXISET001-CR003200', cred)
+    print (result) 
+
 def read_sample_trec(request, pk):
     sample = get_object_or_404(Samples, pk=pk)
+    updateEquipement('PXXISET001-CR003287')
+    createEquipement('PXXISET001-CR004001')
+    #deleteEquipement('PXXISET001-CR003200')
     data = dict()
     if sample.set_id:
         sample_name = sample.set_id.split("SET-")
         code_name = "PXXISET001-CR"+sample_name[1]
-        url = "https://cmmsx-test.cern.ch/WSHub/SOAP"
-        body="""<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsh="http://cern.ch/cmms/infor/wshub">
-        <soapenv:Header/>
-        <soapenv:Body>
-            <wsh:readEquipment>
-                <equipmentCode>"""+code_name+"""</equipmentCode>
-                <credentials>
-                    <password>Maurice010</password>
-                    <username>irrad</username>
-                </credentials>
-                <sessionID></sessionID>
-            </wsh:readEquipment>
-        </soapenv:Body>
-        </soapenv:Envelope>"""
-        headers = { 
-                    "Content-Type": "text/xml;charset=UTF-8",
-        }
-        
-        response = requests.post(url,data=body,headers=headers, stream = True)
-        response.raw.decode_content = True
-        tree = ET.parse(response.raw)
-        root = tree.getroot()
-        data = dict()
-
-        for child in root:
-        #print ("-------Tag: "+str(child.tag)+" ------ Attribute: "+ str(child.text))
-            if child.text:
-                data[child.tag] = child.text
-            for gchild in child:
-                #print ("-------Tag: "+str(gchild.tag)+" ------ Attribute: "+ str(gchild.text))
-                if gchild.text:
-                    data[gchild.tag] = gchild.text
-                for ggchild in gchild:
-                    #print ("-------Tag: "+str(ggchild.tag)+" ------ Attribute: "+ str(ggchild.text))
-                    if ggchild.text:
-                        data[ggchild.tag] = ggchild.text
-                    for gggchild in ggchild:
-                        #print ("-------Tag: "+str(gggchild.tag)+" ------ Attribute: "+ str(gggchild.text))
-                        if gggchild.text:
-                            data[gggchild.tag] = gggchild.text
-                        for ggggchild in gggchild:
-                            #print ("-------Tag: "+str(ggggchild.tag)+" ------ Attribute: "+ str(ggggchild.text))
-                            if ggggchild.text:
-                                data[ggggchild.tag] = ggggchild.text
+        #code_name = 'PXXISET001-CR004000'
+        readEquipemnt(code_name, data)
         data['exist'] = True
     else:
         data['exist'] = False
-
         
     return render(request, 'samples_manager/read_trec_details.html', data)
 
