@@ -36,7 +36,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.cern.ch'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'Irradiation.Facilities@cern.ch'
-EMAIL_HOST_PASSWORD = 'Maurice009'
+EMAIL_HOST_PASSWORD = 'Maurice010'
 
 # Application definition
 
@@ -108,8 +108,13 @@ WSGI_APPLICATION = 'wsgi.application'
         'PASSWORD': 'RadmonAdmin010',
         'OPTIONS': {'threaded': True}
     }
+<<<<<<< HEAD
 }
 """
+=======
+}"""
+
+>>>>>>> 34ec2e50f136421980b3161bc271b65f7c0d97ce
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',

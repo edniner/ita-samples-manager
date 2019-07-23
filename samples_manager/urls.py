@@ -6,7 +6,6 @@ from . import views, user_views, experiment_views, sample_views, dosimeter_views
 
 
 urlpatterns = [
-    url(r'^docs/$', views.schema_view, name='swagger_view'),
     url(r'^$', views.index, name='index'),
     url(r'^(?P<experiment_id>[0-9]+)/experiment/$', experiment_views.experiment_details, name='experiment_details'),
     url(r'^logged_user/$',  user_views.view_user, name='view_user'),
@@ -50,6 +49,7 @@ urlpatterns = [
     url(r'^irradiations/$', irradiation_views.irradiations, name='irradiations'),
     url(r'^search_irradiations/$', views.search_irradiations, name='search_irradiations'),
     url(r'^search/experiment/(?P<experiment_id>\d+)/sample$', sample_views.search_samples, name='search_samples'),
+    url(r'^search/sample$', sample_views.search_single_sample, name='search_single_sample'),
     url(r'^search/experiments/user$', views.search_experiments_user, name='search_experiments_user'),
     url(r'^search/admin/experiments/$', views.search_experiments_admin, name='search_experiments_admin'),
     url(r'^search/experiment/(?P<experiment_id>\d+)/users/$', views.search_experiment_users, name='search_experiment_users'),

@@ -31,10 +31,13 @@ from django.utils.datastructures import MultiValueDictKeyError
 import requests
 from string import Template
 import xml.etree.ElementTree as ET
+<<<<<<< HEAD
 from rest_framework_swagger.views import get_swagger_view
 from zeep import Client
 
 schema_view = get_swagger_view(title="Swagger Docs")
+=======
+>>>>>>> 34ec2e50f136421980b3161bc271b65f7c0d97ce
 
 
 
@@ -100,22 +103,6 @@ def get_logged_user(request):
     logged_user.save()
     return logged_user
 
-def define_preferences(request):
-    data = dict()
-    logged_user = get_logged_user(request)
-    try:
-        userpreference = get_object_or_404(UserPreferences, user = logged_user)
-        data['global_theme'] = userpreference.global_theme
-        data['button_theme'] = userpreference.button_theme
-        data['menu_theme'] = userpreference.menu_theme
-        data['table_theme'] = userpreference.table_theme
-    except:
-        print("exception!")
-        data['global_theme'] = ''
-        data['button_theme'] = ''
-        data['menu_theme'] = ''
-        data['table_theme'] = ''
-    return data
 
 def authorised_experiments(logged_user):
      if logged_user.role == 'Admin':
@@ -140,17 +127,16 @@ def filtered_authorised_experiments(logged_user, experiments):
         return experiments 
 
 def send_mail_notification(title,message,from_mail,to_mail):
-    '''headers = {'Reply-To': 'irrad.ps@cern.ch'}
+    headers = {'Reply-To': 'irrad.ps@cern.ch'}
     from_mail='irrad.ps@cern.ch'
     msg = EmailMessage(title,message,from_mail, to=[to_mail], headers = headers)
-    msg.send()'''
+    msg.send()
     
 
 def index(request):
-    preference = define_preferences(request)
     template = loader.get_template('samples_manager/index.html')
     logged_user = get_logged_user(request)
-    context = {'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']}
+    context = {'logged_user': logged_user,}
     return render(request, 'samples_manager/index.html', context)
 
 
@@ -171,14 +157,12 @@ def authorised_samples(logged_user):
     return samples
 
 def regulations(request):
-    preference = define_preferences(request)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+    return render(request, 'samples_manager/terms_conditions.html', {'logged_user': logged_user})
 
 def fluence_conversion(request):
-    preference = define_preferences(request)
     logged_user = get_logged_user(request)
-    return render(request, 'samples_manager/fluence_conversion.html',{'logged_user': logged_user,'prefered_theme':preference['global_theme'],'prefered_button':preference['button_theme'],'prefered_menu':preference['menu_theme'],'prefered_table':preference['table_theme']})
+    return render(request, 'samples_manager/fluence_conversion.html',{'logged_user': logged_user})
 
 def get_registered_samples_number(experiments):
     data = dict()
@@ -332,9 +316,15 @@ def get_samples_occupancies(samples):
     samples_data = []
     for sample in samples:
         if sample.experiment.category == 'Passive Standard':
-            sample_category = sample.category.split("standard",1)[1]
+            if len(sample.category.split("standard",1))>2:
+                sample_category = sample.category.split("standard",1)[1]
+            else:
+                sample_category = ''
         else:
-            sample_category = sample.category.split(":",1)[1]
+            if len(sample.category.split(":",1))>2:
+                sample_category = sample.category.split(":",1)[1]
+            else:
+                sample_category = ''
         occupancy = Occupancies.objects.filter(sample=sample)
         if len(occupancy) == 0:
             save_occupancies(sample, "new")
@@ -911,6 +901,7 @@ def createComment(equipment_id):
     print (result) 
 
 def read_sample_trec(request, pk):
+    print("read_sample_trec")
     sample = get_object_or_404(Samples, pk=pk)
     updateEquipement('PXXISET001-CR003287')
     createEquipement('PXXISET001-CR004001')
