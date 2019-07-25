@@ -31,19 +31,16 @@ from django.utils.datastructures import MultiValueDictKeyError
 import requests
 from string import Template
 import xml.etree.ElementTree as ET
-<<<<<<< HEAD
 from rest_framework_swagger.views import get_swagger_view
 from zeep import Client
 
 schema_view = get_swagger_view(title="Swagger Docs")
-=======
->>>>>>> 34ec2e50f136421980b3161bc271b65f7c0d97ce
 
 
 
 
 def get_logged_user(request):
-    '''
+    
     username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
@@ -52,10 +49,11 @@ def get_logged_user(request):
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
-    '''
+ 
 
     print("getting logged user---------------")
     
+    '''
     username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
@@ -65,7 +63,7 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"
-    
+    '''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -903,8 +901,8 @@ def createComment(equipment_id):
 def read_sample_trec(request, pk):
     print("read_sample_trec")
     sample = get_object_or_404(Samples, pk=pk)
-    updateEquipement('PXXISET001-CR003287')
-    createEquipement('PXXISET001-CR004001')
+    #updateEquipement('PXXISET001-CR003287')
+    #createEquipement('PXXISET001-CR004001')
     #deleteEquipement('PXXISET001-CR003200')
     data = dict()
     if sample.set_id:

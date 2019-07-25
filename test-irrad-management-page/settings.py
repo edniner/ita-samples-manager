@@ -52,7 +52,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'zeep',
     #Don't forget to uncomment this part in production!!!
-    #'mod_wsgi.server',
+    'mod_wsgi.server',
     'samples_manager',
 )
 
@@ -66,7 +66,7 @@ MIDDLEWARE_CLASSES = (
     #'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Uncomment this in production!!!!
-    #'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
 
@@ -108,13 +108,8 @@ WSGI_APPLICATION = 'wsgi.application'
         'PASSWORD': 'RadmonAdmin010',
         'OPTIONS': {'threaded': True}
     }
-<<<<<<< HEAD
 }
 """
-=======
-}"""
-
->>>>>>> 34ec2e50f136421980b3161bc271b65f7c0d97ce
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
@@ -156,6 +151,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 #Uncomment this in production!!!!
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 INTERNAL_IPS = ['127.0.0.1']
