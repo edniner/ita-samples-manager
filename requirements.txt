@@ -11,4 +11,5 @@ Pillow == 3.4.0
 reportlab
 requests
 Cython
+lxml==4.2.5
 zeep
