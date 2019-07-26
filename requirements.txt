@@ -10,4 +10,5 @@ django-widget-tweaks==1.4.1
 Pillow == 3.4.0
 reportlab
 requests
+Cython
 zeep
