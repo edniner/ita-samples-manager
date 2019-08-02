@@ -32,7 +32,7 @@ import requests
 from string import Template
 import xml.etree.ElementTree as ET
 from rest_framework_swagger.views import get_swagger_view
-from zeep import Client
+from zeep import Client, Settings
 
 schema_view = get_swagger_view(title="Swagger Docs")
 
@@ -40,6 +40,10 @@ schema_view = get_swagger_view(title="Swagger Docs")
 
 
 def get_logged_user(request):
+
+     
+
+    print("getting logged user---------------")
     
     username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
@@ -49,10 +53,7 @@ def get_logged_user(request):
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
- 
 
-    print("getting logged user---------------")
-    
     '''
     username =  "bgkotse"
     firstname =  "Ina"
@@ -863,19 +864,45 @@ def updateEquipement(equipment_id):
     cred = credetials_type(password= 'Maurice010', username='irrad')
 
     equipment_type = client.get_type('ns0:equipment')
-    equipment = equipment_type(code = 'PXXISET001-CR003287',equipmentValue = '2' )
+    equipment = equipment_type(code = equipment_id, equipmentValue = '2',hierarchyLocationCode = '157/R-060')
     result = client.service.updateEquipment(equipment, cred)
     print (result) 
 
-def createEquipement(equipment_id):
+
+def attachParent(child, parent):
     wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
     client = Client(wsdl=wsdl)
     credetials_type = client.get_type('ns0:credentials')
     cred = credetials_type(password= 'Maurice010', username='irrad')
     equipment_type = client.get_type('ns0:equipment')
-    equipment = equipment_type(code = 'PXXISET001-CR004001')
-    result = client.service.createEquipment(equipment, cred, '')
+    equipment = equipment_type(code = child , hierarchyAssetCode = parent, hierarchyAssetCostRollUp = 'true', hierarchyAssetDependent = 'true' )
+    result = client.service.updateEquipment(equipment, cred)
     print (result) 
+
+
+def detachParent(child):
+    wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
+    client = Client(wsdl=wsdl)
+    credetials_type = client.get_type('ns0:credentials')
+    cred = credetials_type(password= 'Maurice010', username='irrad')
+    equipment_type = client.get_type('ns0:equipment')
+    equipment = equipment_type(code = child , hierarchyAssetCode = '', hierarchyAssetCostRollUp = 'true', hierarchyAssetDependent = 'true' )
+    result = client.service.updateEquipment(equipment, cred)
+    print (result) 
+
+
+def createEquipement(equipment_id):
+    wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
+    #client = Client(wsdl=wsdl)
+    settings = Settings(strict=False, xml_huge_tree=True)
+    client = Client(wsdl, settings=settings)
+    credetials_type = client.get_type('ns0:credentials')
+    cred = credetials_type(password= 'Maurice010', username='irrad')
+    equipment_type = client.get_type('ns0:equipment')
+    equipment = equipment_type(categoryDesc='Samples Sets', code='PXXISET001-CR004004', comissionDate='01-AUG-2019', departmentCode='XI01', departmentDesc = 'Experiments - IRRAD', description='Sample Sets',serialNumber='SET-004004', stateCode='GOOD', stateDesc='Bon', statusCode = 'I', statusDesc='En fabrication', typeCode='A', typeDesc='Equipment')
+    with client.settings(raw_response=True):
+        response = client.service.createEquipment(equipment, cred, '')
+        print(response)
 
 
 def deleteEquipement(equipment_id):
@@ -888,22 +915,38 @@ def deleteEquipement(equipment_id):
     result = client.service.deleteEquipment('PXXISET001-CR003200', cred)
     print (result) 
 
+
+def readComment(equipment_id):
+    wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
+    client = Client(wsdl=wsdl)
+    credetials_type = client.get_type('ns0:credentials')
+    cred = credetials_type(password= 'Maurice010', username='irrad')
+    comment_type = client.get_type('ns0:comment')
+    comment = comment_type(entityCode = 'OBJ', entityKeyCode='PXXISET001-CR004004', created = 'false', updated = 'false')
+    result = client.service.readComments(comment, cred)
+    print (result) 
+
 def createComment(equipment_id):
     wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
     client = Client(wsdl=wsdl)
     credetials_type = client.get_type('ns0:credentials')
     cred = credetials_type(password= 'Maurice010', username='irrad')
-    equipment_type = client.get_type('ns0:equipment')
-    equipment = equipment_type(code = 'PXXISET001-CR003200')
-    result = client.service.deleteEquipment('PXXISET001-CR003200', cred)
+    comment_type = client.get_type('ns0:comment')
+    comment = comment_type(entityCode = 'OBJ', entityKeyCode='PXXISET001-CR004004', text = 'text', typeCode = '*', created = 'false', updated = 'false')
+    result = client.service.createComment(comment, cred)
     print (result) 
+
+
 
 def read_sample_trec(request, pk):
     print("read_sample_trec")
     sample = get_object_or_404(Samples, pk=pk)
-    #updateEquipement('PXXISET001-CR003287')
-    #createEquipement('PXXISET001-CR004001')
-    #deleteEquipement('PXXISET001-CR003200')
+    #updateEquipement('PXXISET001-CR004001') 
+    #createEquipement('PXXISET001-CR004004')
+    #attachParent('PXXISET001-CR004004','PXXISET001-CR004001') 
+    #readComment('PXXISET001-CR004004')
+    #createComment('PXXISET001-CR004004')
+    #detachParent('PXXISET001-CR004004')
     data = dict()
     if sample.set_id:
         sample_name = sample.set_id.split("SET-")
