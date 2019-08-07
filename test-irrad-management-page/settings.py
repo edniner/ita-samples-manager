@@ -50,7 +50,6 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'pytz',
     'django.contrib.admindocs',
-    'zeep',
     #Don't forget to uncomment this part in production!!!
     'mod_wsgi.server',
     'samples_manager',
