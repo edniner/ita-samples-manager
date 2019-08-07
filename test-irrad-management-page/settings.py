@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     #Don't forget to uncomment this part in production!!!
     'mod_wsgi.server',
     'samples_manager',
+    'zeep',
 )
 
 MIDDLEWARE_CLASSES = (
