@@ -31,11 +31,13 @@ from django.utils.datastructures import MultiValueDictKeyError
 import requests
 from string import Template
 import xml.etree.ElementTree as ET
+from zeep import Client, Settings
 
 
 def get_logged_user(request):
 
     print("getting logged user---------------")
+    
     
     username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
@@ -45,6 +47,7 @@ def get_logged_user(request):
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
+     
 
     '''
     username =  "bgkotse"
@@ -56,7 +59,7 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"
-    '''
+   '''
     
     email =  email.lower()
     users = Users.objects.all()
@@ -797,7 +800,7 @@ def in_beam_change(request):
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 
-'''
+
 def readEquipemnt(equipment_id, data):
     wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
     client = Client(wsdl=wsdl)
@@ -928,10 +931,9 @@ def createComment(equipment_id):
     result = client.service.createComment(comment, cred)
     print (result) 
 
-'''
 
 def read_sample_trec(request, pk):
-    '''print("read_sample_trec")
+    print("read_sample_trec")
     sample = get_object_or_404(Samples, pk=pk)
     #updateEquipement('PXXISET001-CR004001') 
     #createEquipement('PXXISET001-CR004004')
@@ -948,8 +950,6 @@ def read_sample_trec(request, pk):
         data['exist'] = True
     else:
         data['exist'] = False
-    '''
-    data['exist'] = False
         
     return render(request, 'samples_manager/read_trec_details.html', data)
 
