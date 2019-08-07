@@ -11,6 +11,6 @@ RUN echo -e '[cc7-cernonly]\nname=CC7-CERNOnly\nbaseurl=http://linuxsoft.cern.ch
     && yum install --assumeyes --nogpgcheck oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64
 RUN echo -e '[cc7-cernonly]\nname=CC7-CERNOnly\nbaseurl=http://linuxsoft.cern.ch/cern/centos/7/cernonly/x86_64' > /etc/yum.repos.d/cc7-cernonly.repo \
     && yum install libxslt-devel libxml2-devel
-RUN pip install zeep[xmlsec]
+RUN pip install zeep
 # Make sure the final image runs as unprivileged user
 USER 1001
