@@ -11,12 +11,24 @@ RUN echo -e '[cc7-cernonly]\nname=CC7-CERNOnly\nbaseurl=http://linuxsoft.cern.ch
     && yum install --assumeyes --nogpgcheck oracle-instantclient12.2-sqlplus-12.2.0.1.0-1.x86_64
 RUN echo -e '[cc7-cernonly]\nname=CC7-CERNOnly\nbaseurl=http://linuxsoft.cern.ch/cern/centos/7/cernonly/x86_64' > /etc/yum.repos.d/cc7-cernonly.repo \
     && yum install libxslt-devel libxml2-devel
-RUN python3.4 -V
-# upgrade to latest Pip for Python3.6.5
-RUN pip3.4 install --upgrade pip
-# validate correct version install
-RUN pip3.4 -V
 
-RUN pip3.4 install zeep
+RUN yum update -y && yum upgrade -y
+# install basic tools for downloading, extracting & managing files
+RUN yum install wget git gcc openssl-devel bzip2-devel -y
+# check for any upgrades
+RUN yum upgrade -y && yum clean all -y
+# download & extract Python3.6.5 files, since CentOS only ships with 2.7.5
+RUN cd /usr/src && wget https://www.python.org/ftp/python/3.6.5/Python-3.6.5.tar.xz && tar xvf Python-3.6.5.tar.xz
+# configure python2.7.15 for sqlite & tkinter pkgs & run alternate install script
+RUN cd /usr/src/Python-3.6.5 && ./configure --enable-optimizations && make altinstall
+# validate correct version install
+RUN python3.6 -V
+# upgrade to latest Pip for Python3.6.5
+RUN pip3.6 install --upgrade pip
+# validate correct version install
+RUN pip3.6 -V
+# install packages for pytimber application
+RUN pip3.6 install lxml==4.3.4 zeep
+
 # Make sure the final image runs as unprivileged user
 USER 1001
