@@ -21,7 +21,7 @@ RUN yum upgrade -y && yum clean all -y
 RUN cd /usr/src && wget https://www.python.org/ftp/python/3.4.0/Python-3.4.0.tar.xz && tar xvf Python-3.4.0.tar.xz
 RUN cd /usr/src/Python-3.4.0 && ./configure --enable-optimizations && make altinstall
 # validate correct version install
-RUN python3.4 -V
+#RUN python3.4 -V
 # upgrade to latest Pip for Python3.4.0
 RUN pip3.4 install --upgrade pip
 # validate correct version install
