@@ -31,17 +31,9 @@ from django.utils.datastructures import MultiValueDictKeyError
 import requests
 from string import Template
 import xml.etree.ElementTree as ET
-from rest_framework_swagger.views import get_swagger_view
-#from zeep import Client, Settings
-
-schema_view = get_swagger_view(title="Swagger Docs")
-
-
 
 
 def get_logged_user(request):
-
-     
 
     print("getting logged user---------------")
     
