@@ -32,7 +32,7 @@ import requests
 from string import Template
 import xml.etree.ElementTree as ET
 from rest_framework_swagger.views import get_swagger_view
-from zeep import Client, Settings
+#from zeep import Client, Settings
 
 schema_view = get_swagger_view(title="Swagger Docs")
 
@@ -805,7 +805,7 @@ def in_beam_change(request):
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 
-
+'''
 def readEquipemnt(equipment_id, data):
     wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
     client = Client(wsdl=wsdl)
@@ -936,10 +936,10 @@ def createComment(equipment_id):
     result = client.service.createComment(comment, cred)
     print (result) 
 
-
+'''
 
 def read_sample_trec(request, pk):
-    print("read_sample_trec")
+    '''print("read_sample_trec")
     sample = get_object_or_404(Samples, pk=pk)
     #updateEquipement('PXXISET001-CR004001') 
     #createEquipement('PXXISET001-CR004004')
@@ -956,6 +956,8 @@ def read_sample_trec(request, pk):
         data['exist'] = True
     else:
         data['exist'] = False
+    '''
+    data['exist'] = False
         
     return render(request, 'samples_manager/read_trec_details.html', data)
 
