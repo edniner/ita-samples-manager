@@ -18,16 +18,17 @@ RUN yum install wget git gcc openssl-devel bzip2-devel -y
 # check for any upgrades
 RUN yum upgrade -y && yum clean all -y
 # download & extract Python3.4.0 files, since CentOS only ships with 2.7.5
-#RUN cd /usr/src && wget https://www.python.org/ftp/python/3.4.0/Python-3.4.0.tar.xz && tar xvf Python-3.4.0.tar.xz
-#RUN cd /usr/src/Python-3.4.0 && ./configure --enable-optimizations && make altinstall
+RUN cd /usr/src && wget https://www.python.org/ftp/python/3.4.0/Python-3.4.0.tar.xz && tar xvf Python-3.4.0.tar.xz
+RUN cd /usr/src/Python-3.4.0 && ./configure --enable-optimizations && make altinstall
 # validate correct version install
-#RUN python -V
+RUN echo $PATH
+RUN python3.4.0 -V
 # upgrade to latest Pip for Python3.4.0
-RUN pip3 install --upgrade pip
+RUN pip3.4 install --upgrade pip
 # validate correct version install
 #RUN pip3 -V
 # install packages for pytimber application
-RUN pip3 install lxml zeep
+RUN pip3.4 install lxml zeep
 
 # Make sure the final image runs as unprivileged user
 USER 1001
