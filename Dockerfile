@@ -12,6 +12,8 @@ RUN echo -e '[cc7-cernonly]\nname=CC7-CERNOnly\nbaseurl=http://linuxsoft.cern.ch
 RUN echo -e '[cc7-cernonly]\nname=CC7-CERNOnly\nbaseurl=http://linuxsoft.cern.ch/cern/centos/7/cernonly/x86_64' > /etc/yum.repos.d/cc7-cernonly.repo \
     && yum install libxslt-devel libxml2-devel
 
+RUN yum install libaio
+
 RUN yum update -y && yum upgrade -y
 # install basic tools for downloading, extracting & managing files
 RUN yum install wget git gcc openssl-devel bzip2-devel -y
