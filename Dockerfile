@@ -24,7 +24,7 @@ RUN yum upgrade -y && yum clean all -y
 #RUN cd /usr/src/Python-3.6.5 && ./configure --enable-optimizations && make altinstall
 # validate correct version install
 #RUN echo $PATH
-RUN python --version
+#RUN python 
 # upgrade to latest Pip for Python3.4.0
 RUN pip3 install --upgrade pip
 # validate correct version install
