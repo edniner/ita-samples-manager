@@ -1,13 +1,14 @@
 setuptools
-django==1.11
-cx_Oracle==7.0.0
-gunicorn
-psycopg2
-whitenoise
+django==1.8
+cx_Oracle==5.2
+gunicorn==19.4.5
+psycopg2==2.7.3.1
+whitenoise==3.3.1
 mod_wsgi
 pytz
-django-widget-tweaks
-Pillow
+django-widget-tweaks==1.4.1
+Pillow == 3.4.0
 reportlab
 requests
+lxml==3.7.2
 zeep
