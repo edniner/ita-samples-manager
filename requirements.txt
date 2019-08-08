@@ -1,6 +1,6 @@
 setuptools
 django==1.11
-cx_Oracle==5.2
+cx_Oracle==7.0.0
 gunicorn
 psycopg2
 whitenoise
