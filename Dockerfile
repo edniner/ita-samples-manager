@@ -28,9 +28,9 @@ RUN cd /usr/src/Python-3.6.5 && ./configure --enable-optimizations && make altin
 # upgrade to latest Pip for Python3.4.0
 RUN pip3.6 install --upgrade pip
 # validate correct version install
-#RUN pip3 -V
+RUN pip3.6 -V
 # install packages for pytimber application
-RUN pip3 install lxml==3.7.2 zeep
+RUN pip3.6 install lxml==3.7.2 zeep
 
 # Make sure the final image runs as unprivileged user
 USER 1001
