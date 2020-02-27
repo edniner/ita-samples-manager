@@ -184,6 +184,7 @@ def experiment_status_update(request, pk):
     )
     return JsonResponse(data)
 
+
 def experiment_comment_update(request, pk):
     data = dict()
     logged_user = get_logged_user(request)

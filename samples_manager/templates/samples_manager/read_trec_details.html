@@ -1,11 +1,11 @@
 {% extends 'samples_manager/base.html' %}
 {% block content %}
-  <div class="ui modal" id="modal-experiment-details">
+  <div class="ui modal" id="modal-asset-details">
      <i class="close icon"></i>
      <div class="scrolling content">
       </div>
   </div>
-<div id = 'experiment-details' class= "ui segment">
+<div id = 'asset-details' class= "ui segment">
 
 <script>
      $(document).ready(function() {
@@ -14,7 +14,7 @@
     function goBack() {
          window.history.back();
     }
-       </script>
+</script>
 <div class= "ui center aligned segment grid">
         <div class="two wide column">
                     <button type="button" class="ui left floated grey button" onclick="goBack()" title='Back'>
@@ -25,6 +25,12 @@
             <h2>TREC Data of Sample {{serialNumber}}</h2>
         </div>
         <div class="two wide column">
+                <button type="button"
+                class="ui yellow right floated icon button js-update-asset-details"
+                title='Edit'
+                data-url="{% url 'samples_manager:asset_update' pk %}">
+                <i class="pencil icon"></i>Edit
+        </button>
         </div>
 </div>
 {% if exist %}
@@ -38,6 +44,12 @@
                            Code
                         </div>
                         {{code}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                           Serial Number
+                        </div>
+                        {{serialNumber}}
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
@@ -68,25 +80,37 @@
                         <div class="ui horizontal label">
                                 Length 
                         </div>
-                        {{udfnum07}} cm
+                        {{length}} cm
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
                                 Width 
                         </div>
-                            {{udfnum08}} cm
+                            {{width}} cm
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
                                 Height 
                         </div>
-                            {{udfnum09}} cm
+                            {{height}} cm
                     </div>
                     <div class="item">
                         <div class="ui horizontal label">
                                 Weight 
                         </div>
-                            {{udfnum10}} kg
+                            {{weight}} kg
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                                Family 
+                        </div>
+                            {{family}}
+                    </div>
+                    <div class="item">
+                        <div class="ui horizontal label">
+                               Material
+                        </div>
+                            {{material}}
                     </div>
                 </div>
             </div>
@@ -98,5 +122,6 @@
     </div>
     {% endif %}
     <br>
+</div>
 </div>
 {% endblock %}

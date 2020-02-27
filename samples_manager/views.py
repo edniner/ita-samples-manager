@@ -38,7 +38,7 @@ def get_logged_user(request):
 
     print("getting logged user---------------")
     
-    
+    '''
     username =  request.META["HTTP_X_REMOTE_USER"]
     firstname = request.META["HTTP_X_REMOTE_USER_FIRSTNAME"]
     lastname = request.META["HTTP_X_REMOTE_USER_LASTNAME"]
@@ -47,9 +47,9 @@ def get_logged_user(request):
     mobile = request.META["HTTP_X_REMOTE_USER_MOBILENUMBER"]
     department = request.META["HTTP_X_REMOTE_USER_DEPARTMENT"] 
     home_institute = request.META["HTTP_X_REMOTE_USER_HOMEINSTITUTE"]
-     
-
     '''
+
+    
     username =  "bgkotse"
     firstname =  "Ina"
     lastname = "Gkotse"
@@ -59,7 +59,7 @@ def get_logged_user(request):
     mobile = "12345"
     department = "EP/DT"
     home_institute = "MINES ParisTech"
-   '''
+   
     
     email =  email.lower()
     users = Users.objects.all()
@@ -800,6 +800,51 @@ def in_beam_change(request):
     data['html_irradiation_list'] = render_to_string('samples_manager/partial_irradiations_list.html',{'irradiations': new_irradiations},request=request)
     return JsonResponse(data)
 
+def asset_update(request, pk):
+    data = dict()
+    context = dict()
+    logged_user = get_logged_user(request)
+    sample = get_object_or_404(Samples, pk=pk)
+    if sample.set_id:
+        sample_name = sample.set_id.split("SET-")
+        code_name = "PXXISET001-CR"+sample_name[1]
+        readEquipemnt(code_name,context)
+
+    if request.method == 'POST':
+        code = request.POST['code']
+        serialNumber = request.POST['serialNumber']
+        description = request.POST['description']
+        hierarchyLocationCode = request.POST['hierarchyLocationCode']
+        equipmentValue = request.POST['equipmentValue']
+        length = request.POST['length']
+        width = request.POST['width']
+        height = request.POST['height']
+        weight = request.POST['weight']
+        family = request.POST['family']
+        material= request.POST['material']
+        updateEquipement(code, serialNumber, description, hierarchyLocationCode,  equipmentValue, length, width, height, weight, family, material)
+        print("post")
+    else:
+        print("get")
+    context['sample'] = sample
+    data['html_form'] = render_to_string('samples_manager/partial_asset_update.html',
+        context,
+        request=request,
+    )
+
+    return JsonResponse(data)
+
+
+def updateEquipement(code, serialNumber, description, location, equipmentValue, length, width, height, weight, family, material):
+    wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
+    client = Client(wsdl=wsdl)
+    credetials_type = client.get_type('ns0:credentials')
+    cred = credetials_type(password= 'Maurice010', username='irrad')
+
+    equipment_type = client.get_type('ns0:equipment')
+    equipment = equipment_type(code = code,serialNumber = serialNumber, description = description, hierarchyLocationCode = hierarchyLocationCode, equipmentValue = equipmentValue)
+    result = client.service.updateEquipment(equipment, cred)
+    print (result) 
 
 def readEquipemnt(equipment_id, data):
     wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
@@ -813,6 +858,11 @@ def readEquipemnt(equipment_id, data):
         data['code'] =  result.code
     else:
         data['code'] =  ' - '
+
+    if result.code:
+        data['serialNumber'] =  result.serialNumber
+    else:
+        data['serialNumber'] =  ' - '
 
     if result.description:
         data['description'] = result.description
@@ -830,39 +880,47 @@ def readEquipemnt(equipment_id, data):
         data['equipmentValue'] = ' - '
 
     if result.userDefinedFields.udfnum07:
-        data['udfnum07'] = result.userDefinedFields.udfnum07
+        data['length'] = result.userDefinedFields.udfnum07
     else:
-        data['udfnum07'] =  ' - '
+        data['length'] =  ' - '
 
     if result.userDefinedFields.udfnum08:
-        data['udfnum08'] = result.userDefinedFields.udfnum08
+        data['width'] = result.userDefinedFields.udfnum08
     else:
-        data['udfnum08'] =  ' - '
+        data['width'] =  ' - '
 
     if result.userDefinedFields.udfnum09:
-        data['udfnum09'] = result.userDefinedFields.udfnum09
+        data['height'] = result.userDefinedFields.udfnum09
     else:
-        data['udfnum09'] =  ' - '
+        data['height'] =  ' - '
 
     if result.userDefinedFields.udfnum10:
-        data['udfnum10'] = result.userDefinedFields.udfnum10
+        data['weight'] = result.userDefinedFields.udfnum10
     else:
-        data['udfnum10'] =  ' - '
+        data['weight'] =  ' - '
+
+    if result.userDefinedFields.udfchar21:
+        data['family'] = result.userDefinedFields.udfchar21
+    else:
+        data['family'] =  ' - '
+
+    if result.userDefinedFields.udfchar22:
+        data['material'] = result.userDefinedFields.udfchar22
+    else:
+        data['material'] =  ' - '
 
     return  data
 
 
-def updateEquipement(equipment_id):
+
+
+def readEquipmentBatch():
     wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
     client = Client(wsdl=wsdl)
     credetials_type = client.get_type('ns0:credentials')
     cred = credetials_type(password= 'Maurice010', username='irrad')
-
-    equipment_type = client.get_type('ns0:equipment')
-    equipment = equipment_type(code = equipment_id, equipmentValue = '2',hierarchyLocationCode = '157/R-060')
-    result = client.service.updateEquipment(equipment, cred)
-    print (result) 
-
+    result = client.service.readEquipmentBatch(['PXXISET001-CR003287','PXXISET001-CR004001'], cred)
+    print(result)
 
 def attachParent(child, parent):
     wsdl = 'https://cmmsx-test.cern.ch/WSHub/SOAP?wsdl'
@@ -935,6 +993,7 @@ def createComment(equipment_id):
 def read_sample_trec(request, pk):
     print("read_sample_trec")
     sample = get_object_or_404(Samples, pk=pk)
+    #readEquipmentBatch()
     #updateEquipement('PXXISET001-CR004001') 
     #createEquipement('PXXISET001-CR004004')
     #attachParent('PXXISET001-CR004004','PXXISET001-CR004001') 
@@ -950,6 +1009,7 @@ def read_sample_trec(request, pk):
         data['exist'] = True
     else:
         data['exist'] = False
+    data['pk'] = pk
         
     return render(request, 'samples_manager/read_trec_details.html', data)
 

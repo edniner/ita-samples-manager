@@ -26,7 +26,7 @@ STATIC_URL = 'http://test-irrad-management-page.web.cern.ch/static/'
 SECRET_KEY = 'ma_nu+jq0tcka72kv2rls1+dv6^&0@i7v3#mi(nmzcp7h1f+q-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -36,7 +36,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.cern.ch'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'Irradiation.Facilities@cern.ch'
-EMAIL_HOST_PASSWORD = 'Maurice010'
+EMAIL_HOST_PASSWORD = 'Maurice011'
 
 # Application definition
 
@@ -51,7 +51,7 @@ INSTALLED_APPS = (
     'pytz',
     'django.contrib.admindocs',
     #Don't forget to uncomment this part in production!!!
-    'mod_wsgi.server',
+    #'mod_wsgi.server',
     'samples_manager',
 )
 
@@ -65,7 +65,7 @@ MIDDLEWARE_CLASSES = (
     #'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Uncomment this in production!!!!
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    #'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
 
@@ -104,7 +104,7 @@ WSGI_APPLICATION = 'wsgi.application'
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'pdbr-s.cern.ch:10121/pdbr.cern.ch',
         'USER': 'ps_irrad_admin',
-        'PASSWORD': 'RadmonAdmin010',
+        'PASSWORD': 'RadmonAdmin011',
         'OPTIONS': {'threaded': True}
     }
 }
@@ -114,7 +114,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'devdb11-s.cern.ch:10121/devdb11.cern.ch',
         'USER': 'ps_irrad_admin',
-        'PASSWORD': 'RadmonAdmin010',
+        'PASSWORD': 'RadmonAdmin011',
         'OPTIONS': {'threaded': True}
     }
 }
@@ -150,6 +150,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 #Uncomment this in production!!!!
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 INTERNAL_IPS = ['127.0.0.1']
