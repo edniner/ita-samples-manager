@@ -49,7 +49,6 @@ urlpatterns = [
     url(r'^irradiations/$', irradiation_views.irradiations, name='irradiations'),
     url(r'^search_irradiations/$', views.search_irradiations, name='search_irradiations'),
     url(r'^search/experiment/(?P<experiment_id>\d+)/sample$', sample_views.search_samples, name='search_samples'),
-    url(r'^search/sample$', sample_views.search_single_sample, name='search_single_sample'),
     url(r'^search/experiments/user$', views.search_experiments_user, name='search_experiments_user'),
     url(r'^search/admin/experiments/$', views.search_experiments_admin, name='search_experiments_admin'),
     url(r'^search/experiment/(?P<experiment_id>\d+)/users/$', views.search_experiment_users, name='search_experiment_users'),
@@ -79,5 +78,4 @@ urlpatterns = [
     url(r'^experiment/(?P<pk>\d+)/comment/$', experiment_views.experiment_comment_update, name='experiment_comment_update'),
     url(r'^read/(?P<pk>\d+)/trec$', views.read_sample_trec, name='read_sample_trec'),
     url(r'^samples/$',sample_views.admin_samples_list, name='admin_samples_list'),
-    url(r'^asset/(?P<pk>\d+)/update$', views.asset_update, name='asset_update'),
     ]

@@ -91,28 +91,6 @@ var loadForm = function () {
   };
 
 
-var loadAssetFormDetails = function () {
-    console.log("loading asset form details");
-    var btn = $(this);
-    $.ajax({
-      url: btn.attr("data-url"),
-      type: 'get',
-      dataType: 'json',
-      beforeSend: function () {
-        $("#modal-asset-details").modal({
-          closable:false,
-          onApprove : function() {
-			    return false;
-			  }
-        }).modal("show");
-      },
-      success: function (data) {
-        $("#modal-asset-details .scrolling.content").html(data.html_form);
-      }
-    });
-  };
-
-
  var saveForm = function () {
     var form = $(this);
     console.log("save form");
@@ -416,7 +394,4 @@ var new_irradiation = function (){
   $("#assign_ids").on("click",assignids);
   //Move samples
   $("#change_experiment").on("click",move_samples);
-
-  $("#asset-details").on("click", ".js-update-asset-details", loadAssetFormDetails);
-  
 });

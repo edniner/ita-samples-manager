@@ -52,13 +52,13 @@
             "message": 'This web application uses cookies to ensure you get the best experience on our web application. Please, choose your display preferences from the menu on the side.',
         }
     })
-    var $uisidebar        = $('.ui.sidebar');
+    /*var $uisidebar        = $('.ui.sidebar');
     $uisidebar.sidebar({
         transition: 'push',
         dimPage: false
       })
       .sidebar('attach events', $('.cc-btn.cc-dismiss'))
-    ;
+    ;*/
 
 });
         </script>
@@ -141,14 +141,14 @@
                                         <a href="{% url 'samples_manager:irradiations' %}"class="item"><b>IRRADIATIONS</b></a>
                                         <a href="{% url 'samples_manager:admin_dosimetry_results' %}"class="item"><b>DOSIMETRY RESULTS</b></a>
                                         <a href="https://its.cern.ch/jira/projects/IRRAD/" class="item"><b>JIRA</b></a>
-                                        <a href="{% url 'samples_manager:admin_samples_list' %}" class="item"><b>SAMPLES</b></a>
                                         
                                     </div>
                                 </div>
                                 {% endif %}
+                                <!--
                                 <a class="launch icon item" data-content="Select display preferences">
                                    <b class="yellow"><i class="yellow cogs icon"></i>PREFERENCES</b>
-                                </a>
+                                </a> -->
                         </div>
                         <div class = "ui right floated item">
                             <a href="https://ps-irrad.web.cern.ch/" class="ui small image">

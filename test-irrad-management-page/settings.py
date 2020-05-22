@@ -30,13 +30,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-DEFAULT_FROM_EMAIL = 'irrad.ps@cern.ch'
-SERVER_EMAIL = 'irrad.ps@cern.ch'
+DEFAULT_FROM_EMAIL = ''
+SERVER_EMAIL = ''
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.cern.ch'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'Irradiation.Facilities@cern.ch'
-EMAIL_HOST_PASSWORD = 'Maurice011'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 
 # Application definition
 
@@ -50,7 +50,7 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'pytz',
     'django.contrib.admindocs',
-    #Don't forget to uncomment this part in production!!!
+    #Don't forget to uncomment this part in production!
     #'mod_wsgi.server',
     'samples_manager',
 )
@@ -64,7 +64,7 @@ MIDDLEWARE_CLASSES = (
     #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     #'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Uncomment this in production!!!!
+    # Uncomment this in production!
     #'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
 )
@@ -99,33 +99,12 @@ WSGI_APPLICATION = 'wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 #This setting on production
-"""DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'pdbr-s.cern.ch:10121/pdbr.cern.ch',
-        'USER': 'ps_irrad_admin',
-        'PASSWORD': 'RadmonAdmin011',
-        'OPTIONS': {'threaded': True}
-    }
-}
-"""
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'devdb11-s.cern.ch:10121/devdb11.cern.ch',
-        'USER': 'ps_irrad_admin',
-        'PASSWORD': 'RadmonAdmin011',
-        'OPTIONS': {'threaded': True}
-    }
-}
-
-"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-"""
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
