@@ -279,7 +279,7 @@ def experiment_update(request, pk):
     status = 'update'
     return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, 'samples_manager/partial_experiment_update.html')
 
-def experiment_validate(request, pk):
+def experiment_validate(request, pk): 
     cern_experiments = Experiments.objects.order_by().values('cern_experiment').distinct()
     cern_experiments_list = []
     for item in cern_experiments:
@@ -381,10 +381,10 @@ def experiment_clone(request, pk):
     return save_experiment_form_formset(request, form1,form2,form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, 'samples_manager/partial_experiment_clone.html')
 
 
-
+# MEL: Function changing status of an experiment, options validated, new, updated, etc. 
 def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, material_formset, passive_standard_categories_form, passive_custom_categories_form,active_categories_form, status, template_name):
     data = dict()
-    logged_user = get_logged_user(request)
+    logged_user = get_logged_user(request) 
     if request.method == 'POST':
         if status == 'new' or  status == 'clone': # status experiment
             if form1.is_valid() and form2.is_valid() and form3.is_valid() and fluence_formset.is_valid() and material_formset.is_valid():
@@ -454,7 +454,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                         template_data = {'experiments': experiments}
                         output_template = 'samples_manager/partial_experiments_list.html'
                     data['html_experiment_list'] = render_to_string(output_template, template_data)
-                    data['state'] = "Created"
+                    data['state'] = "Created" # MEL: CHANGE: Message, email, registration link, etc. 
                     message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
                     send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
                     message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
@@ -546,16 +546,16 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['form_is_valid'] = False
                 data['state'] = "missing fields"
                 print("not valid")
-        elif  status == 'validate':  # validation
+        elif  status == 'validate':  # validation # MEL: what does this comment even mean?
             print("validation")
             if form1.is_valid() and form2.is_valid() and form3.is_valid():
                 experiment_updated = form1.save()
                 form2.save()
                 form3.save()
                 experiment = Experiments.objects.get(pk =  experiment_updated.pk)
-                experiment.status = "Validated"
+                experiment.status = "Validated" # MEL: This is where the status gets changed. Tested with printing Validated-TEST instead of Validated, successfully shows up on new validations. 
                 experiment.updated_by = logged_user
-                experiment.save()
+                experiment.save() # MEL: saved into database
                 if experiment.category == "Passive Standard":
                     if passive_standard_categories_form.is_valid(): 
                         if passive_standard_categories_form.cleaned_data is not None:
