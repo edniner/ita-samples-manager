@@ -37,27 +37,10 @@
     </div>
     <div class="sixteen wide column" style='overflow-x:scroll;'>
         <table class="ui center aligned sortable celled table" id="data-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Irradiation<br>title</th>
-                            <th>Availability</th>
-                            <th>No.<br>registered/<br>declared<br>samples</th>
-                            <th>Radiation/<br>Nu.Coll.<br>Length<br>Occupancy<br>(%)</th>
-                            <th>No.<br>Users</th>
-                            <th>Responsible<br>person</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% include 'samples_manager/partial_admin_experiments_list.html' %}
-                    </tbody>
-                    <tfoot>
-                        <tr><td></td><td></td><td></td><td><b>{{experiment_data.total_registered_samples}}/{{experiment_data.total_declared_samples}}</b></td>
-                        <td><b>{{experiment_data.total_experiments_radiation_length_occupancy}}</b> / <b>{{experiment_data.total_experiments_nu_coll_length_occupancy}}</b></td>
-                        <td></td><td></td><td></td></tr>
-                    </tfoot>
+        			{% include 'samples_manager/partial_admin_experiments_list.html' %}
+
+
+
         </table>
     </div>
 </div>

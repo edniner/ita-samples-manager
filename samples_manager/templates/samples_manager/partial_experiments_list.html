@@ -1,3 +1,15 @@
+                <thead>
+                    <tr>
+                    <th>Last update </th>
+                    <th>Irradiation title</th>
+                    <th>Availability</th>
+                    <th>No. samples</th>
+                    <th>No. users</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
 {% for experiment in experiments %}
   <tr>
     <td>{{ experiment.updated_at|date:"d/m/Y"}}</td>
@@ -46,6 +58,7 @@
     <td colspan="10">There are no experiments</td>
   </tr>
 {% endfor %}
+</tbody>
 
  <script>
             $('.allowed_dropdown').dropdown();

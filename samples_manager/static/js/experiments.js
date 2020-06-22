@@ -59,7 +59,7 @@ var loadFormDetails = function () {
             alert("The experiment was validated. The users will be notified now. ")
           else if (data['state']=='Deleted')
             alert("The experiment was successfully deleted!")
-          $("#data-table tbody").html(data.html_experiment_list);  // <-- Replace the table body
+          $("#data-table").html(data.html_experiment_list);  // <-- Replace the table body
           $("#modal-experiment").modal("hide");  // <-- Close the modal
         }
         else {
