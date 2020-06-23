@@ -454,7 +454,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                         template_data = {'experiments': experiments}
                         output_template = 'samples_manager/partial_experiments_list.html'
                     data['html_experiment_list'] = render_to_string(output_template, template_data)
-                    data['state'] = "Created" # MEL: CHANGE: Message, email, registration link, etc. 
+                    data['state'] = "Created" # MEL: TO CHANGE: Message, email, registration link, etc. 
                     message=mark_safe('Dear user,\nyour irradiation experiment with title: '+experiment.title+' was successfully registered by this account: '+logged_user.email+'.\nPlease, find all your experiments at this URL: http://cern.ch/irrad.data.manager/samples_manager/experiments/\nIn case you believe that this e-mail has been sent to you by mistake please contact us at irrad.ps@cern.ch.\nKind regards,\nCERN IRRAD team.\nhttps://ps-irrad.web.cern.ch')
                     send_mail_notification( 'IRRAD Data Manager: New experiment registered in the CERN IRRAD Proton Irradiation Facility',message,'irrad.ps@cern.ch', experiment.responsible.email)
                     message2irrad=mark_safe("The user with the account: "+logged_user.email+" registered a new experiment with title: "+ experiment.title+".\nPlease, find all the registerd experiments in this link: https://irrad-data-manager.web.cern.ch/samples_manager/experiments/")
