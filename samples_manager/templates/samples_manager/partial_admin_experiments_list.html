@@ -1,12 +1,18 @@
-
-  <script>
-        $(document).ready(function() {
-            $('.allowed_dropdown').dropdown();
-            function goBack() {
-                window.history.back();
-            }
-          });
-    </script>
+<thead>
+	<tr>
+ <th>ID</th>
+                            <th>Irradiation<br>title</th>
+                            <th>Availability</th>
+                            <th>No.<br>registered/<br>declared<br>samples</th>
+                            <th>Radiation/<br>Nu.Coll.<br>Length<br>Occupancy<br>(%)</th>
+                            <th>No.<br>Users</th>
+                            <th>Responsible<br>person</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    
 {% for experiment in experiment_data.experiments %}
    <tr>
      <td>{{experiment.experiment.id}}</td>
@@ -70,6 +76,19 @@
     <tr>
       <td colspan="10">There are no experiments</td>
     </tr>
+
   {% endfor %}
   
+                        </tbody>
+                    <tfoot>
+                        <tr><td></td><td></td><td></td><td><b>{{experiment_data.total_registered_samples}}/{{experiment_data.total_declared_samples}}</b></td>
+                        <td><b>{{experiment_data.total_experiments_radiation_length_occupancy}}</b> / <b>{{experiment_data.total_experiments_nu_coll_length_occupancy}}</b></td>
+                        <td></td><td></td><td></td></tr>
+                    </tfoot>
+   <script>
+            $('.allowed_dropdown').dropdown();
+            function goBack() {
+                window.history.back();
+            }
+    </script>
 

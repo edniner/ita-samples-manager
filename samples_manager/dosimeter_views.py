@@ -83,11 +83,11 @@ def dosimeter_delete(request, pk):
     return JsonResponse(data)
 
 def generate_dos_id(dosimeter):
-    if dosimeter.dos_id =='':
+    if dosimeter.dos_id =='' or dosimeter.dos_id is None:
         all_dosimeters = Dosimeters.objects.all()
         dosimeters_numbers = []
         for dosimeter in all_dosimeters:
-            if dosimeter.dos_id !='': 
+            if dosimeter.dos_id and dosimeter.dos_id !='': 
                  dosimeters_numbers.append(int(dosimeter.dos_id[4:10]))
             else:
                 dosimeters_numbers.append(0)  
@@ -119,8 +119,10 @@ def generate_dos_id(dosimeter):
         for x in range(0,zeros):
             new_dosimeter_dos_id_number = "0"+ new_dosimeter_dos_id_number
         new_dosimeter_dos_id = "DOS-"+ new_dosimeter_dos_id_number
+        print("new_dosimeter_dos_id:", new_dosimeter_dos_id)
         return new_dosimeter_dos_id
     else:
+        print("here---")
         return dosimeter.dos_id
 
 def generate_dos_ids(request):
@@ -132,6 +134,7 @@ def generate_dos_ids(request):
             dosimeter.save()
             dosimeter.dos_id = generate_dos_id(dosimeter)
             dosimeter.save()
+            print("dos_id", dosimeter.dos_id)
         data['form_is_valid'] = True
         dosimeters = Dosimeters.objects.order_by('dos_id')
         data['html_dosimeter_list'] = render_to_string('samples_manager/partial_dosimeters_list.html', {
