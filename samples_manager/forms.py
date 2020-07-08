@@ -10,26 +10,29 @@ from django.utils.safestring import mark_safe
 import logging 
 from django.forms.models import BaseInlineFormSet
 
-OPTIONS = (
-            ("5x5 mm²", "5x5 mm²"),
+OPTIONS = ( # Irradiation area can be specified for 'Passive Standard' irradiation (selected under New Experiment/Category)
+            ("5x5 mm²", "5x5 mm²"), 
             ("10x10 mm²", "10x10 mm²"),
             ("20x20 mm²", "20x20 mm²"),
+			#("Test", "Test"), # MELT: Adding this did not change the irradiation options. 
             )
 
-ACTIVE_OPTIONS = (
+ACTIVE_OPTIONS = ( # Active irradiation (see above comment) reveals 'Type' and 'Irradiation Area' and 'Modus operandi and....' 
+# Here, Irradiation Area allows exact specification rather than particular options
             ("Cold box", "Cold box irradiation (-25°C)"),
             ("Cryostat", "Cryostat (< 5 K)"),
-            ("Room temperature", "Room temperature (~ 20 °C)"),
+            ("Room temperature", "Room temperature (~ 20 °C)"), 
+			#("Test", "Test"), # MEL: Successfully changed irradiation options.
             )
 
-PARTICLES = (
-            ("Protons", "Protons"),
-            ("Heavy ions", "Heavy ions"),
-            ("Pions", "Pions"),
+PARTICLES = ( # Specification unnecessary as well. Changing it to only allow for 400 MeV proton beam and commenting out the rest.
+            ("Protons", "400 MeV Protons"),   
+            #("Heavy ions", "Heavy ions"),
+            #("Pions", "Pions"),
             )
 
-IRRAD_TABLES = (
-                ("", "Select IRRAD table"),
+IRRAD_TABLES = ( # Optionality unnecessary for ITA. Allows specification of table in IRRAD; ITA has one table.
+                ("", "Select IRRAD table"), 
                 ("Shuttle", "Shuttle"),
                 ("IRRAD3", "IRRAD3"),
                 ("IRRAD5", "IRRAD5"),
@@ -39,36 +42,38 @@ IRRAD_TABLES = (
                 ("IRRAD13", "IRRAD13"),
                 ("IRRAD15", "IRRAD15"),
                 ("IRRAD17", "IRRAD17"),
-                ("IRRAD19", "IRRAD19"),
+                ("Test", "Test"), # Under 'Irradiation': changes 'New Irradiation' form table specification, does not change dropdown menu to filter by table
                 )
     
 TABLE_POSITIONS = (
-                    ("", "Select position"),
-                    ("Center", "Center"),
-                    ("Left", "Left"),
-                    ("Right", "Right"),
+                    ("", "Select sample placement"), # MEL: changed wording slightly
+                    ("Front Porch", "Front Porch"),
+                    ("Cave Trolley", "Cave Trolley"), # MEL: changed 'center' and 'left' positions to 'Front Porch' and 'Cave Trolley'
+                    #("Right", "Right"), # MEL: commented out this line; not necessary for ITA.
                 )
 
 
 
-class ExperimentsForm1(forms.ModelForm):
+class ExperimentsForm1(forms.ModelForm): # 'New Experiment' form, page 1
     cern_experiment = forms.CharField(required=True)
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs): # field titles within the form and specification of which fields are required
         _cern_experiment_list = kwargs.pop('data_list', None)
         super(ExperimentsForm1, self).__init__(*args, **kwargs)
         self.fields['responsible'].empty_label = None
-        self.fields['title'].label='Irradiation experiment title *'
+        self.fields['title'].label='Irradiation experiment title *' 
         self.fields['description'].label='Description *'
         self.fields['cern_experiment'].widget = ListTextWidget(data_list=_cern_experiment_list, name='cern_experiment_-list')
-        self.fields['cern_experiment'].label='CERN experiment/Projects *'
+        self.fields['cern_experiment'].label='Fermilab experiment/Projects *' # MEL: Changed CERN to Fermilab
         self.fields['responsible'].label='Responsible person *'
         self.fields['emergency_phone'].label = 'Emergency telephone number*'
         self.fields['emergency_phone'].required = True
         self.fields['constraints'].required = False
-        self.fields['availability'] = forms.DateField(('%d/%m/%Y',),widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When your samples will be available for irradiation'} ) )
+        self.fields['availability'] = forms.DateField(('%d/%m/%Y',),widget=forms.DateInput(format='%d/%m/%Y',attrs={'placeholder': 'When your samples will be available for irradiation'} ) ) 
+		# ^ Availability dates. Ideally this would allow more than one, currently only allows 1 entry.
         self.fields['availability'].label= 'Availability *'
 
-    class Meta:
+    class Meta:# models.py contains the 'Experiments' model, which contains more detailed specifications of formatting and options for fields in the form.
+		# this class excludes parts of the 'Experiments' model that aren't relevant to page 1 of 'New Experiment' form.
         model = Experiments
         exclude = ('category','number_samples','comments','regulations_flag','irradiation_type', 'public_experiment')
         fields = ['title','description','cern_experiment','responsible','emergency_phone','availability','constraints',]
@@ -90,26 +95,27 @@ class ExperimentsForm1(forms.ModelForm):
             return False
         return True
 
-def validate_negative(value):
+def validate_negative(value): # Ensures all values must be positive.
     if value < 0:
         raise ValidationError(
             _('%(value)s is negative'),
             params={'value': value},
         )
-class ExperimentsForm2(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
+class ExperimentsForm2(forms.ModelForm): # Partial code for 'New Experiment' form, page 2
+    def __init__(self, *args, **kwargs): # titles of individual fields, type of entry. 
         super(ExperimentsForm2, self).__init__(*args, **kwargs)
         self.fields['irradiation_type'].label='Irradiation type *'
         self.fields['irradiation_type'] = forms.ChoiceField(choices = PARTICLES)
         self.fields['number_samples'] = forms.IntegerField(min_value=0)
         self.fields['number_samples'].label='Number of samples *'
         self.fields['category'].label='Category *'
-    class Meta:
+    class Meta: # models.py contains the Experiments model, which contains more detailed specifications of formatting and options for fields in the form.
+		# excludes parts of the Experiments model that aren't relevant to page 2 of 'New Experiment' form.
         model = Experiments
         exclude = ('title','description','cern_experiment','responsible','availability','constraints','comments','regulations_flag', 'public_experiment')
         fields = ['irradiation_type','number_samples','category', ]
 
-class ExperimentsForm3(forms.ModelForm):
+class ExperimentsForm3(forms.ModelForm): # Partial code for 'New Experiment' form, page 3. 
     def __init__(self, *args, **kwargs):
         super(ExperimentsForm3, self).__init__(*args, **kwargs)
         self.fields['comments'].required = False
@@ -117,7 +123,7 @@ class ExperimentsForm3(forms.ModelForm):
         self.fields['public_experiment'].label= mark_safe("Would you like to make your experiment details public to other IRRAD users.<br> This will allow you to view other users' experiments, too.")
         self.fields['public_experiment'].required = False
         self.fields['regulations_flag'].label=mark_safe('<a target="_blank" style="color:black; text-decoration: underline;" href="/samples_manager/regulations/">Please, accept terms and conditions *</a> <a target="_blank" href="/samples_manager/regulations/"><i class="info circle icon"></i></a>')
-    class Meta:
+    class Meta: # Pulls Experiments model from models.py, excludes fields from pages 1 and 2 of the form. 
         model = Experiments
         exclude = ('title','description','responsible','cern_experiment''availability','constraints','category','number_samples','irradiation_type')
         fields = ['comments','regulations_flag','public_experiment']
@@ -474,11 +480,11 @@ class CompoundElementsFormSet(forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
         super(CompoundElementsFormSet, self).__init__(*args, **kwargs)
         for form in self.forms:
-            form.empty_permitted = False
+            form.empty_permitted = False # MEL: Changed from FALSE to see if I can now add compounds. Didn't work. 
 
     def clean(self):
         if self.has_changed() == False:
-            raise forms.ValidationError('Please add at least one item.')
+            raise forms.ValidationError('Please add at least one item.') 
 
 
 class CompoundElementsForm(ModelForm):
@@ -488,9 +494,9 @@ class CompoundElementsForm(ModelForm):
 
     class Meta:
         model = CompoundElements
-        fields = ['id','element_type','percentage',]
+        fields = ['id','element_type','percentage', 'compound'] #MEL: added 'compound' as a field
         widgets = {}
-        exclude = ('compound',)
+       # exclude = ('compound',) #MEL: commented out exclusion of compound. Not sure what this will do
 
 
 class CompoundFormSet(forms.BaseInlineFormSet):

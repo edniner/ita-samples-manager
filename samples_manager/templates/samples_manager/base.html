@@ -2,7 +2,7 @@
 {% load staticfiles %}
 <html>
     <head>
-         <title>IRRAD Data Manager</title>
+         <title>ITA Data Manager</title>
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}"/>
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.0/dist/semantic.min.css">
@@ -98,12 +98,12 @@
                     <div class="blank-toolbar s4-notdlg"></div>
                     <div class="toolbar-wrapper s4-notdlg">
                         <div id="cern-toolbar">
-                            <h1 id="cern-mainlink"><a href="http://home.cern" title="CERN">CERN <span>Accelerating science </span></a></h1>
+                            <h1 id="cern-mainlink"><a href="https://www.fnal.gov/" title="Fermilab">Fermi <span>National Accelerator Laboratory </span></a></h1>
                             <ul class="cern-signedin">                    
                                 <li id="ctl00_ctl32_linksLi" class='cern-accountlinks'>
                                     <span id="ctl00_ctl32_accountSpan">Signed in as: <a href="https://cern.ch/account" id="ctl00_ctl32_accountLink" title="Signed in as {{logged_user}}">{{logged_user.email}}</a></span>
                                     <a href="https://login.cern.ch/adfs/ls/?wa=wsignout1.0" id="ctl00_ctl32_signOutALink" class="cern-signout" title="Sign out of your account">Sign out</a></li>
-                                <li><a class="cern-directory" href="http://cern.ch/directory" title="Search CERN resources and browse the directory">Directory</a></li>
+                                <li><a class="cern-directory" href="https://www.fnal.gov/pub/resources/index.html" title="Browse Fermilab resources on the FNAL website">Resources</a></li>
                             </ul>
                         </div>	
                     </div>	
@@ -118,8 +118,8 @@
                                 <a target='_blank' href="https://op-webtools.web.cern.ch/irrad/index.html#/" class="item">
                                 <b>BPM</b>
                                 </a>
-                                <a target='_blank' href="https://ps-irrad.web.cern.ch/" class="item">
-                                <b>IRRAD</b>
+                                <a target='_blank' href="https://ita.fnal.gov/" class="item">
+                                <b>ITA</b>
                                 </a>
                                 <div class="ui dropdown link item allowed_dropdown">
                                     <span class="text"><b>INFO</b></span>
@@ -140,7 +140,7 @@
                                         <a href="{% url 'samples_manager:dosimeters_list' %}"class="item"><b>DOSIMETERS</b></a>
                                         <a href="{% url 'samples_manager:irradiations' %}"class="item"><b>IRRADIATIONS</b></a>
                                         <a href="{% url 'samples_manager:admin_dosimetry_results' %}"class="item"><b>DOSIMETRY RESULTS</b></a>
-                                        <a href="https://its.cern.ch/jira/projects/IRRAD/" class="item"><b>JIRA</b></a>
+                                        <a href="https://its.cern.ch/jira/projects/IRRAD/" class="item"><b>JIRA???</b></a>
                                         
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@
                         </div>
                     </div>
                     <div class= "ui center aligned blue raised segment">
-                        <h1 class="ui center aligned header">IRRAD Data Manager</h1>
+                        <h1 class="ui center aligned header">ITA Data Manager</h1>
                     </div>
                 </div>
 

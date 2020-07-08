@@ -7,6 +7,8 @@ from django.contrib.admin import widgets
 from django.core.validators import MinValueValidator
 # Create your models here.
 
+# Most (if not all) classes in this file create a table in the database and specify the type of content in each field (integer, character, etc.)
+
 CERN_EXPERIMENTS=(('ATLAS','ATLAS'),('CMS','CMS'), ('ALICE', 'ALICE'),('LHCb', 'LHCb'), ('TOTEM', 'TOTEM'), ('Other','Other'))
 CATEGORIES=(('','Please,choose category'),('Passive Standard','Passive Standard'),('Passive Custom','Passive Custom'),('Active','Active'))
 STORAGE=(('Room temperature','Room temperature'),('Cold storage <20','Cold storage <20 °C'))
@@ -85,7 +87,8 @@ IRRAD_POSITION=(
 ROLE=(('Owner','Owner'),('Operator','Operator'),('Coordinator','Coordinator'),('User','User'))
 
 
-class Users(models.Model):
+class Users(models.Model): # Creates db table samples_manager_users, which is populated through the IDM.
+	# Some of this data (Dept/home institute/etc) may come from CERN's SSO. Unsure.
     email = models.EmailField(max_length=200)
     name = models.CharField(max_length=200,  null=True)
     surname = models.CharField(max_length=200, null=True)
@@ -113,6 +116,7 @@ def validate_negative(value):
             )
 
 class Experiments(models.Model):
+	# Creates db table samples_manager_experiments
     title = models.CharField(max_length=200, unique = True)
     description =  models.TextField()
     cern_experiment = models.CharField(max_length=100)
@@ -146,7 +150,8 @@ class Experiments(models.Model):
     def long_irradiation(self):
         return self.end_date - self.start_date >=datetime.timedelta(days=1)
         
-class PassiveStandardCategories(models.Model):
+class PassiveStandardCategories(models.Model): 
+# Partial code for options in New Experiment form. More code in forms.py
     irradiation_area_5x5 = models.BooleanField()
     irradiation_area_10x10 = models.BooleanField()
     irradiation_area_20x20 = models.BooleanField()
@@ -289,7 +294,7 @@ class Dosimeters(models.Model):
         return super(Dosimeters, self).save(*args, **kwargs)
 
 
-class MaterialElements(models.Model):
+class MaterialElements(models.Model): # First mention of the variables used in Elements csv. 
     atomic_number = models.PositiveIntegerField()
     atomic_symbol = models.CharField(max_length=5)
     atomic_mass = models.DecimalField(max_digits=15,decimal_places=10)
@@ -312,14 +317,14 @@ class Compound(models.Model):
         return self.name
 
 class CompoundElements(models.Model):
-    element_type = models.ForeignKey(MaterialElements)
+    element_type = models.ForeignKey(MaterialElements) 
     percentage = models.DecimalField(max_digits=15, decimal_places=4)
     compound = models.ForeignKey(Compound, null = True)
 
 class Layers(models.Model):
     name = models.CharField(max_length=20)
     length = models.DecimalField(max_digits=26,decimal_places=6)
-    element_type = models.ForeignKey(MaterialElements,null = True)
+    element_type = models.ForeignKey(MaterialElements,null = True) # MEL: I changed this from a dropdown to CharField in order to bypass a bug, then reverted all changes. 
     compound_type = models.ForeignKey(Compound,null = True)
     density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
     percentage = models.DecimalField(max_digits=8,decimal_places=4, null = True)

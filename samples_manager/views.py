@@ -157,14 +157,14 @@ def fluence_conversion(request):
 
 def get_registered_samples_number(experiments):
     data = dict()
-    experiment_data = []
+    experiment_data = [] # Experiment_data starts as empty list
     total_registered_samples = 0
     total_declared_samples = 0
     total_experiments_radiation_length_occupancy = 0
     total_experiments_nu_coll_length_occupancy = 0
     total_experiments_int_length_occupancy = 0
     row = 0
-    for experiment in experiments:
+    for experiment in experiments: #where is experiments coming from? REVISIT.
             samples = Samples.objects.filter(experiment = experiment)
             number = samples.count()
             total_radiation_length_occupancy = 0
@@ -175,8 +175,8 @@ def get_registered_samples_number(experiments):
                 if len(occupancy) == 0:
                     save_occupancies(sample,"new")
                     occupancy = Occupancies.objects.filter(sample=sample)
-                if len(occupancy) != 0:
-                    total_radiation_length_occupancy = total_radiation_length_occupancy + occupancy[0].radiation_length_occupancy
+                if len(occupancy) != 0: #if longer than *nothing*, take only the first character of occupancy? REVISIT. 
+                    total_radiation_length_occupancy = total_radiation_length_occupancy + occupancy[0].radiation_length_occupancy #where are these variables first mentioned? REVISIT. 
                     total_nu_coll_length_occupancy = total_nu_coll_length_occupancy + occupancy[0].nu_coll_length_occupancy
                     total_nu_int_length_occupancy = total_nu_int_length_occupancy + occupancy[0].nu_int_length_occupancy
                 else:
@@ -184,7 +184,7 @@ def get_registered_samples_number(experiments):
             total_registered_samples = total_registered_samples + number
             total_declared_samples = total_declared_samples + int(experiment.number_samples)
             row = row + 1
-            experiment_data.append({  
+            experiment_data.append({  # all of this data is entered into the empty list 'experiment_data'
             "experiment": experiment,
             "number_samples": number,
             "row":row,
@@ -192,9 +192,9 @@ def get_registered_samples_number(experiments):
             "total_nu_coll_length_occupancy": total_nu_coll_length_occupancy,
             "total_nu_int_length_occupancy": total_nu_int_length_occupancy,
             })
-            total_experiments_radiation_length_occupancy = total_experiments_radiation_length_occupancy + total_radiation_length_occupancy
-            total_experiments_nu_coll_length_occupancy = total_experiments_nu_coll_length_occupancy + total_nu_coll_length_occupancy
-            total_experiments_int_length_occupancy = total_experiments_int_length_occupancy + total_nu_int_length_occupancy
+            total_experiments_radiation_length_occupancy += total_radiation_length_occupancy # MEL: cleaned up these three lines, eliminated repeated variables.
+            total_experiments_nu_coll_length_occupancy += total_nu_coll_length_occupancy # MEL: modifies the (left value) variable to include the addition of the (right value) var
+            total_experiments_int_length_occupancy += total_nu_int_length_occupancy
     data = {
             "experiments":experiment_data,"total_registered_samples": total_registered_samples,"total_declared_samples": total_declared_samples,
             "total_experiments_radiation_length_occupancy": total_experiments_radiation_length_occupancy,

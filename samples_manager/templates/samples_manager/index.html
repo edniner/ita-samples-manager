@@ -9,7 +9,7 @@
   </div>
 
 <div class= "ui center aligned raised segment">
-      <p>Welcome to IRRAD Data Manager, the all-in-one data management tool for the registration, supervision and follow up of IRRAD experiments. Please, register your irradiation.</p>
+      <p>Welcome to ITA Data Manager, the all-in-one data management tool for the registration, supervision, and follow up of ITA experiments. Please, register your irradiation.</p>
       <a href="{% url 'samples_manager:experiments_list' %}">
             <button type="button"
                     class="massive ui yellow button"
@@ -23,8 +23,10 @@
                   title='Register new irradiation experiment'
                   data-url="{% url 'samples_manager:experiment_new' %}">
                   <i class="plus icon"></i> New Experiment
+				 
         </button>  
-  
+		<p>
+		<p><small>	The Fermilab IDM is adapted from the CERN IDM and brought to you by the Test Beam Facility.</small></p>
          
   </div>
 

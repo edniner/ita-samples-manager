@@ -72,3 +72,13 @@ DATABASES = {
     }
 
 }
+
+
+Places to start when looking for something in the code:
+	models.py contains code for tables in the database. 
+	forms.py is the code that creates forms in the IDM, pulling from models.py for some data, since the IDM forms usually populate a corresponding database table.
+
+
+
+
+

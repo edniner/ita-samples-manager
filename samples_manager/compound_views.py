@@ -32,7 +32,7 @@ def save_compound_form(request, form, elem_formset, experiment, template_name):
         if form.is_valid() and elem_formset.is_valid():
             compound = form.save()
             if elem_formset.is_valid():
-                if elem_formset.cleaned_data is not None:
+                if elem_formset.cleaned_data is not None: #BOOKMARK MEL: I think this is where the elements issue is. 
                         for form in elem_formset.forms:
                             element = form.save()
                             element.compound = compound

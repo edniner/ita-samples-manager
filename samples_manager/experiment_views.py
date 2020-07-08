@@ -547,7 +547,7 @@ def save_experiment_form_formset(request,form1, form2, form3, fluence_formset, m
                 data['form_is_valid'] = False
                 data['state'] = "missing fields"
                 print("not valid")
-        elif  status == 'validate':  # validation # MEL: what does this comment even mean?
+        elif  status == 'validate':  # validation
             print("validation")
             if form1.is_valid() and form2.is_valid() and form3.is_valid():
                 experiment_updated = form1.save()
