@@ -221,7 +221,7 @@ class Boxes(models.Model):
         return super(Boxes, self).save(*args, **kwargs)
 
 
-class Samples(models.Model):
+class Samples(models.Model): #Creates db table samples_manager_samples
     set_id = models.CharField(max_length=50, null = True,  unique = True)
     name = models.CharField(max_length=200, unique = True)
     current_location = models.CharField(max_length=100)
@@ -254,7 +254,7 @@ class Samples(models.Model):
         return super(Samples, self).save(*args, **kwargs)
 
 
-class Occupancies(models.Model):
+class Occupancies(models.Model): #Creates db table samples_manager_occupancies
     radiation_length_occupancy =  models.DecimalField(max_digits=9,decimal_places=3)
     nu_coll_length_occupancy =  models.DecimalField(max_digits=9,decimal_places=3)
     nu_int_length_occupancy =  models.DecimalField(max_digits=9,decimal_places=3)
@@ -263,7 +263,7 @@ class Occupancies(models.Model):
     def __str__(self):              # __str__ on Python 2
         return str(self.radiation_length_occupancy) + " "+ str(self.nu_coll_length_occupancy) +  " "+ str(self.nu_int_length_occupancy)
 
-class Dosimeters(models.Model):
+class Dosimeters(models.Model): #Creates db table samples_manager_dosimeters
     dos_id= models.CharField(max_length=50, null= True, unique = True)
     responsible = models.ForeignKey(Users, related_name="%(class)s_responsible",  null= True)
     current_location = models.CharField(max_length=100, null= True)
@@ -294,12 +294,12 @@ class Dosimeters(models.Model):
         return super(Dosimeters, self).save(*args, **kwargs)
 
 
-class MaterialElements(models.Model): # First mention of the variables used in Elements csv. 
+class MaterialElements(models.Model): # Creates db table samples_manager_materialelements
     atomic_number = models.PositiveIntegerField()
     atomic_symbol = models.CharField(max_length=5)
     atomic_mass = models.DecimalField(max_digits=15,decimal_places=10)
     density = models.DecimalField(max_digits=9,decimal_places=7)
-    min_ionization = models.DecimalField(max_digits=4,decimal_places=3)
+    min_ionization = models.DecimalField(max_digits=9,decimal_places=5) # Changed max digits to 9 (from 4) and decimal places to 5 (from 3) to reflect current table.
     nu_coll_length = models.DecimalField(max_digits=4,decimal_places=1)
     nu_int_length = models.DecimalField(max_digits=4,decimal_places=1)
     pi_coll_length = models.DecimalField(max_digits=4,decimal_places=1)
@@ -324,7 +324,7 @@ class CompoundElements(models.Model):
 class Layers(models.Model):
     name = models.CharField(max_length=20)
     length = models.DecimalField(max_digits=26,decimal_places=6)
-    element_type = models.ForeignKey(MaterialElements,null = True) # MEL: I changed this from a dropdown to CharField in order to bypass a bug, then reverted all changes. 
+    element_type = models.ForeignKey(MaterialElements,null = True) # References class MaterialElements from above. MEL: I changed this from a dropdown to CharField in order to bypass a bug, then reverted all changes. 
     compound_type = models.ForeignKey(Compound,null = True)
     density = models.DecimalField(max_digits=9,decimal_places=3,null = True)
     percentage = models.DecimalField(max_digits=8,decimal_places=4, null = True)
@@ -333,7 +333,7 @@ class Layers(models.Model):
     def __str__(self):             # __str__ on Python 2
         return str(self.name)
 
-class Irradiation(models.Model):
+class Irradiation(models.Model): #Creates db table samples_manager_irradiation
     sample = models.ForeignKey(Samples, null = True)
     dosimeter = models.ForeignKey(Dosimeters, null = True)
     date_in = models.DateTimeField(blank=True, null=True)

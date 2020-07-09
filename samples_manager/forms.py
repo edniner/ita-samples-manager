@@ -494,10 +494,10 @@ class CompoundElementsForm(ModelForm):
 
     class Meta:
         model = CompoundElements
-        fields = ['id','element_type','percentage', 'compound'] #MEL: added 'compound' as a field
+        fields = ['id','element_type','percentage',]#MEL: added 'compound' as a field. No change, reverted.
         widgets = {}
-       # exclude = ('compound',) #MEL: commented out exclusion of compound. Not sure what this will do
-
+        exclude = ('compound',)
+		
 
 class CompoundFormSet(forms.BaseInlineFormSet):
     def __init__(self, *args, **kwargs):
