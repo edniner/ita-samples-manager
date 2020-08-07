@@ -671,7 +671,7 @@ def search_irradiations(request):
         return render(request, 'samples_manager/irradiations_list.html', {'irradiations': irradiations,'logged_user': logged_user})
 
 
-def select_table(request):
+def select_table(request): #Unnecessary: selection of IRRAD table
         logged_user = get_logged_user(request)
         tables = ['IRRAD1','IRRAD3','IRRAD5','IRRAD7','IRRAD9','IRRAD11','IRRAD13','IRRAD15','IRRAD17','IRRAD19']
         query_string = ''

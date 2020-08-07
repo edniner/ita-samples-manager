@@ -339,7 +339,7 @@ class Irradiation(models.Model): #Creates db table samples_manager_irradiation
     date_in = models.DateTimeField(blank=True, null=True)
     date_out = models.DateTimeField(blank=True, null=True)
     table_position = models.CharField(max_length=50, null=True)
-    irrad_table = models.CharField(max_length=50, null = True)
+    irrad_table = models.CharField(max_length=50, null = True) #IRRAD table selection
     sec = models.PositiveIntegerField(null = True)
     accumulated_fluence =  models.DecimalField(max_digits=38,decimal_places=18, null=True)
     fluence_error = models.DecimalField(max_digits=10,decimal_places=3, null=True)

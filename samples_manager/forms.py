@@ -25,23 +25,23 @@ ACTIVE_OPTIONS = ( # Active irradiation (see above comment) reveals 'Type' and '
 			#("Test", "Test"), # MEL: Successfully changed irradiation options.
             )
 
-PARTICLES = ( # Specification unnecessary as well. Changing it to only allow for 400 MeV proton beam and commenting out the rest.
+PARTICLES = ( # Specification unnecessary. Changing it to only allow for 400 MeV proton beam and commenting out the rest.
             ("Protons", "400 MeV Protons"),   
             #("Heavy ions", "Heavy ions"),
             #("Pions", "Pions"),
             )
 
 IRRAD_TABLES = ( # Optionality unnecessary for ITA. Allows specification of table in IRRAD; ITA has one table.
-                ("", "Select IRRAD table"), 
-                ("Shuttle", "Shuttle"),
-                ("IRRAD3", "IRRAD3"),
-                ("IRRAD5", "IRRAD5"),
-                ("IRRAD7", "IRRAD7"),
-                ("IRRAD9", "IRRAD9"),
-                ("IRRAD11", "IRRAD11"),
-                ("IRRAD13", "IRRAD13"),
-                ("IRRAD15", "IRRAD15"),
-                ("IRRAD17", "IRRAD17"),
+               # ("", "Select table"), 
+               # ("Shuttle", "Shuttle"),
+               # ("IRRAD3", "IRRAD3"),
+               # ("IRRAD5", "IRRAD5"),
+               # ("IRRAD7", "IRRAD7"),
+               # ("IRRAD9", "IRRAD9"),
+               # ("IRRAD11", "IRRAD11"),
+               # ("IRRAD13", "IRRAD13"),
+               # ("IRRAD15", "IRRAD15"),
+               # ("IRRAD17", "IRRAD17"),
                 ("Test", "Test"), # Under 'Irradiation': changes 'New Irradiation' form table specification, does not change dropdown menu to filter by table
                 )
     
@@ -437,8 +437,8 @@ class GroupIrradiationForm(ModelForm):
         self.fields['dosimeter'].required = True
         self.fields['dosimeter'].empty_label = 'Select dosimeter'
         self.fields['dosimeter']= forms.ModelChoiceField(Dosimeters.objects.filter(dos_id__isnull = False).order_by('dos_id'))
-        self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES)
-        self.fields['irrad_table'].required = True
+        #self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES) #IRRAD table selection: unnecessary
+        #self.fields['irrad_table'].required = True
         self.fields['table_position'] = forms.ChoiceField(choices = TABLE_POSITIONS)
         self.fields['table_position'].required = False
 
@@ -455,7 +455,7 @@ class IrradiationForm(ModelForm):
         self.fields['dosimeter']= forms.ModelChoiceField(Dosimeters.objects.filter(dos_id__isnull = False).order_by('dos_id'))
         self.fields['dosimeter'].required = False
         self.fields['dosimeter'].empty_label = 'Select dosimeter'
-        self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES)
+        self.fields['irrad_table'] = forms.ChoiceField(choices = IRRAD_TABLES) #IRRAD table selection
         self.fields['irrad_table'].required = False
         self.fields['table_position'] = forms.ChoiceField(choices = TABLE_POSITIONS)
         self.fields['table_position'].required = False

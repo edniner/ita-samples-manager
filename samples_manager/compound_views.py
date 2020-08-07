@@ -55,13 +55,13 @@ def save_compound_form(request, form, elem_formset, experiment, template_name):
 def save_admin_compound_form(request,form,elem_formset,status,template_name):
     data = dict()
     if request.method == 'POST':
-        if form.is_valid() and elem_formset.is_valid():
+        if form.is_valid() and elem_formset.is_valid(): # Maybe the form doesn't show up because the elem_formset is not valid?
             compound = form.save()
             if elem_formset.cleaned_data is not None:
                 for form in elem_formset.forms:
                     element = form.save()
                     element.compound = compound
-                    element.save()
+                    element.save() # Is this related to the compound form not showing up? 
                     '''for e in element:
                             print(e.compound)
                         for elem in elem_formset.forms:
